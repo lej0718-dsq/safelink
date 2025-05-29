@@ -12,7 +12,7 @@ public class VerifiedService {
 
     private static final Logger logger = LoggerFactory.getLogger(VerifiedService.class);
     private final DefaultKaptcha kaptcha;
-    private static final int RATE_LIMIT = 5;
+    private static final int RATE_LIMIT = 20;
     private static final long WINDOW_MS = 1000; // 10초
     private static final long CAPTCHA_EXPIRE_MS = 3 * 60 * 1000; // 3분
 
