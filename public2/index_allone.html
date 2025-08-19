@@ -11,10 +11,10 @@
 	<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
 	<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
 	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/allone.css">
 	<link rel="stylesheet" href="css/index.css">
 	<link rel="stylesheet" href="css/responsive.css">
 	<link rel="stylesheet" href="css/index_qr.css">
-	<link rel="stylesheet" href="css/allone.css">
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -26,19 +26,19 @@
 	}
 	.blank1{
 		position: absolute;
-		top: 31%;
+		top: 50%;
 		left: 6%;
 		width: 87%;
-		height: 29%;
+		height: 22%;
 		display: block;
 		cursor: pointer;
 	}
 	.blank2{
 		position: absolute;
-		top: 62%;
+		top: 72%;
 		left: 6%;
 		width: 87%;
-		height: 29%;
+		height: 25%;
 		display: block;
 		cursor: pointer;
 	}
@@ -47,7 +47,28 @@
 		height: auto;
 		display: block;
 	}
-
+	.button-group {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+		gap: 6px;
+	}
+	.button-group .button {
+		width: 100%;
+		font-size: 14px;
+		line-height: 100%;
+		font-weight: 500; /*0818 폰트 weight 수정*/
+		text-align: center;
+		padding: 15px 0;
+		border-radius: 12px;
+	}
+	.button-group .button:only-child {
+		font-size: 18px;
+	}
+	.button-group .button.-primary {
+		background-color: #18973c;
+		color: #fff;
+	}
 
 </style>
 
@@ -57,18 +78,19 @@
 </section>
 <section>
 	<img src="./images/img2.png" alt="이미지2">
-	<a id="copy-btn" style="margin-right: 10px;display: none;width: 65%;"  class="blank1" href="javascript:void(0);"onclick="qrPopup('copy');"></a>
-	<a id="qr-btn" class="blank2" style="display: none;width: 50%;" href="javascript:void(0);" onclick="qrPopup('download');"></a>
+	<a id="copy-btn" style="margin-right: 10px;display: none;width: 88%;"  class="blank1" href="javascript:void(0);"onclick="qrPopup('copy');"></a>
+	<a id="qr-btn" class="blank2" style="display: none;width: 88%;" href="javascript:void(0);" onclick="qrPopup('download');"></a>
 
 </section>
 <section>
-	<img src="./images/img3.png" alt="이미지3">
+	<img src="./images/img3.png" alt="이미지3"  >
 </section>
 <section style="padding: 10px 24px 20px;">
 	<div class="button-group">
 		<a href="subscribe_allone.html" class="button -primary">서비스 가입하기</a>
 	</div>
-</section>
+</section><section>
+
 
 
 
@@ -79,7 +101,8 @@
 		<hr class="qr-line">
 		<!-- 휴대폰 번호 입력 영역 -->
 		<div class="phone-input-wrap">
-			<input type="text" id="phoneNumber" placeholder="휴대폰 번호 입력" />
+			<input type="text" id="phoneNumber" placeholder="휴대폰 번호 입력"
+				   style="flex: 1 !important; min-width: 200px !important; max-width: 344px !important; height: 46px !important;" />
 			<button style="height: 46px;width: 73px;" id="confirmBtn">확인</button>
 		</div>
 		<div style="font-size: 11pt;font-weight: 400;color: #8C8C8C;line-height: normal;margin-bottom: 24px;">
@@ -125,11 +148,17 @@
 		QR 다운로드가 완료되었습니다
 	</div>
 </div>
+
+<!-- 새로운 팝업 -->
+<div class="show-popup" id="showPopup">
+	서비스 가입 후 사용가능합니다
+</div>
 </body>
 
 
 <script language="JavaScript">
 	// ===== 요소 가져오기 =====
+	// 새로운 팝업 요소 선언
 	const popupOverlay = document.getElementById('popupOverlay');
 	const closeBtn = document.getElementById('closeBtn');
 	const confirmBtn = document.getElementById('confirmBtn');
@@ -144,6 +173,7 @@
 	const copyTextBtn = document.getElementById('copyTextBtn');
 	let qrType = 'copy';
 	let amcNumber = '';
+	const showPopup = document.getElementById('showPopup');
 
 	$(document).ready(function(){
 		// LoadingWithMask();
@@ -221,7 +251,7 @@
 				if (data.code === 200) {
 					createQrcode(data.msg);
 				} else {
-					alert(data.msg);
+					showServiceRequiredPopup();
 				}
 			},
 			error: function (xhr, status, error) {
@@ -234,7 +264,41 @@
 			}
 		});
 	});
+	function LoadingWithMask() {
+		// 화면의 높이와 너비를 구합니다.
+		var maskHeight = $(document).height();
+		var maskWidth = $(window).width();
 
+		// 화면에 출력할 마스크를 설정해줍니다.
+		var mask = "<div id='mask' style='position:fixed; z-index:9000; background-color:#000000; display:none; left:0; top:0;' onclick='LoadingWithMaskOff()'></div>";
+		var loadingImg = '';
+		loadingImg += "<div id='loadingImg' style='width:80%;height;40%; position: fixed; z-index:10000; display: none; background-color:#FFF;'>";
+		loadingImg += " <table height=200 width=100%><tr><td align=center style='padding: 10px;font-size:30px; font-weight:500; '>작업공지사항<hr/></td></tr>";
+		loadingImg += " <tr><td align=center style='line-height:180%; vertical-align : top; font-size:18px;'> 안전한 서비스 제공을 위하여 시스템점검을 진행합니다. <br/><br/> 점검 일시 : 2024년 11월 24일 00시 ~ 06시<br/> </td></tr>";
+		loadingImg += " <tr><td align=center style='line-height:180%; vertical-align : top'> <button style='margin-top: 20px; padding: 8px 15px; font-size: 14px; cursor: pointer;' onclick='LoadingWithMaskOff()'> 닫기 </button> <br/></td></tr> <tr><td>.</td></tr> </table>";
+		loadingImg += "</div>";
+
+		// 화면에 레이어 추가
+		$('body').append(mask).append(loadingImg);
+
+		// 마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채웁니다.
+		$('#mask').css({
+			'width': maskWidth,
+			'height': maskHeight,
+			'opacity': '0.3'
+		});
+
+		// loadingImg 요소를 화면 중앙에 위치시킵니다.
+		$('#loadingImg').css({
+			'top': '50%',
+			'left': '50%',
+			'transform': 'translate(-50%, -50%)'
+		});
+
+		// 마스크와 로딩 이미지 표시
+		$('#mask').show();
+		$('#loadingImg').show();
+	}
 	function createQrcode(serviceNumber) {
 		amcNumber = '15555551,1,' + serviceNumber + '#';
 		if(qrType === 'copy') {
@@ -248,7 +312,10 @@
 			const qr = new QRCode(qrCodeDiv, {
 				text: 'tel:'+amcNumber,  // 실제 원하는 텍스트나 URL
 				width: 120,
-				height: 120
+				height: 120,
+				colorDark: '#000000',
+				colorLight: '#ffffff',
+				correctLevel: QRCode.CorrectLevel.H
 			});
 			// 예시로 QR 하단 텍스트 설정
 			qrInfoText.textContent = `${amcNumber}`;
@@ -317,6 +384,28 @@
 			qrType = 'copy';
 		} else {
 			qrType = 'download';
+		}
+	}
+
+	/* 서비스 가입 후 사용가능 팝업 */
+	function showServiceRequiredPopup() {
+		console.log('showServiceRequiredPopup 함수 실행됨'); // 디버그용
+
+		// 새로운 show-popup 사용
+		if (showPopup) {
+			// 팝업 보이기
+			showPopup.classList.add('active');
+			console.log('팝업에 active 클래스 추가됨'); // 디버그용
+
+			// 일정 시간 후 자동으로 숨기기 (예: 2초 후)
+			setTimeout(() => {
+				showPopup.classList.remove('active');
+				console.log('팝업에서 active 클래스 제거됨'); // 디버그용
+			}, 2000);
+		} else {
+			console.error('showPopup 요소를 찾을 수 없습니다'); // 디버그용
+			// 대안으로 alert 사용
+			alert('서비스 가입 후 사용 가능합니다');
 		}
 	}
 </script>

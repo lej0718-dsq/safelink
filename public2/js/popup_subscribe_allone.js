@@ -253,7 +253,7 @@ $(document).ready(function () {
 	});
 
 	// 가입처리
-	$('.agree_btn').on("click", function(){
+	$('.button').on("click", function(){
 		// 상태체크
 		let steps = $('#steps').val();
 

@@ -371,7 +371,10 @@
             const qr = new QRCode(qrCodeDiv, {
                 text: 'tel:' + amcNumber,  // 실제 원하는 텍스트나 URL
                 width: 120,
-                height: 120
+                height: 120,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
             });
             // 예시로 QR 하단 텍스트 설정
             qrInfoText.textContent = `${amcNumber}`;
