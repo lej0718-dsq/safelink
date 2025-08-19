@@ -1,0 +1,929 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html, body{
+    height: calc(var(--vh, 1vh) * 100) !important;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #fff;
+}
+
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+}
+
+.main-content {
+    padding: 30px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.service-title {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 100%;
+    letter-spacing: -0.25px;
+    text-align: center;
+    color: #000;
+    margin-bottom: 30px;
+}
+
+.main-title {
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 140%;
+    letter-spacing: -6%;
+    margin-bottom: 40px;
+}
+
+.carrier-selection {
+    margin-bottom: 30px;
+}
+
+.carrier-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.carrier-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 25px;
+    background: white;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.carrier-btn:hover {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.carrier-btn.active {
+    border-color: #007bff;
+    background: #007bff;
+    color: white;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+}
+
+.input-field::placeholder {
+    color: #999;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.input-with-button {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.input-with-button .input-field {
+    flex: 1;
+}
+
+.action-btn {
+    padding: 15px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.verify-btn {
+    background: #b0b0b0;
+    color: white;
+}
+
+.verify-btn:hover:not(:disabled) {
+    background: #007bff;
+}
+
+.confirm-btn {
+    background: #b0b0b0;
+    color: white;
+}
+
+.confirm-btn:hover:not(:disabled) {
+    background: #28a745;
+}
+
+.agreement-section {
+    background: #f8f9fa;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+.checkbox-group {
+    margin-bottom: 15px;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #666;
+}
+
+.checkbox-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    cursor: pointer;
+}
+
+.checkbox-item.main {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 18px;
+}
+
+.info-section #infoContent {
+    overflow-y: hidden;
+    height: 0;
+    transition: all 0.2s ease-in-out;
+    opacity: 0;
+}
+
+.info-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px; /*0811 추가*/
+    cursor: pointer;
+    padding: 17px 4px; /*0811 추가*/
+}
+
+.info-title {
+    width: 18px;
+    height: 18px;
+}
+.info-label {
+    margin-left: 8px; /* 이미지와 텍스트 사이 여백 */
+    flex-grow: 1;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 130%;
+    letter-spacing: 0%;
+
+}
+
+.info-icon {
+    width: 20px;
+    height: 20px;
+    background: #007bff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.info-content {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.chevron {
+    width: 11px;
+    height: 7.5px;
+    background: url('../images/ico_arrow_down.png') no-repeat center center;
+    background-size: contain;
+    transition: transform 0.2s;
+}
+.chevron.expanded {
+    transform: rotate(180deg);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 18px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin: 20px;
+    margin-top: 0;
+}
+
+.submit-btn:hover {
+    background: #218838;
+}
+
+.submit-btn:disabled {
+    background: #b0b0b0;
+    cursor: not-allowed;
+}
+@charset "utf-8";
+/***
+ The new CSS reset - version 1.8.4 (last updated 14.2.2023)
+ GitHub page: https://github.com/elad2412/the-new-css-reset
+***/
+
+/*
+ Remove all the styles of the "User-Agent-Stylesheet", except for the 'display' property
+ - The "symbol *" part is to solve Firefox SVG sprite bug
+ */
+*:where(:not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *)) {
+    all: unset;
+    display: revert;
+}
+
+/* Preferred box-sizing value */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Reapply the pointer cursor for anchor tags */
+a, button {
+    cursor: revert;
+}
+
+/* Remove list styles (bullets/numbers) */
+ol, ul, menu {
+    list-style: none;
+}
+
+/* For images to not be able to exceed their container */
+img {
+    max-inline-size: 100%;
+    max-block-size: 100%;
+}
+
+/* removes spacing between cells in tables */
+table {
+    border-collapse: collapse;
+}
+
+/* Safari - solving issue when using user-select:none on the <body> text input doesn't working */
+input, textarea {
+    -webkit-user-select: auto;
+}
+
+/* revert the 'white-space' property for textarea elements on Safari */
+textarea {
+    white-space: revert;
+}
+
+/* Restore checkbox functionality that was removed by CSS reset */
+input[type="checkbox"] {
+    -webkit-appearance: checkbox !important;
+    appearance: checkbox !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+/* minimum style to allow to style meter element */
+meter {
+    -webkit-appearance: revert;
+    appearance: revert;
+}
+
+/* preformatted text - use only for this feature */
+:where(pre) {
+    all: revert;
+}
+
+/* reset default text opacity of input placeholder */
+::placeholder {
+    color: unset;
+}
+
+/* remove default dot (•) sign */
+::marker {
+    content: initial;
+}
+
+/* fix the feature of 'hidden' attribute.
+ display:revert; revert to element instead of attribute */
+:where([hidden]) {
+    display: none;
+}
+
+/* revert for bug in Chromium browsers
+ - fix for the content editable attribute will work properly.
+ - webkit-user-select: auto; added for Safari in case of using user-select:none on wrapper element*/
+:where([contenteditable]:not([contenteditable="false"])) {
+    -moz-user-modify: read-write;
+    -webkit-user-modify: read-write;
+    overflow-wrap: break-word;
+    -webkit-line-break: after-white-space;
+    -webkit-user-select: auto;
+}
+
+/* apply back the draggable feature - exist only in Chromium and Safari */
+:where([draggable="true"]) {
+    -webkit-user-drag: element;
+}
+
+/* Revert Modal native behavior */
+:where(dialog:modal) {
+    all: revert;
+}
+
+@font-face {
+    font-family: 'Noto KR';
+    font-style: normal;
+    font-weight: 300;
+    src: url('../fonts/NotoSansKR-Light.otf') format('opentype'),
+    url('../fonts/NotoSansKR-Light.woff') format('woff'),
+    url('../fonts/NotoSansKR-Light.woff2') format('woff2'),
+    url('../fonts/NotoSansKR-Light.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto KR';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../fonts/NotoSansKR-Regular.otf') format('opentype'),
+    url('../fonts/NotoSansKR-Regular.woff') format('woff'),
+    url('../fonts/NotoSansKR-Regular.woff2') format('woff2'),
+    url('../fonts/NotoSansKR-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto KR';
+    font-style: normal;
+    font-weight: 500;
+    src: url('../fonts/NotoSansKR-Medium.otf') format('opentype'),
+    url('../fonts/NotoSansKR-Medium.woff') format('woff'),
+    url('../fonts/NotoSansKR-Medium.woff2') format('woff2'),
+    url('../fonts/NotoSansKR-Medium.ttf') format('truetype');
+}
+
+html {
+    font-size: 6.25%; /* 1px == 1rem */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 20250807 덮어씌우는 추가 css */
+#sendotp, #checkotp {
+    text-align: center;
+}
+/* 특정성을 위해 아이디 선택자 추가 다른페이지 오류 가능성 있음 */
+#service_join_wrap_allone #subscriptionForm .agree_wrap {
+    background-color: #F0F0F0 !important;
+    margin-bottom: 30px;
+}
+#service_join_wrap.-allone #infoContent ul li {
+    position: relative;
+    padding-left: 10px;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 140%;
+    letter-spacing: -5%;
+    margin-bottom: 5px;
+}
+#infoContent ul li::before {
+    content: "•";
+    position: absolute;
+    top:0;
+    left: 0;
+    color: #000;
+    font-size: 15px;
+    line-height: 19px;
+}
+/* 기존 agree_btn 스타일 제거 - 새로운 .button-container 스타일 사용 */
+
+#service_join_wrap.-allone .agree_wrap p.agree_tit input[type="checkbox"] {
+    border: 1px solid #777 !important;
+    background-color: #fff !important;
+    border-radius: 3px;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    -webkit-appearance: checkbox !important;
+    appearance: checkbox !important;
+}
+#service_join_wrap.-allone .agree_wrap p.agree_txt input[type="checkbox"] {
+    border: 1px solid #777 !important;
+    background-color: #fff !important;
+    border-radius: 3px;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    -webkit-appearance: checkbox !important;
+    appearance: checkbox !important;
+}
+#service_join_wrap.-allone .phone_info ul li button { width:100%; height:35px; line-height:33px; background:#fff; border:1px solid #ddd; border-radius:35px; font-family: 'Pretendard'; cursor: pointer!important;; }
+#service_join_wrap.-allone .phone_info ul li button.selected { color:#fff; background:#19973C; border:1px solid #19973C!important; }
+#service_join_wrap.-allone .phone_info .number2 button.btn-success {
+    display: inline-block;
+    font-size: 13px;
+    width: 90px;
+    height: 35px;
+    line-height: 35px;
+    background: #19973C;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: none;
+    border: 0;
+    border-radius: 5px;
+}
+/*subscribe_done*/
+#service_join_wrap.link_wrap {
+    padding: 20px 24px;
+}
+#service_join_wrap.link_wrap .service_join_tit {
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 140%;
+    letter-spacing: -5%;
+    text-align: center;
+    padding: 40px;
+    border-bottom: 2px solid #000;
+    margin-top: 15px;
+    margin-bottom: 40px;
+}
+#service_join_wrap.link_wrap .service_notice {
+    padding: 24px 16px;
+    background-color: #F8F8F8;
+    border-radius: 12px;
+    margin-bottom: 60px;
+}
+.list_dot {
+}
+.list_dot li {
+    position: relative;
+    font-family: Noto Sans KR;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 120%;
+    padding-left: 10px;
+}
+.list_dot li:not(:last-child) {
+    margin-bottom: 16px;
+}
+.list_dot li:before {
+    content: "";
+    position: absolute;
+    top:8px;
+    left: 0;
+    width: 4px;
+    height: 4px;
+    border-radius: 4px;
+    background-color: #666666;
+}
+#service_join_wrap.link_wrap .how_to_section {
+    margin-bottom: 40px;
+}
+#service_join_wrap.link_wrap .how_to_section .how_to_wrap {
+    margin-bottom: 40px;
+}
+#service_join_wrap.link_wrap .how_to_section .how_to_wrap .service_join_sub_tit {
+    color: #121212;
+    font-size: 34px;
+    font-weight: 500;
+    word-wrap: break-word;
+    text-align: center;
+    padding: 20px;
+}
+#service_join_wrap.link_wrap .how_to_section .how_to_wrap .how_to_inner {
+    margin-top: 16.5px;
+}
+#service_join_wrap.link_wrap .how_to_section .how_to_wrap .how_to_inner .tag.-gray {
+    padding: 10px;
+    background-color: #f1f1f1;
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 140%;
+    letter-spacing: -5%;
+    color: #19973C;
+}
+#service_join_wrap.link_wrap .how_to_section .how_to_wrap .how_to_inner ul li {
+    margin-top: 16px;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 15px;
+    line-height: 140%;
+    letter-spacing: -5%;
+}
+#service_join_wrap.link_wrap .button-group {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 6px;
+}
+#service_join_wrap.link_wrap .button-group .button {
+    width: 100%;
+    font-style: Medium;
+    font-size: 14px;
+    line-height: 100%;
+    letter-spacing: -5%;
+    font-weight: 500; /*0818 폰트 weight 수정*/
+    text-align: center;
+    padding: 15px 0;
+    border-radius: 12px;
+}
+.button-group .button.-primary {
+    background-color: #18973c;
+    color: #fff;
+}
+.button-group .button.-primary.-white {
+    background-color: #fff;
+    border: 1px solid #19973C;
+    color: #19973C;
+}
+#service_join_wrap.link_wrap .banner {
+    padding: 38px 47px;
+}
+#service_join_wrap.link_wrap .banner .txt_wrap.-col {
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 47px);
+}
+#service_join_wrap.link_wrap .banner .txt_wrap.-col p {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 8px;
+}
+#service_join_wrap.link_wrap .banner .txt_wrap.-col p b {
+    color: #19973C;
+}
+#service_join_wrap.link_wrap .banner .txt_wrap.-col a {
+    width: 60px;
+    height: initial;
+    line-height: initial;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 100%;
+    letter-spacing: -5%;
+    color: #666666;
+}
+/*subscribe_done*/
+.info-section #infoContent {
+    overflow-y: hidden;
+    height: 0;
+    transition: all 0.2s ease-in-out;
+    opacity: 0;
+}
+.info-section.expended #infoContent {
+    opacity: 1;
+    height: 120px;
+    overflow-y: auto;
+}
+.info-section.expended .chevron {
+    transform: rotate(180deg);
+}
+
+#service_join_wrap.-allone {
+    overflow-x: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+#subscriptionForm {
+    margin-bottom: 60px;
+}
+#service_join_wrap.-allone .info-section {
+    width: 100%;
+    display:flex; flex:1; flex-direction: column; justify-content: space-between;
+}
+
+
+.info-section #infoContent {
+    overflow-y: hidden;
+    height: 0;
+    transition: all 0.2s ease-in-out;
+    opacity: 0;
+}
+.hr_border {
+    display: block;
+    transform: translateX(-10%);
+    width: 121%;
+    height: 8px;
+    background-color: #f0f0f0;
+}
+.info-section.expended #infoContent {
+    opacity: 1;
+    height: 120px;
+    padding-bottom: 10px;
+    overflow-y: auto;
+}
+.info-section.expended .chevron {
+    transform: rotate(180deg);
+}
+
+.inner_title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 82%;
+    margin: 60px auto 20px;
+} /* 0818 inner_title 통합 밑 마진 값 수정 */
+.icon.-big-check {
+    display: block;
+    width: 56px;
+    height: 56px;
+    background: url('../images/ico_big_check.png') no-repeat center center;
+    background-size: contain;
+}
+
+h2 {
+    text-align: center;
+    font-size: 22px;
+    margin: 20px 0;
+    line-height: 140%;
+    font-family: 'Noto KR', sans-serif;
+}
+/* 0818 .number-row css style 병합 및 스타일 수정 */
+.number-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: Noto Sans KR;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 15px;
+    line-height: 100%;
+    letter-spacing: -5%;
+    padding: 21px 0;
+    border-top: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd;
+    margin-bottom: 40px;
+}
+.number-row .disc {
+    color: #666666;
+}
+.number-row .num {
+    color: #19973C;
+}
+/*// 0818 .number-row css style 병합 및 스타일 수정 */
+/* 0818 accordion style 수정 */
+.accordion {
+    margin-bottom: 50px;
+}
+.accordion-item {
+    margin-bottom: 20px;
+}
+.accordion-header {
+    padding: 16px 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: Noto Sans KR;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 140%;
+    letter-spacing: -5%;
+    box-sizing: border-box;
+    color: #121212;
+    border: 1px solid #e6e6e6;
+    border-radius: 6px;
+    padding: 17px 20px;
+}
+.accordion-item.-active .accordion-header{
+    border-radius: 6px 6px 0 0;
+}
+.accordion-header .icon.-arrow {
+    width: 16px;
+    height: 9px;
+    background: url('../images/icon_arrow_up_gray.png') no-repeat center center;
+    background-size: contain;
+    rotate: 180deg;
+}
+.accordion-item.-active .accordion-header .icon.-arrow {
+    rotate: 0deg;
+}
+.accordion-content {
+    height: 0;
+    font-size: 13px;
+    overflow-y: hidden;
+    transition: all 0.2s ease-in-out;
+    background-color: #F6F6F6;
+    padding: 0 20px;
+    box-sizing: border-box;
+
+}
+.accordion-item.-active .accordion-content {
+    height: auto;
+    padding: 24px 20px;
+    border: 1px solid #e6e6e6;
+    border-radius: 0 0 6px 6px;
+}
+.accordion-content ul.list{
+    margin-bottom: 20px;
+}
+.accordion-content ul.list:last-child{
+    margin-bottom: 0;
+}
+.accordion-content ul.list li {
+    font-family: Roboto;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 15px;
+    line-height: 140%;
+    letter-spacing: -5%;
+    word-break: keep-all;
+    margin-bottom: 16px;
+}
+.accordion-content ul.list li:last-child {
+    margin-bottom: 0;
+}
+/*// 0818 accordion style 수정 */
+.confirm {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: #0a0;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.list.-num {
+    list-style: none;
+    counter-reset: step; /* 카운터 초기화 */
+}
+.list.-num li {
+    position: relative;
+    counter-increment: step;
+    padding-left: 20px;
+    color: #343434;
+}
+
+.list.-num li:before {
+    content: counter(step)". "; /* 카운터 값 표시 */
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #343434;
+}
+.list.-dot {
+}
+.list.-dot li {
+    position: relative;
+    font-family: Noto Sans KR;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 120%;
+    padding-left: 20px;
+}
+.list.-dot li:not(:last-child) {
+    margin-bottom: 16px;
+}
+.list.-dot li:before {
+    content: "";
+    position: absolute;
+    top:8px;
+    left: 4px;
+    width: 4px;
+    height: 4px;
+    border-radius: 4px;
+    background-color: #666666;
+}
+/* 0818 accordion style 수정 */
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 6px;
+}
+.button-group .button {
+    width: 100%;
+    font-style: Medium;
+    font-size: 14px;
+    line-height: 100%;
+    letter-spacing: -5%;
+    text-align: center;
+    padding: 15px 0;
+    border-radius: 12px;
+}
+.notice-wrap {
+    margin-bottom: 40px;
+}
+.notice-wrap ul.list li {
+    font-family: Noto Sans KR;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 15px;
+    line-height: 140%;
+    letter-spacing: -5%;
+    color: #343434;
+    padding-left: 7px;
+}
+.notice-wrap ul.list li:before {
+    top: 10px;
+    width: 3px;
+    height: 3px;
+}
+
+#service_join_wrap.-allone .agree_btn {
+    display: inline-block;
+    width: 100%;
+    padding: 12px 0;
+    background-color: #18973c !important;
+    border-radius: 14px !important;
+    color: #fff !important;
+    font-size: 15px;
+    line-height: 140%;
+    letter-spacing: -2%;
+    text-align: center;
+
+
+
+}
+/* 하단 고정 버튼 - 최우선 순위 */
+/* .button-container {
+ position: fixed !important;
+ bottom: 0 !important;
+ left: 0 !important;
+ right: 0 !important;
+ width: 100% !important;
+ z-index: 9999 !important;
+ padding: 20px !important;
+ background: rgba(255, 255, 255, 0.95) !important;
+ backdrop-filter: blur(5px) !important;
+ pointer-events: auto !important;
+ }
+
+.button-container .agree_btn,
+.button-container #agreeButton {
+ display: block !important;
+ width: 100% !important;
+ margin: 0 !important;
+ height: 50px !important;
+ line-height: 50px !important;
+ color: #fff !important;
+ background: #19973C !important;
+ background-color: #19973C !important;
+ border-radius: 25px !important;
+ text-align: center !important;
+ text-decoration: none !important;
+ border: none !important;
+ outline: none !important;
+ cursor: pointer !important;
+ font-size: 16px !important;
+ font-weight: 500 !important;
+ box-sizing: border-box !important;
+ transition: all 0.2s ease !important;
+ }
+
+.button-container .agree_btn:hover,
+.button-container #agreeButton:hover {
+ background: #157a30 !important;
+ background-color: #157a30 !important;
+ }
+
+/* 모든 가능한 버튼 선택자에 강제 적용 */
+/*div.button-container a[href="#"].agree_btn,
+div.button-container a#agreeButton,
+.button-container > a {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    height: 50px !important;
+    background: #19973C !important;
+}  */

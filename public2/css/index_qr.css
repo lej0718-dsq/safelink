@@ -164,6 +164,13 @@
     margin-bottom: 9px;
 }
 
+/* QR 코드 표시 요소(canvas 또는 img)가 페이지마다 동일 크기로 보이도록 고정 */
+#qrCode canvas,
+#qrCode img {
+    width: 120px !important;
+    height: 120px !important;
+}
+
 #qrInfoText {
     font-size: 20pt;
     font-weight: 600;
@@ -213,4 +220,29 @@
         font-size: 18pt;
         margin-top: 16px;
     }
+}
+
+/* 새로운 팝업 스타일 */
+.show-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #000000;
+    color: #FFFFFF;
+    padding: 25px 40px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
+    min-width: 280px;
+    z-index: 99999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.show-popup.active {
+    opacity: 1;
+    visibility: visible;
 }

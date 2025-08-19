@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>휴대폰약속번호 가입하기::가입완료</title>
+
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/allone.css">
+    <link rel="stylesheet" href="css/index.css?2408272329">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/index_qr.css">
+
+</head>
+
+<body>
+<div id="service_join_wrap" class="link_wrap">
+    <div class="inner02">
+        <div class="inner_title">
+            <span class="icon -big-check"></span>
+            <h2>휴대폰 약속번호 서비스에<br/> 가입했어요</h2>
+        </div>
+        <div class="number-row">
+            <span class="disc">약속번호</span>
+            <span id="userPromiseNumber" class="num"></span>
+        </div>
+        <div class="button-group" style="margin-bottom: 60px;">
+            <a href="#" class="button -primary -white" onclick="qrPopup('copy');">약속번호 복사</a>
+            <a href="#" class="button -primary -white" onclick="qrPopup('download');">QR코드 다운로드</a>
+        </div>
+        <div class="accordion">
+            <div class="accordion-item">
+                <div class="accordion-header">히든다이얼 사용 방법 <span class="icon -arrow"></span></div>
+                <div class="accordion-content">
+                    <ul class="list -num">
+                        <li>대표번호 1555-5551으로 전화 걸기</li>
+                        <li>ARS 안내에 따라 상대방 전화번호 입력</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">안심콜 사용 방법 <span class="icon -arrow"></span></div>
+                <div class="accordion-content">
+                    <ul class="list -num">
+                        <li> 통화하고 싶은 분에게 대표번호(1555-5551)와 약속번호를 전달</li>
+                        <li> 상대방이 대표번호로 전화를 걸어 ARS 안내에 따라 약속번호를 입력</li>
+                    </ul>
+
+                    <ul class="list -dot">
+                        <li> 서비스 가입시, 내 휴대폰 번호 뒤 8자리가 약속번호로 자동 설정됩니다.</li>
+                        <li> 약속번호 변경을 원하는 경우, 대표번호로 전화하여 수정할 수 있습니다.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="button-group">
+            <button type="button" class="button -primary" id="nextButton">확인</button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- QR 팝업 오버레이 -->
+<div class="overlay" id="popupOverlay" style="flex-direction: column;">
+    <div class="popup" id="qrPopup">
+        <button class="close-btn" id="closeBtn">&times;</button>
+        <div class="popup-header">약속번호 확인하기</div>
+        <hr class="qr-line">
+        <!-- 휴대폰 번호 입력 영역 -->
+        <div class="phone-input-wrap">
+            <input type="text" id="phoneNumber" placeholder="휴대폰 번호 입력" style="flex: 1 !important; min-width: 200px !important; max-width: 344px !important; height: 46px !important;" />
+            <button style="height: 46px;width: 73px;" id="confirmBtn">확인</button>
+        </div>
+        <div style="font-size: 11pt;font-weight: 400;color: #8C8C8C;line-height: normal;margin-bottom: 24px;">
+            * 최초에 부여받은 연결 번호를 변경하지 않은 상태에서 휴대폰 번호를 입력하시게 되면, 휴대폰 번호가 노출될 수 있습니다.
+            (처음 가입 시 휴대폰 번호 뒷 8자리로 자동 설정되는 방식) 설정 방법은 메인 하단에서 확인하실 수 있습니다.
+        </div>
+        <hr class="qr-line">
+        <!-- QR 코드 표시 영역 -->
+        <div class="qr-code-area" id="qrCodeArea">
+            <div style="font-size: 16pt;font-weight: bold;color: #323232;text-align: -webkit-left;">
+                QR 생성하기
+            </div>
+            <!-- 실제 QR 코드가 들어갈 div -->
+            <div id="qrCode"></div>
+            <!-- 예시로 QR 하단에 표시할 텍스트(약속번호 등) -->
+            <div id="qrInfoText"></div>
+        </div>
+
+        <!-- 약속번호 복사 영역 -->
+        <div class="copy-code-area" id="copyCodeArea">
+            <div style="font-size: 16pt;font-weight: bold;color: #323232;text-align: -webkit-left;">
+                약속번호 복사하기
+            </div>
+            <div class="copyInfoDiv">
+                <div>
+                    <span id="copyText"></span>
+                </div>
+                <div>
+                    <img id="copyTextBtn" data-clipboard-text="" style="width: 55px;float: right;" src="images/button.png" alt="복사">
+                </div>
+            </div>
+
+        </div>
+
+        <div style="text-align:-webkit-center">
+            <!-- QR 다운로드 버튼 -->
+            <button style="align-items: center;" class="qr-download-btn" id="qrDownloadBtn">QR 다운로드</button>
+        </div>
+
+    </div>
+    <!-- 다운로드 완료 메시지 -->
+    <div class="success-popup" id="successPopup">
+        QR 다운로드가 완료되었습니다
+    </div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+
+
+<script language="JavaScript">
+    $(document).ready(function () {
+        // 세션에서 핸드폰 번호 가져오기 (1회성)
+        loadPhoneNumberFromSession();
+
+        // "다음" 버튼 클릭 이벤트
+        $('#nextButton').on('click', function() {
+            window.location.href = 'index_allone.html';
+        });
+    });
+
+    // sessionStorage 또는 서버 세션에서 핸드폰 번호를 가져와서 표시하는 함수
+    function loadPhoneNumberFromSession() {
+        try {
+            // 먼저 sessionStorage에서 시도
+            var phoneNumber = sessionStorage.getItem('allonePhoneNumber');
+            console.log('sessionStorage에서 가져온 휴대폰 번호:', phoneNumber);
+
+            if (phoneNumber) {
+                var displayNumber = phoneNumber;
+
+                // 010으로 시작하는 경우 010을 제거하고 뒤 8자리만 사용
+                if (phoneNumber.startsWith('010') && phoneNumber.length === 11) {
+                    displayNumber = phoneNumber.substring(3); // 010 제거하고 뒤 8자리
+                }
+
+                // 8자리 번호를 약속번호 영역에 표시
+                $('#userPromiseNumber').text(displayNumber);
+                console.log('sessionStorage에서 핸드폰 번호 로드 성공: ' + phoneNumber + ' -> 표시: ' + displayNumber);
+
+                // 사용 후 sessionStorage에서 제거 (1회성)
+                sessionStorage.removeItem('allonePhoneNumber');
+                console.log('sessionStorage에서 휴대폰 번호 제거 완료');
+                return; // 성공했으므로 서버 세션 확인은 하지 않음
+            }
+        } catch (e) {
+            console.error('sessionStorage 처리 오류:', e);
+        }
+
+        // sessionStorage에 없으면 서버 세션에서 시도
+        console.log('sessionStorage에 번호가 없어서 서버 세션에서 시도');
+        $.ajax({
+            type: 'GET',
+            url: '/api/v1.0/session/phone',
+            success: function(response) {
+                try {
+                    var data = typeof response === 'string' ? JSON.parse(response) : response;
+                    if (data.code === 200 && data.phoneNumber) {
+                        // 핸드폰 번호에서 010을 제거하고 뒤의 8자리만 표시
+                        var phoneNumber = data.phoneNumber;
+                        var displayNumber = phoneNumber;
+
+                        // 010으로 시작하는 경우 010을 제거하고 뒤 8자리만 사용
+                        if (phoneNumber.startsWith('010') && phoneNumber.length === 11) {
+                            displayNumber = phoneNumber.substring(3); // 010 제거하고 뒤 8자리
+                        }
+
+                        // 8자리 번호를 약속번호 영역에 표시
+                        $('#userPromiseNumber').text(displayNumber);
+                        console.log('서버 세션에서 핸드폰 번호 로드 성공: ' + phoneNumber + ' -> 표시: ' + displayNumber);
+                    } else {
+                        console.warn('서버 세션에도 핸드폰 번호가 없습니다:', data.msg);
+                        $('#userPromiseNumber').text('번호를 불러올 수 없습니다');
+                    }
+                } catch (e) {
+                    console.error('서버 응답 파싱 실패:', e);
+                    $('#userPromiseNumber').text('번호를 불러올 수 없습니다');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('서버 세션에서 핸드폰 번호 가져오기 실패:', error);
+                $('#userPromiseNumber').text('번호를 불러올 수 없습니다');
+            }
+        });
+    }
+
+    // 약속번호는 서버에서 직접 HTML에 주입됩니다.
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const item = header.closest('.accordion-item');
+            item.classList.toggle('-active');
+        });
+    });
+    // ===== 요소 가져오기 =====
+    const popupOverlay = document.getElementById('popupOverlay');
+    const closeBtn = document.getElementById('closeBtn');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const qrCodeArea = document.getElementById('qrCodeArea');
+    const qrCodeDiv = document.getElementById('qrCode');
+    const qrInfoText = document.getElementById('qrInfoText');
+    const qrDownloadBtn = document.getElementById('qrDownloadBtn');
+    const successPopup = document.getElementById('successPopup');
+    const phoneNumberInput = document.getElementById('phoneNumber');
+    const copyCodeArea = document.getElementById('copyCodeArea');
+    const copyText = document.getElementById('copyText');
+    const copyTextBtn = document.getElementById('copyTextBtn');
+    let qrType = 'copy';
+    let amcNumber = '';
+
+    $(document).ready(function(){
+        // LoadingWithMask();
+        $('#phoneNumber').on('input', function() { this.value = this.value.replace(/[^0-9]/g, ''); });
+
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
+        if (isMobileDevice()) {
+            console.log("모바일 기기입니다.");
+            const copyBtn = document.getElementById('copy-btn');
+            const qrBtn = document.getElementById('qr-btn');
+
+            if (copyBtn) {
+                copyBtn.style.display = '';
+            }
+            if (qrBtn) {
+                qrBtn.style.display = '';
+            }
+        }
+    });
+
+    // ===== 팝업 닫기 =====
+    closeBtn.addEventListener('click', () => {
+        popupOverlay.style.display = 'none';
+        resetPopup();
+    });
+
+    // 오버레이 클릭 시 팝업 닫기
+    popupOverlay.addEventListener('click', (event) => {
+        // 실제 배경(overlay) 자체를 클릭했을 경우에만 닫기
+        if (event.target === popupOverlay) {
+            popupOverlay.style.display = 'none';
+            resetPopup();
+        }
+    });
+
+    // ===== 확인 버튼 클릭 시 (예: 전화번호 검증 후 QR 영역 노출 준비) =====
+    confirmBtn.addEventListener('click', () => {
+        const phoneNumber = phoneNumberInput.value.trim();
+        if (!phoneNumber) {
+            alert('전화번호를 입력해주세요.');
+            return;
+        }
+        const phoneValid1 = /^010/.test(phoneNumber);
+        const phoneValid2 = /^010[1-9]/.test(phoneNumber);
+        const phoneValid3 = /^010\d{8}/.test(phoneNumber);
+        if (!phoneValid1) {
+            alert('전화번호는 010으로 시작해야 합니다.');
+            $('#phoneNumber').focus();
+            return;
+        }
+        if (!phoneValid2) {
+            //$('#phoneNumberFeedback').show();
+            alert('전화번호는 숫자로 입력하여 주세요.');
+            $('#phoneNumber').focus();
+            return;
+        }
+        if (!phoneValid3) {
+            alert('전화번호를 다시 한번 확인해 주세요.');
+            $('#phoneNumber').focus();
+            return;
+        }
+
+        // 실제 로직에서는 서버 검증, 혹은 약속번호 생성 로직 등이 들어갈 수 있음
+        const formData = new FormData();
+        formData.append('phoneNumber', phoneNumber);
+        $.ajax({
+            type: 'POST',
+            url: '/api/v1.0/getdata',
+            data: JSON.stringify({phoneNumber : phoneNumber}),
+            contentType: 'application/json',
+            caches: false,
+            beforeSend: function () {
+                //LoadingWithMask(); // 요청 전 로딩 표시
+            },
+            success: function (response) {
+                //LoadingWithMaskOff();
+                var data = JSON.parse(response);
+                closeBtn.style.display='block';
+                if (data.code === 200) {
+                    createQrcode(data.msg);
+                } else {
+                    alert(data.msg);
+                }
+            },
+            error: function (xhr, status, error) {
+                //LoadingWithMaskOff(); // 에러 발생 시 로딩 해제
+                alert('잠시 후 다시 해주세요.');
+            },
+            complete: function () {
+                //hideLoading();
+                //LoadingWithMaskOff();
+            }
+        });
+    });
+    function LoadingWithMask() {
+        // 화면의 높이와 너비를 구합니다.
+        var maskHeight = $(document).height();
+        var maskWidth = $(window).width();
+
+        // 화면에 출력할 마스크를 설정해줍니다.
+        var mask = "<div id='mask' style='position:fixed; z-index:9000; background-color:#000000; display:none; left:0; top:0;' onclick='LoadingWithMaskOff()'></div>";
+        var loadingImg = '';
+        loadingImg += "<div id='loadingImg' style='width:80%;height;40%; position: fixed; z-index:10000; display: none; background-color:#FFF;'>";
+        loadingImg += " <table height=200 width=100%><tr><td align=center style='padding: 10px;font-size:30px; font-weight:500; '>작업공지사항<hr/></td></tr>";
+        loadingImg += " <tr><td align=center style='line-height:180%; vertical-align : top; font-size:18px;'> 안전한 서비스 제공을 위하여 시스템점검을 진행합니다. <br/><br/> 점검 일시 : 2024년 11월 24일 00시 ~ 06시<br/> </td></tr>";
+        loadingImg += " <tr><td align=center style='line-height:180%; vertical-align : top'> <button style='margin-top: 20px; padding: 8px 15px; font-size: 14px; cursor: pointer;' onclick='LoadingWithMaskOff()'> 닫기 </button> <br/></td></tr> <tr><td>.</td></tr> </table>";
+        loadingImg += "</div>";
+
+        // 화면에 레이어 추가
+        $('body').append(mask).append(loadingImg);
+
+        // 마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채웁니다.
+        $('#mask').css({
+            'width': maskWidth,
+            'height': maskHeight,
+            'opacity': '0.3'
+        });
+
+        // loadingImg 요소를 화면 중앙에 위치시킵니다.
+        $('#loadingImg').css({
+            'top': '50%',
+            'left': '50%',
+            'transform': 'translate(-50%, -50%)'
+        });
+
+        // 마스크와 로딩 이미지 표시
+        $('#mask').show();
+        $('#loadingImg').show();
+    }
+    function createQrcode(serviceNumber) {
+        amcNumber = '15555551,1,' + serviceNumber + '#';
+        if(qrType === 'copy') {
+            copyCodeArea.style.display = 'block';
+            copyText.textContent= `${amcNumber}`;
+            copyTextBtn.setAttribute("data-clipboard-text", amcNumber);
+        } else {
+            // 이미 QR 코드가 있다면 초기화
+            qrCodeDiv.innerHTML = '';
+            // QR 코드 생성 (qrcode.js 라이브러리 사용) - index_allone.html과 동일한 방식
+            const qr = new QRCode(qrCodeDiv, {
+                text: 'tel:'+amcNumber,  // 실제 원하는 텍스트나 URL
+                width: 120,
+                height: 120
+            });
+            // 예시로 QR 하단 텍스트 설정
+            qrInfoText.textContent = `${amcNumber}`;
+            // QR 영역 및 다운로드 버튼 노출
+            qrCodeArea.style.display = 'block';
+            qrDownloadBtn.style.display = 'grid';
+        }
+    }
+
+    // ===== QR 다운로드 버튼 클릭 =====
+    qrDownloadBtn.addEventListener('click', () => {
+        // canvas 태그를 이미지로 변환
+        const canvas = qrCodeDiv.querySelector('canvas');
+        if (!canvas) return;
+
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = 'qr_code.png';
+        link.click();
+
+        // 다운로드 완료 메시지 표시
+        showSuccessPopup();
+    });
+
+    function showSuccessPopup() {
+        let text = '';
+        if(qrType === 'copy') {
+            text = '약속번호가 복사되었습니다';
+        } else {
+            text = 'QR 다운로드가 완료되었습니다'
+        }
+        successPopup.innerText=text;
+        // 팝업 보이기
+        successPopup.classList.add('show')
+
+        // 일정 시간 후 자동으로 숨기기 (예: 2초 후)
+        setTimeout(() => {
+            successPopup.classList.remove('show');
+        }, 2000);
+    }
+
+    // ===== 팝업 리셋 함수 =====
+    function resetPopup() {
+        phoneNumberInput.value = '';
+        qrCodeArea.style.display = 'none';
+        qrDownloadBtn.style.display = 'none';
+        qrCodeDiv.innerHTML = '';
+        qrInfoText.textContent = '';
+        closeBtn.style.display = 'none';
+        copyCodeArea.style.display = 'none';
+    }
+
+    const clipboard = new ClipboardJS('#copyTextBtn');
+    clipboard.on('success', function(e){
+        console.log("success");
+        e.clearSelection();
+        showSuccessPopup();
+    });
+
+    /* QR 기능*/
+    function qrPopup(type) {
+        const qrPopup = document.getElementById("popupOverlay");
+        qrPopup.style.display = 'flex';
+        if(type === 'copy') {
+            qrType = 'copy';
+        } else {
+            qrType = 'download';
+        }
+    }
+</script>
+
+</html>

@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import com.dsqd.amc.linkedmo.controller.*;
 import com.dsqd.amc.linkedmo.model.Mobilians;
 import com.dsqd.amc.linkedmo.service.CouponService;
 import com.dsqd.amc.linkedmo.service.MobiliansService;
@@ -36,15 +37,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.dsqd.amc.linkedmo.batch.DataCleanser;
 import com.dsqd.amc.linkedmo.buzzvil.Event12;
 import com.dsqd.amc.linkedmo.config.MyBatisConfig;
-import com.dsqd.amc.linkedmo.controller.AdminController;
-import com.dsqd.amc.linkedmo.controller.BoardController;
-import com.dsqd.amc.linkedmo.controller.DataController;
-import com.dsqd.amc.linkedmo.controller.EventController;
-import com.dsqd.amc.linkedmo.controller.LoginController;
-import com.dsqd.amc.linkedmo.controller.PartnerController;
-import com.dsqd.amc.linkedmo.controller.QRImageController;
-import com.dsqd.amc.linkedmo.controller.SchedulerController;
-import com.dsqd.amc.linkedmo.controller.SubscribeController;
 import com.dsqd.amc.linkedmo.mobiletown.mobiletownSMS;
 import com.dsqd.amc.linkedmo.model.Mobiletown;
 import com.dsqd.amc.linkedmo.model.Subscribe;
@@ -95,7 +87,7 @@ public class RestServer {
         if ("local".equals(env)) {
 //		staticFiles.externalLocation("/Users/eunjun/Documents/dsqf/AMCProject/public2"); // Static files
         	//staticFiles.externalLocation("C:\\Users\\silve\\git\\safelink\\public2"); // Static files
-			staticFiles.externalLocation("C:\\Yang\\99.project\\01.workspace\\safelink_git\\public2"); // Static files YangSeyong
+			staticFiles.externalLocation("/Users/eom-inguk/documents/safelink/public2"); // Static files YangSeyong
         }
 
         GlobalCache cache = GlobalCache.getInstance();
@@ -206,7 +198,8 @@ public class RestServer {
 		new PartnerController();
 		new EventController();
 		new QRImageController();
-		
+		new VerifiedController();
+
 		SchedulerModule.startScheduler();
 		
 	}
