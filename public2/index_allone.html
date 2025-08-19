@@ -14,6 +14,7 @@
 	<link rel="stylesheet" href="css/index.css">
 	<link rel="stylesheet" href="css/responsive.css">
 	<link rel="stylesheet" href="css/index_qr.css">
+	<link rel="stylesheet" href="css/allone.css">
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -46,8 +47,8 @@
 		height: auto;
 		display: block;
 	}
-	
-	
+
+
 </style>
 
 <body>
@@ -56,15 +57,17 @@
 </section>
 <section>
 	<img src="./images/img2.png" alt="이미지2">
-	<a id="copy-btn" style="margin-right: 10px;display: none;width: 88%;"  class="blank1" href="javascript:void(0);"onclick="qrPopup('copy');"></a>
-	<a id="qr-btn" class="blank2" style="display: none;width: 88%;" href="javascript:void(0);" onclick="qrPopup('download');"></a>
+	<a id="copy-btn" style="margin-right: 10px;display: none;width: 65%;"  class="blank1" href="javascript:void(0);"onclick="qrPopup('copy');"></a>
+	<a id="qr-btn" class="blank2" style="display: none;width: 50%;" href="javascript:void(0);" onclick="qrPopup('download');"></a>
 
 </section>
 <section>
-	<img src="./images/img3.png" alt="이미지3"  >
+	<img src="./images/img3.png" alt="이미지3">
 </section>
-<section>
-	<img src="./images/img4.png" alt="이미지4" style="cursor: pointer;" onclick="location.href='subscribe_allone.html';">
+<section style="padding: 10px 24px 20px;">
+	<div class="button-group">
+		<a href="subscribe_allone.html" class="button -primary">서비스 가입하기</a>
+	</div>
 </section>
 
 
@@ -122,263 +125,200 @@
 		QR 다운로드가 완료되었습니다
 	</div>
 </div>
-
-<!-- 새로운 팝업 -->
-<div class="show-popup" id="showPopup">
-	서비스 가입 후 사용가능합니다
-</div>
 </body>
 
 
 <script language="JavaScript">
-// ===== 요소 가져오기 =====
-// 새로운 팝업 요소 선언
-const popupOverlay = document.getElementById('popupOverlay');
-const closeBtn = document.getElementById('closeBtn');
-const confirmBtn = document.getElementById('confirmBtn');
-const qrCodeArea = document.getElementById('qrCodeArea');
-const qrCodeDiv = document.getElementById('qrCode');
-const qrInfoText = document.getElementById('qrInfoText');
-const qrDownloadBtn = document.getElementById('qrDownloadBtn');
-const successPopup = document.getElementById('successPopup');
-const phoneNumberInput = document.getElementById('phoneNumber');
-const copyCodeArea = document.getElementById('copyCodeArea');
-const copyText = document.getElementById('copyText');
-const copyTextBtn = document.getElementById('copyTextBtn');
-let qrType = 'copy';
-let amcNumber = '';
-const showPopup = document.getElementById('showPopup');
+	// ===== 요소 가져오기 =====
+	const popupOverlay = document.getElementById('popupOverlay');
+	const closeBtn = document.getElementById('closeBtn');
+	const confirmBtn = document.getElementById('confirmBtn');
+	const qrCodeArea = document.getElementById('qrCodeArea');
+	const qrCodeDiv = document.getElementById('qrCode');
+	const qrInfoText = document.getElementById('qrInfoText');
+	const qrDownloadBtn = document.getElementById('qrDownloadBtn');
+	const successPopup = document.getElementById('successPopup');
+	const phoneNumberInput = document.getElementById('phoneNumber');
+	const copyCodeArea = document.getElementById('copyCodeArea');
+	const copyText = document.getElementById('copyText');
+	const copyTextBtn = document.getElementById('copyTextBtn');
+	let qrType = 'copy';
+	let amcNumber = '';
 
-$(document).ready(function(){
-	// LoadingWithMask();
-	$('#phoneNumber').on('input', function() { this.value = this.value.replace(/[^0-9]/g, ''); });
+	$(document).ready(function(){
+		// LoadingWithMask();
+		$('#phoneNumber').on('input', function() { this.value = this.value.replace(/[^0-9]/g, ''); });
 
-	function isMobileDevice() {
-		return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-	}
-
-	if (isMobileDevice()) {
-		console.log("모바일 기기입니다.");
-		document.getElementById('copy-btn').style.display='';
-		document.getElementById('qr-btn').style.display='';
-	}
-});
-
-// ===== 팝업 닫기 =====
-closeBtn.addEventListener('click', () => {
-	popupOverlay.style.display = 'none';
-	resetPopup();
-});
-
-// 오버레이 클릭 시 팝업 닫기
-popupOverlay.addEventListener('click', (event) => {
-	// 실제 배경(overlay) 자체를 클릭했을 경우에만 닫기
-	if (event.target === popupOverlay) {
-		popupOverlay.style.display = 'none';
-		resetPopup();
-	}
-});
-
-// ===== 확인 버튼 클릭 시 (예: 전화번호 검증 후 QR 영역 노출 준비) =====
-confirmBtn.addEventListener('click', () => {
-	const phoneNumber = phoneNumberInput.value.trim();
-	if (!phoneNumber) {
-		alert('전화번호를 입력해주세요.');
-		return;
-	}
-	const phoneValid1 = /^010/.test(phoneNumber);
-	const phoneValid2 = /^010[1-9]/.test(phoneNumber);
-	const phoneValid3 = /^010\d{8}/.test(phoneNumber);
-	if (!phoneValid1) {
-		alert('전화번호는 010으로 시작해야 합니다.');
-		$('#phoneNumber').focus();
-		return;
-	}
-	if (!phoneValid2) {
-		//$('#phoneNumberFeedback').show();
-		alert('전화번호는 숫자로 입력하여 주세요.');
-		$('#phoneNumber').focus();
-		return;
-	}
-	if (!phoneValid3) {
-		alert('전화번호를 다시 한번 확인해 주세요.');
-		$('#phoneNumber').focus();
-		return;
-	}
-
-	// 실제 로직에서는 서버 검증, 혹은 약속번호 생성 로직 등이 들어갈 수 있음
-	const formData = new FormData();
-	formData.append('phoneNumber', phoneNumber);
-	$.ajax({
-		type: 'POST',
-		url: '/api/v1.0/getdata',
-		data: JSON.stringify({phoneNumber : phoneNumber}),
-		contentType: 'application/json',
-		caches: false,
-		beforeSend: function () {
-			//LoadingWithMask(); // 요청 전 로딩 표시
-		},
-		success: function (response) {
-			//LoadingWithMaskOff();
-			var data = JSON.parse(response);
-			closeBtn.style.display='block';
-			if (data.code === 200) {
-				createQrcode(data.msg);
-					} else {
-			showServiceRequiredPopup();
+		function isMobileDevice() {
+			return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 		}
-		},
-		error: function (xhr, status, error) {
-			//LoadingWithMaskOff(); // 에러 발생 시 로딩 해제
-			alert('잠시 후 다시 해주세요.');
-		},
-		complete: function () {
-			//hideLoading();
-			//LoadingWithMaskOff();
+
+		if (isMobileDevice()) {
+			console.log("모바일 기기입니다.");
+			document.getElementById('copy-btn').style.display='';
+			document.getElementById('qr-btn').style.display='';
 		}
 	});
-});
-function LoadingWithMask() {
-    // 화면의 높이와 너비를 구합니다.
-    var maskHeight = $(document).height();
-    var maskWidth = $(window).width();
 
-    // 화면에 출력할 마스크를 설정해줍니다.
-    var mask = "<div id='mask' style='position:fixed; z-index:9000; background-color:#000000; display:none; left:0; top:0;' onclick='LoadingWithMaskOff()'></div>";
-    var loadingImg = '';
-    loadingImg += "<div id='loadingImg' style='width:80%;height;40%; position: fixed; z-index:10000; display: none; background-color:#FFF;'>";
-    loadingImg += " <table height=200 width=100%><tr><td align=center style='padding: 10px;font-size:30px; font-weight:500; '>작업공지사항<hr/></td></tr>";
-    loadingImg += " <tr><td align=center style='line-height:180%; vertical-align : top; font-size:18px;'> 안전한 서비스 제공을 위하여 시스템점검을 진행합니다. <br/><br/> 점검 일시 : 2024년 11월 24일 00시 ~ 06시<br/> </td></tr>";
-    loadingImg += " <tr><td align=center style='line-height:180%; vertical-align : top'> <button style='margin-top: 20px; padding: 8px 15px; font-size: 14px; cursor: pointer;' onclick='LoadingWithMaskOff()'> 닫기 </button> <br/></td></tr> <tr><td>.</td></tr> </table>";
-    loadingImg += "</div>";
+	// ===== 팝업 닫기 =====
+	closeBtn.addEventListener('click', () => {
+		popupOverlay.style.display = 'none';
+		resetPopup();
+	});
 
-    // 화면에 레이어 추가
-    $('body').append(mask).append(loadingImg);
+	// 오버레이 클릭 시 팝업 닫기
+	popupOverlay.addEventListener('click', (event) => {
+		// 실제 배경(overlay) 자체를 클릭했을 경우에만 닫기
+		if (event.target === popupOverlay) {
+			popupOverlay.style.display = 'none';
+			resetPopup();
+		}
+	});
 
-    // 마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채웁니다.
-    $('#mask').css({
-        'width': maskWidth,
-        'height': maskHeight,
-        'opacity': '0.3'
-    });
+	// ===== 확인 버튼 클릭 시 (예: 전화번호 검증 후 QR 영역 노출 준비) =====
+	confirmBtn.addEventListener('click', () => {
+		const phoneNumber = phoneNumberInput.value.trim();
+		if (!phoneNumber) {
+			alert('전화번호를 입력해주세요.');
+			return;
+		}
+		const phoneValid1 = /^010/.test(phoneNumber);
+		const phoneValid2 = /^010[1-9]/.test(phoneNumber);
+		const phoneValid3 = /^010\d{8}/.test(phoneNumber);
+		if (!phoneValid1) {
+			alert('전화번호는 010으로 시작해야 합니다.');
+			$('#phoneNumber').focus();
+			return;
+		}
+		if (!phoneValid2) {
+			//$('#phoneNumberFeedback').show();
+			alert('전화번호는 숫자로 입력하여 주세요.');
+			$('#phoneNumber').focus();
+			return;
+		}
+		if (!phoneValid3) {
+			alert('전화번호를 다시 한번 확인해 주세요.');
+			$('#phoneNumber').focus();
+			return;
+		}
 
-    // loadingImg 요소를 화면 중앙에 위치시킵니다.
-    $('#loadingImg').css({
-        'top': '50%',
-        'left': '50%',
-        'transform': 'translate(-50%, -50%)'
-    });
-
-    // 마스크와 로딩 이미지 표시
-    $('#mask').show();
-    $('#loadingImg').show();
-}
-function createQrcode(serviceNumber) {
-	amcNumber = '15555551,1,' + serviceNumber + '#';
-	if(qrType === 'copy') {
-		copyCodeArea.style.display = 'block';
-		copyText.textContent= `${amcNumber}`;
-		copyTextBtn.setAttribute("data-clipboard-text", amcNumber);
-	} else {
-		// 이미 QR 코드가 있다면 초기화
-		qrCodeDiv.innerHTML = '';
-		// QR 코드 생성 (qrcode.js 라이브러리 사용)
-		const qr = new QRCode(qrCodeDiv, {
-			text: 'tel:'+amcNumber,  // 실제 원하는 텍스트나 URL
-			width: 120,
-			height: 120
+		// 실제 로직에서는 서버 검증, 혹은 약속번호 생성 로직 등이 들어갈 수 있음
+		const formData = new FormData();
+		formData.append('phoneNumber', phoneNumber);
+		$.ajax({
+			type: 'POST',
+			url: '/api/v1.0/getdata',
+			data: JSON.stringify({phoneNumber : phoneNumber}),
+			contentType: 'application/json',
+			caches: false,
+			beforeSend: function () {
+				//LoadingWithMask(); // 요청 전 로딩 표시
+			},
+			success: function (response) {
+				//LoadingWithMaskOff();
+				var data = JSON.parse(response);
+				closeBtn.style.display='block';
+				if (data.code === 200) {
+					createQrcode(data.msg);
+				} else {
+					alert(data.msg);
+				}
+			},
+			error: function (xhr, status, error) {
+				//LoadingWithMaskOff(); // 에러 발생 시 로딩 해제
+				alert('잠시 후 다시 해주세요.');
+			},
+			complete: function () {
+				//hideLoading();
+				//LoadingWithMaskOff();
+			}
 		});
-		// 예시로 QR 하단 텍스트 설정
-		qrInfoText.textContent = `${amcNumber}`;
-		// QR 영역 및 다운로드 버튼 노출
-		qrCodeArea.style.display = 'block';
-		qrDownloadBtn.style.display = 'grid';
+	});
+
+	function createQrcode(serviceNumber) {
+		amcNumber = '15555551,1,' + serviceNumber + '#';
+		if(qrType === 'copy') {
+			copyCodeArea.style.display = 'block';
+			copyText.textContent= `${amcNumber}`;
+			copyTextBtn.setAttribute("data-clipboard-text", amcNumber);
+		} else {
+			// 이미 QR 코드가 있다면 초기화
+			qrCodeDiv.innerHTML = '';
+			// QR 코드 생성 (qrcode.js 라이브러리 사용)
+			const qr = new QRCode(qrCodeDiv, {
+				text: 'tel:'+amcNumber,  // 실제 원하는 텍스트나 URL
+				width: 120,
+				height: 120
+			});
+			// 예시로 QR 하단 텍스트 설정
+			qrInfoText.textContent = `${amcNumber}`;
+			// QR 영역 및 다운로드 버튼 노출
+			qrCodeArea.style.display = 'block';
+			qrDownloadBtn.style.display = 'grid';
+		}
 	}
-}
 
-// ===== QR 다운로드 버튼 클릭 =====
-qrDownloadBtn.addEventListener('click', () => {
-	// canvas 태그를 이미지로 변환
-	const canvas = qrCodeDiv.querySelector('canvas');
-	if (!canvas) return;
+	// ===== QR 다운로드 버튼 클릭 =====
+	qrDownloadBtn.addEventListener('click', () => {
+		// canvas 태그를 이미지로 변환
+		const canvas = qrCodeDiv.querySelector('canvas');
+		if (!canvas) return;
 
-	const dataUrl = canvas.toDataURL('image/png');
-	const link = document.createElement('a');
-	link.href = dataUrl;
-	link.download = 'qr_code.png';
-	link.click();
+		const dataUrl = canvas.toDataURL('image/png');
+		const link = document.createElement('a');
+		link.href = dataUrl;
+		link.download = 'qr_code.png';
+		link.click();
 
-	// 다운로드 완료 메시지 표시
-	showSuccessPopup();
-});
+		// 다운로드 완료 메시지 표시
+		showSuccessPopup();
+	});
 
-function showSuccessPopup() {
-	let text = '';
-	if(qrType === 'copy') {
-		text = '약속번호가 복사되었습니다';
-	} else {
-		text = 'QR 다운로드가 완료되었습니다'
-	}
-	successPopup.innerText=text;
-	// 팝업 보이기
-	successPopup.classList.add('show')
-
-	// 일정 시간 후 자동으로 숨기기 (예: 2초 후)
-	setTimeout(() => {
-		successPopup.classList.remove('show');
-	}, 2000);
-}
-
-// ===== 팝업 리셋 함수 =====
-function resetPopup() {
-	phoneNumberInput.value = '';
-	qrCodeArea.style.display = 'none';
-	qrDownloadBtn.style.display = 'none';
-	qrCodeDiv.innerHTML = '';
-	qrInfoText.textContent = '';
-	closeBtn.style.display = 'none';
-	copyCodeArea.style.display = 'none';
-}
-
-const clipboard = new ClipboardJS('#copyTextBtn');
-clipboard.on('success', function(e){
-	console.log("success");
-	e.clearSelection();
-	showSuccessPopup();
-});
-
-/* QR 기능*/
-function qrPopup(type) {
-	const qrPopup = document.getElementById("popupOverlay");
-	qrPopup.style.display = 'flex';
-	if(type === 'copy') {
-		qrType = 'copy';
-	} else {
-		qrType = 'download';
-	}
-}
-
-/* 서비스 가입 후 사용가능 팝업 */
-function showServiceRequiredPopup() {
-	console.log('showServiceRequiredPopup 함수 실행됨'); // 디버그용
-	
-	// 새로운 show-popup 사용
-	if (showPopup) {
+	function showSuccessPopup() {
+		let text = '';
+		if(qrType === 'copy') {
+			text = '약속번호가 복사되었습니다';
+		} else {
+			text = 'QR 다운로드가 완료되었습니다'
+		}
+		successPopup.innerText=text;
 		// 팝업 보이기
-		showPopup.classList.add('active');
-		console.log('팝업에 active 클래스 추가됨'); // 디버그용
+		successPopup.classList.add('show')
 
 		// 일정 시간 후 자동으로 숨기기 (예: 2초 후)
 		setTimeout(() => {
-			showPopup.classList.remove('active');
-			console.log('팝업에서 active 클래스 제거됨'); // 디버그용
+			successPopup.classList.remove('show');
 		}, 2000);
-	} else {
-		console.error('showPopup 요소를 찾을 수 없습니다'); // 디버그용
-		// 대안으로 alert 사용
-		alert('서비스 가입 후 사용 가능합니다');
 	}
-}
+
+	// ===== 팝업 리셋 함수 =====
+	function resetPopup() {
+		phoneNumberInput.value = '';
+		qrCodeArea.style.display = 'none';
+		qrDownloadBtn.style.display = 'none';
+		qrCodeDiv.innerHTML = '';
+		qrInfoText.textContent = '';
+		closeBtn.style.display = 'none';
+		copyCodeArea.style.display = 'none';
+	}
+
+	const clipboard = new ClipboardJS('#copyTextBtn');
+	clipboard.on('success', function(e){
+		console.log("success");
+		e.clearSelection();
+		showSuccessPopup();
+	});
+
+	/* QR 기능*/
+	function qrPopup(type) {
+		const qrPopup = document.getElementById("popupOverlay");
+		qrPopup.style.display = 'flex';
+		if(type === 'copy') {
+			qrType = 'copy';
+		} else {
+			qrType = 'download';
+		}
+	}
 </script>
 
 </html>

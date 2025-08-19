@@ -25,7 +25,7 @@
     <div class="inner02">
         <div class="inner_title">
             <span class="icon -big-check"></span>
-            <h2>휴대폰 약속번호 서비스에<br/> 가입했어요</h2>
+            <h2>휴대폰 약속번호 서비스에<br /> 가입했어요</h2>
         </div>
         <div class="number-row">
             <span class="disc">약속번호</span>
@@ -52,7 +52,6 @@
                         <li> 통화하고 싶은 분에게 대표번호(1555-5551)와 약속번호를 전달</li>
                         <li> 상대방이 대표번호로 전화를 걸어 ARS 안내에 따라 약속번호를 입력</li>
                     </ul>
-
                     <ul class="list -dot">
                         <li> 서비스 가입시, 내 휴대폰 번호 뒤 8자리가 약속번호로 자동 설정됩니다.</li>
                         <li> 약속번호 변경을 원하는 경우, 대표번호로 전화하여 수정할 수 있습니다.</li>
@@ -60,14 +59,10 @@
                 </div>
             </div>
         </div>
-
-
-        <div class="button-group">
-            <button type="button" class="button -primary" id="nextButton">확인</button>
-        </div>
-
     </div>
-
+    <div class="button-group">
+        <button type="button" class="button -primary" id="nextButton">확인</button>
+    </div>
 </div>
 
 <!-- QR 팝업 오버레이 -->
@@ -78,7 +73,8 @@
         <hr class="qr-line">
         <!-- 휴대폰 번호 입력 영역 -->
         <div class="phone-input-wrap">
-            <input type="text" id="phoneNumber" placeholder="휴대폰 번호 입력" style="flex: 1 !important; min-width: 200px !important; max-width: 344px !important; height: 46px !important;" />
+            <input type="text" id="phoneNumber" placeholder="휴대폰 번호 입력"
+                   style="flex: 1 !important; min-width: 200px !important; max-width: 344px !important; height: 46px !important;" />
             <button style="height: 46px;width: 73px;" id="confirmBtn">확인</button>
         </div>
         <div style="font-size: 11pt;font-weight: 400;color: #8C8C8C;line-height: normal;margin-bottom: 24px;">
@@ -107,7 +103,8 @@
                     <span id="copyText"></span>
                 </div>
                 <div>
-                    <img id="copyTextBtn" data-clipboard-text="" style="width: 55px;float: right;" src="images/button.png" alt="복사">
+                    <img id="copyTextBtn" data-clipboard-text="" style="width: 55px;float: right;"
+                         src="images/button.png" alt="복사">
                 </div>
             </div>
 
@@ -137,7 +134,7 @@
         loadPhoneNumberFromSession();
 
         // "다음" 버튼 클릭 이벤트
-        $('#nextButton').on('click', function() {
+        $('#nextButton').on('click', function () {
             window.location.href = 'index_allone.html';
         });
     });
@@ -175,7 +172,7 @@
         $.ajax({
             type: 'GET',
             url: '/api/v1.0/session/phone',
-            success: function(response) {
+            success: function (response) {
                 try {
                     var data = typeof response === 'string' ? JSON.parse(response) : response;
                     if (data.code === 200 && data.phoneNumber) {
@@ -200,7 +197,7 @@
                     $('#userPromiseNumber').text('번호를 불러올 수 없습니다');
                 }
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error('서버 세션에서 핸드폰 번호 가져오기 실패:', error);
                 $('#userPromiseNumber').text('번호를 불러올 수 없습니다');
             }
@@ -230,9 +227,9 @@
     let qrType = 'copy';
     let amcNumber = '';
 
-    $(document).ready(function(){
+    $(document).ready(function () {
         // LoadingWithMask();
-        $('#phoneNumber').on('input', function() { this.value = this.value.replace(/[^0-9]/g, ''); });
+        $('#phoneNumber').on('input', function () { this.value = this.value.replace(/[^0-9]/g, ''); });
 
         function isMobileDevice() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -300,7 +297,7 @@
         $.ajax({
             type: 'POST',
             url: '/api/v1.0/getdata',
-            data: JSON.stringify({phoneNumber : phoneNumber}),
+            data: JSON.stringify({ phoneNumber: phoneNumber }),
             contentType: 'application/json',
             caches: false,
             beforeSend: function () {
@@ -309,7 +306,7 @@
             success: function (response) {
                 //LoadingWithMaskOff();
                 var data = JSON.parse(response);
-                closeBtn.style.display='block';
+                closeBtn.style.display = 'block';
                 if (data.code === 200) {
                     createQrcode(data.msg);
                 } else {
@@ -363,16 +360,16 @@
     }
     function createQrcode(serviceNumber) {
         amcNumber = '15555551,1,' + serviceNumber + '#';
-        if(qrType === 'copy') {
+        if (qrType === 'copy') {
             copyCodeArea.style.display = 'block';
-            copyText.textContent= `${amcNumber}`;
+            copyText.textContent = `${amcNumber}`;
             copyTextBtn.setAttribute("data-clipboard-text", amcNumber);
         } else {
             // 이미 QR 코드가 있다면 초기화
             qrCodeDiv.innerHTML = '';
             // QR 코드 생성 (qrcode.js 라이브러리 사용) - index_allone.html과 동일한 방식
             const qr = new QRCode(qrCodeDiv, {
-                text: 'tel:'+amcNumber,  // 실제 원하는 텍스트나 URL
+                text: 'tel:' + amcNumber,  // 실제 원하는 텍스트나 URL
                 width: 120,
                 height: 120
             });
@@ -402,12 +399,12 @@
 
     function showSuccessPopup() {
         let text = '';
-        if(qrType === 'copy') {
+        if (qrType === 'copy') {
             text = '약속번호가 복사되었습니다';
         } else {
             text = 'QR 다운로드가 완료되었습니다'
         }
-        successPopup.innerText=text;
+        successPopup.innerText = text;
         // 팝업 보이기
         successPopup.classList.add('show')
 
@@ -429,7 +426,7 @@
     }
 
     const clipboard = new ClipboardJS('#copyTextBtn');
-    clipboard.on('success', function(e){
+    clipboard.on('success', function (e) {
         console.log("success");
         e.clearSelection();
         showSuccessPopup();
@@ -439,7 +436,7 @@
     function qrPopup(type) {
         const qrPopup = document.getElementById("popupOverlay");
         qrPopup.style.display = 'flex';
-        if(type === 'copy') {
+        if (type === 'copy') {
             qrType = 'copy';
         } else {
             qrType = 'download';

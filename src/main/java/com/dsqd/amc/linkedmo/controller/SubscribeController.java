@@ -520,7 +520,7 @@ public class SubscribeController {
 								} else {
 									// 개발서버일 경우에는 SMS를 다른 폰으로 쏜다. ===================
 									//if ((System.getProperty("argEnv")).equals("dev"))
-										//mobileno = itfMgr.getTestMobileno();
+									//mobileno = itfMgr.getTestMobileno();
 									// ===============================================================
 									json = smt.cancelMobiletown(mobileno, data.getSpuserid());
 								}
@@ -616,22 +616,22 @@ public class SubscribeController {
 					int code = 200;
 					String msg = "성공";
 					String phoneNumber = null;
-					
+
 					try {
 						// 세션에서 핸드폰 번호 가져오기
 						phoneNumber = req.session().attribute("allonePhoneNumber");
 						logger.debug("세션에서 가져온 핸드폰 번호: {}", phoneNumber);
-						
+
 						if (phoneNumber != null && !phoneNumber.trim().isEmpty()) {
 							// 1회성 사용이므로 세션에서 삭제
 							req.session().removeAttribute("allonePhoneNumber");
 							logger.debug("세션에서 핸드폰 번호 삭제 완료");
-							
+
 							JSONObject responseJSON = new JSONObject();
 							responseJSON.put("code", code);
 							responseJSON.put("msg", msg);
 							responseJSON.put("phoneNumber", phoneNumber);
-							
+
 							res.status(200);
 							return responseJSON.toJSONString();
 						} else {
@@ -644,12 +644,12 @@ public class SubscribeController {
 						code = 500;
 						msg = "서버 오류";
 					}
-					
+
 					JSONObject responseJSON = new JSONObject();
 					responseJSON.put("code", code);
 					responseJSON.put("msg", msg);
 					responseJSON.put("phoneNumber", phoneNumber);
-					
+
 					res.status(code == 200 ? 200 : 400);
 					return responseJSON.toJSONString();
 				});

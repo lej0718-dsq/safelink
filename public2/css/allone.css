@@ -508,6 +508,15 @@ html {
     border-radius: 4px;
     background-color: #666666;
 }
+
+#service_join_wrap.-allone,
+#service_join_wrap.link_wrap{
+    height: 100vh;
+    padding: 30px 24px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
 #service_join_wrap.link_wrap .how_to_section {
     margin-bottom: 40px;
 }
@@ -544,32 +553,6 @@ html {
     font-size: 15px;
     line-height: 140%;
     letter-spacing: -5%;
-}
-#service_join_wrap.link_wrap .button-group {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    gap: 6px;
-}
-#service_join_wrap.link_wrap .button-group .button {
-    width: 100%;
-    font-style: Medium;
-    font-size: 14px;
-    line-height: 100%;
-    letter-spacing: -5%;
-    font-weight: 500; /*0818 폰트 weight 수정*/
-    text-align: center;
-    padding: 15px 0;
-    border-radius: 12px;
-}
-.button-group .button.-primary {
-    background-color: #18973c;
-    color: #fff;
-}
-.button-group .button.-primary.-white {
-    background-color: #fff;
-    border: 1px solid #19973C;
-    color: #19973C;
 }
 #service_join_wrap.link_wrap .banner {
     padding: 38px 47px;
@@ -837,9 +820,22 @@ h2 {
     font-size: 14px;
     line-height: 100%;
     letter-spacing: -5%;
+    font-weight: 500; /*0818 폰트 weight 수정*/
     text-align: center;
     padding: 15px 0;
     border-radius: 12px;
+}
+.button-group .button:only-child {
+    font-size: 18px;
+}
+.button-group .button.-primary {
+    background-color: #18973c;
+    color: #fff;
+}
+.button-group .button.-primary.-white {
+    background-color: #fff;
+    border: 1px solid #19973C;
+    color: #19973C;
 }
 .notice-wrap {
     margin-bottom: 40px;
@@ -871,9 +867,6 @@ h2 {
     line-height: 140%;
     letter-spacing: -2%;
     text-align: center;
-
-
-
 }
 /* 하단 고정 버튼 - 최우선 순위 */
 /* .button-container {
