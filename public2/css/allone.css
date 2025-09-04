@@ -3,7 +3,7 @@
     padding: 0;
     box-sizing: border-box;
 }
-html, body{
+html, body {
     height: calc(var(--vh, 1vh) * 100) !important;
 }
 body {
@@ -366,36 +366,6 @@ meter {
     all: revert;
 }
 
-@font-face {
-    font-family: 'Noto KR';
-    font-style: normal;
-    font-weight: 300;
-    src: url('../fonts/NotoSansKR-Light.otf') format('opentype'),
-    url('../fonts/NotoSansKR-Light.woff') format('woff'),
-    url('../fonts/NotoSansKR-Light.woff2') format('woff2'),
-    url('../fonts/NotoSansKR-Light.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'Noto KR';
-    font-style: normal;
-    font-weight: 400;
-    src: url('../fonts/NotoSansKR-Regular.otf') format('opentype'),
-    url('../fonts/NotoSansKR-Regular.woff') format('woff'),
-    url('../fonts/NotoSansKR-Regular.woff2') format('woff2'),
-    url('../fonts/NotoSansKR-Regular.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'Noto KR';
-    font-style: normal;
-    font-weight: 500;
-    src: url('../fonts/NotoSansKR-Medium.otf') format('opentype'),
-    url('../fonts/NotoSansKR-Medium.woff') format('woff'),
-    url('../fonts/NotoSansKR-Medium.woff2') format('woff2'),
-    url('../fonts/NotoSansKR-Medium.ttf') format('truetype');
-}
-
 html {
     font-size: 6.25%; /* 1px == 1rem */
     -webkit-font-smoothing: antialiased;
@@ -510,7 +480,7 @@ html {
 }
 
 #service_join_wrap.-allone,
-#service_join_wrap.link_wrap{
+#service_join_wrap.link_wrap {
     height: 100vh;
     padding: 30px 24px 20px;
     display: flex;
@@ -630,7 +600,7 @@ html {
 }
 .info-section.expended #infoContent {
     opacity: 1;
-    height: 120px;
+    height: 140px;
     padding-bottom: 10px;
     overflow-y: auto;
 }
@@ -707,7 +677,7 @@ h2 {
     border-radius: 6px;
     padding: 17px 20px;
 }
-.accordion-item.-active .accordion-header{
+.accordion-item.-active .accordion-header {
     border-radius: 6px 6px 0 0;
 }
 .accordion-header .icon.-arrow {
@@ -736,10 +706,10 @@ h2 {
     border: 1px solid #e6e6e6;
     border-radius: 0 0 6px 6px;
 }
-.accordion-content ul.list{
+.accordion-content ul.list {
     margin-bottom: 20px;
 }
-.accordion-content ul.list:last-child{
+.accordion-content ul.list:last-child {
     margin-bottom: 0;
 }
 .accordion-content ul.list li {
@@ -914,9 +884,325 @@ h2 {
 /*div.button-container a[href="#"].agree_btn,
 div.button-container a#agreeButton,
 .button-container > a {
-    position: static !important;
-    display: block !important;
-    width: 100% !important;
-    height: 50px !important;
-    background: #19973C !important;
-}  */
+ position: static !important;
+ display: block !important;
+ width: 100% !important;
+ height: 50px !important;
+ background: #19973C !important;
+ } */
+
+/* index_allone.html 20250821 */
+/*공통*/
+.section-sub-title {
+    font-family: Noto Sans KR;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 140%;
+    letter-spacing: -0.0375em;
+    color: #121212;
+    text-align: left;
+    margin:initial;
+    margin-bottom: 16px;
+}
+.section-sub-text {
+    font-family: Noto Sans KR;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 23px;
+    letter-spacing: -0.05em;
+    color: #343434;
+    margin-bottom: 16px;
+}
+/*공통*/
+#service_join_wrap.index_wrap {
+    padding: 20px 24px;
+}
+#service_join_wrap.index_wrap .visual_main {
+    padding: 20px 8px 40px;
+}
+#service_join_wrap.index_wrap .visual_main h2 {
+    font-family: Noto Sans KR;
+    font-weight: 500;
+    font-size: 28px;
+    line-height: 140%;
+    letter-spacing: -5%;
+    text-align: left;
+    color: #121212;
+}
+#service_join_wrap.index_wrap .visual_main span {
+    font-family: Noto Sans KR;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 140%;
+    letter-spacing: -5%;
+    color: #343434;
+}
+#service_join_wrap.index_wrap .visual_main .visual_main_img{
+    margin-top: 10px;
+}
+#service_join_wrap.index_wrap .info-card {
+    margin-bottom: 30px;
+}
+#service_join_wrap.index_wrap .info-card .card {
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-radius: 14px;
+}
+#service_join_wrap.index_wrap .info-card .card:not(:last-child) {
+    margin-bottom: 10px;
+}
+#service_join_wrap.index_wrap .info-card .card .card-icon {
+    display: block;
+    width: 32px;
+    height: 32px;
+}
+#service_join_wrap.index_wrap .info-card .card.-dial {
+    background-color: #F6F9FE;
+}
+#service_join_wrap.index_wrap .info-card .card.-dial .card-icon {
+    background: url(../images/icon_dial.png) center center no-repeat;
+    background-size: contain;
+}
+#service_join_wrap.index_wrap .info-card .card.-safe-call {
+    background-color: #F4FCFF;
+}
+#service_join_wrap.index_wrap .info-card .card.-safe-call .card-icon {
+    background: url(../images/icon_safe_call.png) center center no-repeat;
+    background-size: contain;
+}
+#service_join_wrap.index_wrap .info-card .card.-call-log {
+    background-color: #F2FFF7;
+}
+#service_join_wrap.index_wrap .info-card .card.-call-log .card-icon {
+    background: url(../images/icon_call_log.png) center center no-repeat;
+    background-size: contain;
+}
+#service_join_wrap.index_wrap .info-card .card .texts { }
+#service_join_wrap.index_wrap .info-card .card .texts .title {
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 140%;
+    letter-spacing: -5%;
+    color: #121212;
+}
+#service_join_wrap.index_wrap .info-card .card .texts .desc {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 140%;
+    letter-spacing: -5%;
+    color: #343434;
+}
+#service_join_wrap.index_wrap .info-card .card .texts .list.-dot { }
+#service_join_wrap.index_wrap .info-card .card .texts .list.-dot li {
+    padding-left: 7px;
+    font-family: Noto Sans KR;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 140%;
+    letter-spacing: -5%;
+    color: #666666;
+}
+#service_join_wrap.index_wrap .info-card .card .texts .list.-dot li:before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 0;
+    width: 3px;
+    height: 3px;
+    border-radius: 6px;
+    background-color: #666666;
+}
+#service_join_wrap.index_wrap .pass-on-desc {
+    padding: 30px 0 30px;
+}
+#service_join_wrap.index_wrap .pass-on-desc .list.-dot {
+    margin-bottom: 20px;
+}
+#service_join_wrap.index_wrap .pass-on-desc .list.-dot li {
+    padding-left: 24px;
+}
+#service_join_wrap.index_wrap .pass-on-desc .list.-dot li:before {
+    left: 10px;
+}
+#service_join_wrap.index_wrap .pass-on-desc .card_wrap { }
+#service_join_wrap.index_wrap .pass-on-desc .card_wrap .card {
+    background-color: #F6F6F6;
+    border-radius: 14px;
+    margin-bottom: 10px;
+}
+#service_join_wrap.index_wrap .pass-on-desc .card_wrap .card .card-btn {
+    display: flex;
+    width: 100%;
+    padding: 20px 12px;
+    text-align: left;
+    border: none;
+    cursor: pointer;
+}
+#service_join_wrap.index_wrap .pass-on-desc .card_wrap .card .card-icon {
+    flex: 0 0 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    border-radius: 8px;
+    margin-right: 16px;
+}
+#service_join_wrap.index_wrap .pass-on-desc .card_wrap .card .card-icon .icon-copy {
+    display: block;
+    width: 32px;
+    height: 32px;
+    background: url(../images/icon_card_copy.png) no-repeat center / contain;
+}
+#service_join_wrap.index_wrap .pass-on-desc .card_wrap .card .card-icon .icon-qr {
+    display: block;
+    width: 32px;
+    height: 32px;
+    background: url(../images/icon_card_qr.png) no-repeat center / contain;
+}
+#service_join_wrap.index_wrap .pass-on-desc .card_wrap .card .texts {
+    flex: 1;
+    word-break: keep-all;
+}
+
+#service_join_wrap.index_wrap .pass-on-desc .card_wrap .card .title {
+    font-family: Noto Sans KR;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 140%;
+    letter-spacing: -0.05em;
+    color: #121212;
+    margin: 0 0 4px;
+}
+
+#service_join_wrap.index_wrap .pass-on-desc .card_wrap .card .desc {
+    font-family: Noto Sans KR;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 13.5px;
+    line-height: 140%;
+    letter-spacing: -0.4px;
+    color: #343434;
+    margin: 0;
+}
+#service_join_wrap.index_wrap .pass-on-desc .card_wrap .card .card-arrow {
+    flex: 0 0 18px;
+    align-self: center;
+    height: 18px;
+    background: url('../images/icon_card_arrow_right_black.png') no-repeat center / contain;
+}
+#service_join_wrap.index_wrap .consulting-num{
+    padding: 30px 0 50px;
+}
+#service_join_wrap.index_wrap .consulting-num .contact-item {
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    margin-bottom:14px;
+}
+#service_join_wrap.index_wrap .consulting-num .contact-item .icon {
+    flex:0 0 24px;
+    height:24px;
+    display:flex; justify-content:center; align-items:center;
+    font-size:10px; color:#aaa;
+}
+#service_join_wrap.index_wrap .consulting-num .contact-item .icon .icon-phone {
+    width: 24px;
+    height: 24px;
+    background:url(../images/icon_phone.png) center center no-repeat;
+    background-size: contain;
+}
+#service_join_wrap.index_wrap .consulting-num .contact-item .icon .icon-email {
+    width: 24px;
+    height: 24px;
+    background:url(../images/icon_email.png) center center no-repeat;
+    background-size: contain;
+}
+#service_join_wrap.index_wrap .consulting-num .contact-item .info {
+    flex:1;
+}
+#service_join_wrap.index_wrap .consulting-num .contact-item strong {
+    font-family: Noto Sans KR;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 140%;
+    letter-spacing: -2%;
+
+}
+#service_join_wrap.index_wrap .consulting-num .contact-item a {
+    text-decoration:none;
+    font-family: Noto Sans KR;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 140%;
+    letter-spacing: -2%;
+}
+#service_join_wrap.index_wrap .consulting-num .contact-item small {
+    display:block;
+    font-family: Noto Sans KR;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 140%;
+    letter-spacing: -5%;
+    color: #909090;
+    margin-top:2px;
+}
+#service_join_wrap.index_wrap .event-banner{
+    padding: 10px 0 50px;
+}
+/* index_allone.html 20250821 */
+
+.custom-div {
+    width: 614px;
+    height: 34px;
+    gap: 10px;              /* flex/grid 컨텍스트에서만 적용됨 */
+    opacity: 1;
+    transform: rotate(0deg);
+    display: flex;            /* gap 적용하려면 flex나 grid 필요 */
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-item .texts {
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 */
+    gap: 8px; /* 아이콘과 텍스트 사이 간격 */
+}
+.contact-item .texts .infotext{
+    font-size: 15px;
+    color:#909090;
+}
+
+.contact-item .icon .icon-qcmark {
+    width: 16px;
+    height: 16px;
+    background: url(../images/qcmark.png) center center no-repeat;
+    background-size: contain;
+    display: inline-block;
+}
+
+.button-group .button.-primary.-white {
+    width :100% !important;
+    height: 40px;
+    padding-right: 20px;
+    padding-left: 20px;
+    gap: 15px;
+    border-radius: 50px;
+    border: 1px solid #ddd;
+    opacity: 1;
+
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    color: #757575 !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+    margin-top: 16px;
+    box-sizing: border-box; /* 중요! padding 포함한 계산 */
+}
+
