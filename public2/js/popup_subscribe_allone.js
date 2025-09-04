@@ -339,7 +339,7 @@ $(document).ready(function () {
 					// true/false 값 확인
 					if (data.result === true) {
 						// true일 때 알림창 표시
-						shouldProceed = confirm('최초 가입자가 아닙니다. 해당 이벤트에 해당이 되지않습니다 그래도 가입하시겠습니까?');
+						shouldProceed = confirm('최초가입자가 아니어서 메가커피쿠폰 대상이 아닙니다. CU쿠폰 이벤트는 참여가능합니다. 그래도 가입하시겠습니까?');
 					}
 					if (shouldProceed) {
 						// PG결제 분기 처리 2025.02.10 양세용
@@ -404,7 +404,7 @@ $(document).ready(function () {
 										console.log('sessionStorage에 휴대폰 번호 저장:', phoneNumber);
 
 										// 완료 페이지로 리다이렉트
-										window.location.href = "https://linksafe.kr/subscribe_allone_done.html";
+										window.location.href = "http://dev.linksafe.kr/subscribe_allone_done.html";
 										//$('#subscriptionModal').modal('hide');
 									} else if (data.code === 901) {
 										alert('휴대폰약속번호 서비스에 가입이 된 전화번호입니다.[901]');

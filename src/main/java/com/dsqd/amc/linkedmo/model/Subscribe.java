@@ -32,8 +32,10 @@ public class Subscribe {
 	private String cncode;
 	private String spuserid;
 	private String checkcode;
-    private String noReq;
-	
+    private String no_req;
+    private int coupon_count;
+    private int coupon_max_count;
+
     public String toJSONString() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", id);
@@ -50,6 +52,9 @@ public class Subscribe {
         jsonObject.put("cncode", cncode);
         jsonObject.put("spuserid", spuserid);
         jsonObject.put("checkcode", checkcode);
+        jsonObject.put("no_req", no_req);
+        jsonObject.put("coupon_count", coupon_count);
+        jsonObject.put("coupon_max_count", coupon_max_count);
         return jsonObject.toJSONString();
     }
 }
