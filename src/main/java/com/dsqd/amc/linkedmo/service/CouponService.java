@@ -4,6 +4,7 @@ import com.dsqd.amc.linkedmo.config.MyBatisConfig;
 import com.dsqd.amc.linkedmo.mapper.CouponMapper;
 import com.dsqd.amc.linkedmo.mapper.MobiliansAutoMapper;
 import com.dsqd.amc.linkedmo.model.CouponRequest;
+import com.dsqd.amc.linkedmo.model.CouponRequestCount;
 import com.dsqd.amc.linkedmo.model.CouponResponse;
 import com.dsqd.amc.linkedmo.model.Subscribe;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,6 +51,14 @@ public class CouponService {
             return mapper.getCouponTargetList(data);
         }
     }
+    //allone mega coupon
+    public List<Subscribe> getNhCouponTargetList(HashMap<String,Object> data) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            CouponMapper mapper = session.getMapper(CouponMapper.class);
+            return mapper.getMegaCouponTargetList(data);
+        }
+    }
+
 
     public void insertCouponRequest(HashMap<String,Object> data) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
@@ -66,7 +75,13 @@ public class CouponService {
             session.commit();
         }
     }
-    
+    public void updateCouponRequestCount(String offercode, String noReq, int couponCount) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            CouponMapper mapper = session.getMapper(CouponMapper.class);
+            mapper.updateCouponRequestCount(offercode, noReq, couponCount);
+            session.commit();
+        }
+    }
     /*
     * 배치 실행 메소드
     * */
@@ -182,5 +197,95 @@ public class CouponService {
         return couponResponse;
     }
 
+
+    /*
+     * 배치 실행 메소드
+     * */
+    public void sendNHCouponRequest() {
+        // 모바일 쿠폰 발행 리스트 조회
+        LocalDate today = LocalDate.now();
+        String targetDate = today.minusMonths(1).toString();
+        HashMap<String,Object> params = new HashMap<>();
+        //params.put("targetDate", targetDate);
+        //params.put("offerCode", "20");
+        // 로컬 테스트
+        //params.put("targetDate", "2025-02-26");
+
+        List<Subscribe> NhcouponTargetList = getNhCouponTargetList(params);
+
+
+        Properties properties = new Properties();
+        try {
+            properties.load(Resources.getResourceAsStream("application.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Subscribe firstTarget = NhcouponTargetList.get(0);
+        int available = firstTarget.getCoupon_max_count() - firstTarget.getCoupon_count();
+        int todayCount = NhcouponTargetList.size();
+        int loopCount = Math.min(todayCount, available);
+
+        for(int i=0;i<loopCount;i++) {
+            Subscribe target = NhcouponTargetList.get(i);
+            try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+                // POST 요청을 보낼 URL 설정
+                HttpPost httpPost = new HttpPost(properties.getProperty("coupon.server"));
+
+                // 전송할 파라미터 설정 (x-www-form-urlencoded 형식)
+                List<NameValuePair> requestParams = new ArrayList<>();
+                requestParams.add(new BasicNameValuePair("ACTION", "CI102_ISSUECPN_TITLE_WITHPAY"));
+                requestParams.add(new BasicNameValuePair("COOPER_ID", properties.getProperty("coupon.megacooperid")));
+                requestParams.add(new BasicNameValuePair("COOPER_PW", properties.getProperty("coupon.megacooperpw")));
+                requestParams.add(new BasicNameValuePair("SITE_ID", properties.getProperty("coupon.megasiteid")));
+                requestParams.add(new BasicNameValuePair("NO_REQ", target.getNo_req()));
+                requestParams.add(new BasicNameValuePair("COOPER_ORDER", target.getMobileno()+new Date().getTime()));
+                //requestParams.add(new BasicNameValuePair("COOPER_ORDER", "01045273143"+new Date().getTime()));
+                requestParams.add(new BasicNameValuePair("ISSUE_COUNT", "1"));
+                requestParams.add(new BasicNameValuePair("CALL_CTN", properties.getProperty("coupon.callctn")));
+                requestParams.add(new BasicNameValuePair("RCV_CTN", target.getMobileno()));
+                //requestParams.add(new BasicNameValuePair("RCV_CTN", "01045273143"));
+                requestParams.add(new BasicNameValuePair("SEND_MSG", "휴대폰약속번호 서비스 신규가입 이벤트"));
+                requestParams.add(new BasicNameValuePair("VALID_START", today.format(DateTimeFormatter.ofPattern("yyyyMMdd"))));
+                requestParams.add(new BasicNameValuePair("VALID_END", today.plusMonths(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"))));
+                requestParams.add(new BasicNameValuePair("PAY_ID","1"));
+                requestParams.add(new BasicNameValuePair("BOOKING_NO","1"));
+                requestParams.add(new BasicNameValuePair("SITE_URL","1"));
+                requestParams.add(new BasicNameValuePair("TITLE","[휴대폰약속번호 서비스 신규가입 이벤트]"));
+
+                for (NameValuePair pair : requestParams) {
+                    // 동일한 키가 여러 번 등장하면 마지막 값이 저장됩니다.
+                    params.put(pair.getName(), pair.getValue());
+                }
+
+                // 모바일 쿠폰 발송 API 요청 파라미터 저장
+                insertCouponRequest(params);
+
+                // 파라미터를 UrlEncodedFormEntity로 인코딩 (UTF-8)
+                httpPost.setEntity(new UrlEncodedFormEntity(requestParams, "UTF-8"));
+
+                // POST 요청 실행 및 응답 받기
+                try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+                    // 응답 상태 코드 출력
+                    System.out.println("Response Code: " + response.getStatusLine().getStatusCode());
+
+                    // 응답 본문 처리
+                    HttpEntity entity = response.getEntity();
+                    if (entity != null) {
+                        String responseBody = EntityUtils.toString(entity, "UTF-8");
+                        insertCouponResponse(xmlParse(responseBody));
+                    }
+                }
+                updateCouponRequestCount(target.getOffercode(), target.getNo_req(), firstTarget.getCoupon_count() + (i + 1));
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        }
+
+    }
 
 }
