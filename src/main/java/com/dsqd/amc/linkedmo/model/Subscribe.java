@@ -32,6 +32,7 @@ public class Subscribe {
 	private String cncode;
 	private String spuserid;
 	private String checkcode;
+    private String noReq;
 	
     public String toJSONString() {
         JSONObject jsonObject = new JSONObject();

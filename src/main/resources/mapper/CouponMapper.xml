@@ -57,10 +57,11 @@
         <result column="canceled_at" property="cancelDate" />
         <result column="cancelcode" property="cncode" />
         <result column="spuserid" property="spuserid" />
+        <result column="no_req" property="noReq" />
     </resultMap>
 
     <select id="getCouponTargetList" resultMap="subscribe">
-        select s.id,s.spcode,s.mobileno,s.status,s.agree1,s.agree2,s.agree3,s.bFP,s.linkno,s.created_at,s.updated_at,s.canceled_at,s.cancelcode,s.cancelmanager,s.cancelreason,s.offercode,s.spuserid
+        select s.id,s.spcode,s.mobileno,s.status,s.agree1,s.agree2,s.agree3,s.bFP,s.linkno,s.created_at,s.updated_at,s.canceled_at,s.cancelcode,s.cancelmanager,s.cancelreason,s.offercode,s.spuserid, eo.no_req
         from subscribe s
         inner join event_offercode eo on s.offercode = eo.offercode
         where

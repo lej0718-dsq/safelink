@@ -101,7 +101,7 @@ public class CouponService {
                 requestParams.add(new BasicNameValuePair("COOPER_ID", properties.getProperty("coupon.cooperid")));
                 requestParams.add(new BasicNameValuePair("COOPER_PW", properties.getProperty("coupon.cooperpw")));
                 requestParams.add(new BasicNameValuePair("SITE_ID", properties.getProperty("coupon.siteid")));
-                requestParams.add(new BasicNameValuePair("NO_REQ", properties.getProperty("coupon.noreq")));
+                requestParams.add(new BasicNameValuePair("NO_REQ", target.getNoReq()));
                 requestParams.add(new BasicNameValuePair("COOPER_ORDER", target.getMobileno()+new Date().getTime()));
                 //requestParams.add(new BasicNameValuePair("COOPER_ORDER", "01045273143"+new Date().getTime()));
                 requestParams.add(new BasicNameValuePair("ISSUE_COUNT", "1"));
