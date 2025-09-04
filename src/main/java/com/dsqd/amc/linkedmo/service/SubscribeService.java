@@ -105,4 +105,11 @@ public class SubscribeService {
             return mapper.getSubscribeAlltoBatch01();
         }
     }
+
+    public String getFirstSubscriber(String mobileno) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            SubscribeMapper mapper = session.getMapper(SubscribeMapper.class);
+            return mapper.getFirstSubscriber(mobileno);
+        }
+    }
 }

@@ -155,6 +155,10 @@ public class SubscribeController {
 
 				});
 
+
+
+
+
 				// 사용자 홈페이지
 				path("/subscribe", () -> {
 					// 가입자 등록
@@ -168,6 +172,9 @@ public class SubscribeController {
 						JSONObject jsonObject = (JSONObject) JSONValue.parse(req.body());
 						logger.info(jsonObject.toJSONString());
 						Subscribe data = JSONValue.parse(req.body(), Subscribe.class);
+						String mobileno = data.getMobileno();
+
+						req.session().attribute("allonePhoneNumber", mobileno);
 
 						// checkcode의 전화번호와 요청한 전화번호가 같은지 확인
 						String encCheckcode = data.getCheckcode();
@@ -650,9 +657,49 @@ public class SubscribeController {
 					responseJSON.put("msg", msg);
 					responseJSON.put("phoneNumber", phoneNumber);
 
-					res.status(code == 200 ? 200 : 400);
-					return responseJSON.toJSONString();
+					if (code == 200) {
+						res.status(200);
+					} else if (code == 404) {
+						res.status(404);
+					} else {
+						res.status(500);
+					}					return responseJSON.toJSONString();
 				});
+
+				//최초 가입자
+				path("/subscribeEvent", () -> {
+					post("/firstUser", (req, res) -> {
+						res.type("application/json");
+
+						try {
+							// 요청 파라미터 추출
+							String mobileno = req.queryParams("phoneNumber");
+							if (mobileno == null || mobileno.trim().isEmpty()) {
+								res.status(400); // Bad Request
+								return "{ \"code\": 400, \"message\": \"phoneNumber parameter is required\" }";
+							}
+
+							// DB 조회
+							String result = service.getFirstSubscriber(mobileno);
+
+							if ("false".equalsIgnoreCase(result)) {  // DB에 없음 → 최초 가입자
+								req.session().attribute("allonePhoneNumber", mobileno);
+								logger.debug("firstUser 성공: 세션에 allonePhoneNumber 저장 = {}", mobileno);
+							}
+
+							// 정상 응답
+							res.status(200);
+							return "{ \"code\": 200, \"mobileno\": \"" + mobileno + "\", \"result\": " + result + " }";
+
+						} catch (Exception e) {
+							e.printStackTrace(); // 서버 로그에 찍기
+							res.status(500); // Internal Server Error
+							return "{ \"code\": 500, \"message\": \"Internal server error: " + e.getMessage() + "\" }";
+						}
+					});
+				});
+
+
 
 				// KG모빌리언스
 				path("/mobilians", () -> {
@@ -758,6 +805,12 @@ public class SubscribeController {
 						}
 
 					});
+
+
+
+
+
+
 					post("/precheck", (req, res) -> {
 						int code = 999;
 						String msg = "";
@@ -918,6 +971,8 @@ public class SubscribeController {
 				});
 			});
 		});
+
+
 	}
 }
 

@@ -33,4 +33,6 @@ public interface SubscribeMapper {
     List<Subscribe> getCancelList();
 
     List<Subscribe> getSubscribeAlltoBatch01();
+
+    String  getFirstSubscriber(String mobileno);
 }

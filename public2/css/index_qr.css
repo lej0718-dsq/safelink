@@ -130,10 +130,10 @@
 }
 /* 하단에 위치하는 간단한 토스트/레이어 팝업 예시 */
 .success-popup {
-    /*position: fixed;*/
-    /*bottom: 10%;*/
-    /*left: 50%;*/
-    /*transform: translateX(-50%);*/
+    position: fixed;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
     background: #000000;
     color: #FFFFFF;
     padding: 10px 20px;

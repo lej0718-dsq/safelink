@@ -180,7 +180,7 @@ span.dot_txt01:before{position: absolute; width:4px; height:4px; background:#fff
 #service_join_wrap .phone_info ul li{display:inline-block; width:calc(33.3% - 10px); margin-right:10px;}
 #service_join_wrap .phone_info ul li:last-child{margin-right:0;}
 #service_join_wrap .phone_info ul li button{width:100%; height:35px; line-height:33px; background:#fff; border:1px solid #ddd; border-radius:35px; font-family: 'Pretendard'; cursor: pointer;}
-#service_join_wrap .phone_info ul li button.selected{color:#fff; background:#0077ff; border:1px solid #0077ff;}
+#service_join_wrap .phone_info ul li button.selected{color:#fff; background:#74541F; border:1px solid #0077ff;}
 #service_join_wrap .phone_info ul li button.disable{color:#aaa; background: #eee; border:1px solid #eee;}
 #service_join_wrap .phone_info .number input{width:100%; height:35px; border:1px solid #ddd; font-size:14px; color:#555; font-family: 'Pretendard'; border-radius:5px; padding:0 10px; box-sizing: border-box;}
 

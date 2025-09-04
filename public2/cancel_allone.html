@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>휴대폰약속번호 해지하기</title>
+    
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+</head>
+<body>
+    <div id="service_join_wrap">
+        <div class="inner02">
+            <h3 class="service_join_tit">서비스 해지하기</h3>
+            <form name="cancelForm" id="cancelForm">
+                <input type="hidden" name="mobileno" id="mobileno" value="" />
+                <input type="hidden" name="spcode" id="spcode" value=""/>
+                <input type="hidden" name="offercode" id="offercode" value="00"/>
+				<input type="hidden" name="steps" id="steps" value="" />
+				<input type="hidden" name="checkcode" id="checkcode" value="" />
+				
+                <div class="agree_wrap">
+                    <p class="agree_txt">
+                        <span class="txt dot_txt">가입하신 휴대폰약속번호 서비스 해지가 가능합니다.</span>
+                        <span class="txt dot_txt">서비스 해지는 24시간 연중무휴 언제든지 가능합니다.</span>
+                        <span class="txt dot_txt">휴대폰약속번호 서비스는 월 1,650원(VAT포함)의 유료서비스로, 
+                            사용일 수와 관계없이 과금됩니다. (단, 해지 시 해지 당월은 일할 계산되어 과금 됩니다.)</span>
+                    </p>
+                </div>
+                
+                <div class="phone_info">
+                    <strong>가입하였던 전화번호 입력</strong>
+                    <ul>
+                        <li><button class="service_j_btn" id="SKT">SKT</button></li>
+                        <li><button class="service_j_btn" id="KTF">KT</button></li>
+                        <li><button class="service_j_btn" id="LGT">LGU+</button></li>
+                    </ul>
+
+					<div class="number number2">
+						<input type="text" id="phoneNumber" class="phone02" placeholder="전화번호를 입력하세요.">
+						<button type="button" class="btn-success disable_btn" id="sendotp">인증번호요청</button>
+					</div>
+					<div class="number number2">
+						<input type="text" id="otpNumber" class="phone02" placeholder="인증번호 6자리를 입력하세요." maxlength="6">
+						<button type="button" class="btn-success disable_btn" id="checkotp">확인하기</button>
+					</div>
+					
+                </div>
+
+                <div class="agree_wrap">
+                    <p class="agree_txt"><input type="checkbox" name="cancelAgree" id="cancelAgree">
+                    <span>
+                        아래 내용에 동의 후 해지를 신청합니다.
+                    </span></p>
+                    <p class="agree_txt mt5 pl5">
+                        <span class="txt line_txt">해지완료 후 취소는 불가하며, 재가입은 가능합니다. (단, 해지당일 재가입 불가)</span>
+                    </p>
+                </div>
+            </form>
+            <a href="#" class="cancel_btn">해지 신청</a>
+        </div>
+    </div>
+
+</body>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script type="text/javascript" src="js/popup_cancel_allone.js?20241106"></script>
+<script>
+	$(document).ready(function(){
+		$('#otpNumber').on('input', function() { this.value = this.value.replace(/[^0-9]/g, ''); });
+		$('#phoneNumber').on('input', function() { $('#sendotp').removeClass('disable_btn'); });
+	});
+
+	function btn(){
+		alert('서비스 준비중입니다.');
+	}
+</script>
+</html>

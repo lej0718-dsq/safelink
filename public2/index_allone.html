@@ -5,92 +5,138 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>올원뱅크</title>
-	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
-	<link rel="stylesheet" href="//fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+	<link rel="stylesheet" type="text/css"
+		  href="//cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+	<link rel="stylesheet"
+		  href="//fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
 	<link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
 	<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
 	<link rel="stylesheet" href="css/reset.css">
-	<link rel="stylesheet" href="css/allone.css">
 	<link rel="stylesheet" href="css/index.css">
 	<link rel="stylesheet" href="css/responsive.css">
 	<link rel="stylesheet" href="css/index_qr.css">
+	<link rel="stylesheet" href="css/allone.css">
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-</head>
-<style>
-	section {
-		position: relative;
-		width: 100%;
-	}
-	.blank1{
-		position: absolute;
-		top: 50%;
-		left: 6%;
-		width: 87%;
-		height: 22%;
-		display: block;
-		cursor: pointer;
-	}
-	.blank2{
-		position: absolute;
-		top: 72%;
-		left: 6%;
-		width: 87%;
-		height: 25%;
-		display: block;
-		cursor: pointer;
-	}
-	img{
-		width: 100%;
-		height: auto;
-		display: block;
-	}
-	.button-group {
-		display: flex;
-		justify-content: space-between;
-		width: 100%;
-		gap: 6px;
-	}
-	.button-group .button {
-		width: 100%;
-		font-size: 14px;
-		line-height: 100%;
-		font-weight: 500; /*0818 폰트 weight 수정*/
-		text-align: center;
-		padding: 15px 0;
-		border-radius: 12px;
-	}
-	.button-group .button:only-child {
-		font-size: 18px;
-	}
-	.button-group .button.-primary {
-		background-color: #18973c;
-		color: #fff;
-	}
 
-</style>
+</head>
 
 <body>
-<section>
-	<img src="./images/img1.png" alt="이미지1">
-</section>
-<section>
-	<img src="./images/img2.png" alt="이미지2">
-	<a id="copy-btn" style="margin-right: 10px;display: none;width: 88%;"  class="blank1" href="javascript:void(0);"onclick="qrPopup('copy');"></a>
-	<a id="qr-btn" class="blank2" style="display: none;width: 88%;" href="javascript:void(0);" onclick="qrPopup('download');"></a>
+<div id="service_join_wrap" class="index_wrap">
+	<div class="inner02">
+		<section class="visual_main">
+			<h2>휴대폰 번호 노출 없이<br />약속번호로 안전하게!</h2>
+			<span>#전화번호노출방지 #쉬운이용</span>
+			<img class="visual_main_img" src="./images/img_service_info_visual_main.png" alt="해당 서비스는 주 올마이크레딧에서 제공 및 운영합니다.">
+		</section>
+		<section class="info-card">
+			<article class="card -dial">
+				<span class="card-icon"></span>
+				<div class="texts">
+					<h3 class="title">히든다이얼(전화 걸 때)</h3>
+					<p class="desc">내 번호 대신 대표번호로 통화가 연결돼요</p>
+					<ul class="list -dot">
+						<li>중고 거래 시 추천</li>
+					</ul>
+				</div>
+			</article>
+			<article class="card -safe-call">
+				<span class="card-icon"></span>
+				<div class="texts">
+					<h3 class="title">안심콜(전화 받을 때)</h3>
+					<p class="desc">상대방에게 약속번호를 알려주면<br />내 번호 없이도 안전하게 통화할 수 있어요</p>
+					<ul class="list -dot">
+						<li>주차, 상담 업무 시 추천</li>
+					</ul>
+				</div>
+			</article>
+			<article class="card -call-log">
+				<span class="card-icon"></span>
+				<div class="texts">
+					<h3 class="title">대표번호만 남는 깔끔한 통화기록</h3>
+					<p class="desc">내 번호 노출 없이 통화기록에도<br />대표번호만 기록돼요</p>
+				</div>
+			</article>
 
-</section>
-<section>
-	<img src="./images/img3.png" alt="이미지3"  >
-</section>
-<section style="padding: 10px 24px 20px;">
-	<div class="button-group">
-		<a href="subscribe_allone.html" class="button -primary">서비스 가입하기</a>
+			<div class="contact-item">
+				<div class="texts">
+					<div class="icon"><i class="icon-qcmark"></i></div>
+					<p class="infotext">월 1,650원(VAT포함)이 부과되는 유료 서비스에요</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="pass-on-desc">
+			<h2 class="section-sub-title">
+				약속번호 전달방법
+			</h2>
+			<p class="section-sub-text">[약속번호]와 [QR코드]를 공유하면 상대방이 쉽게 전화를 걸 수 있어요</p>
+			<ul class="list -dot">
+				<li>서비스 가입 시, 내 휴대폰 번호 뒤 8자리가 약속번호로 자동 설정됩니다.</li>
+				<li>약속번호 변경을 원하는 경우, 대표번호로 전화하여 수정할 수 있습니다.</li>
+			</ul>
+			<div class="card_wrap">
+				<article class="card">
+					<button type="button" class="card-btn" onclick="qrPopup('copy')">
+						<span class="card-icon"><i class="icon-copy"></i></span>
+						<div class="texts">
+							<h3 class="title">약속번호 복사</h3>
+							<p class="desc">간단하게 약속번호 복사 후 상대방에게 전달해주면 바로 통화 연결 가능</p>
+						</div>
+						<span class="card-arrow"></span>
+					</button>
+				</article>
+				<article class="card">
+					<button type="button" class="card-btn" onclick="qrPopup('download')">
+						<span class="card-icon"><i class="icon-qr"></i></span>
+						<div class="texts">
+							<h3 class="title">QR코드 다운로드</h3>
+							<p class="desc">QR을 찍으면 바로<br />통화 가능</p>
+						</div>
+						<span class="card-arrow"></span>
+					</button>
+				</article>
+			</div>
+		</section>
+		<section class="consulting-num">
+			<h2 class="section-sub-title">
+				문의 및 상담
+			</h2>
+			<div class="contact-item">
+				<div class="icon"><i class="icon-phone"></i></div>
+				<div class="info">
+					<strong>전화상담</strong> <a href="tel:1533-5278">1533-5278</a>
+					<small>운영시간 10:00~17:00 (토/일/공휴일 제외)</small>
+				</div>
+			</div>
+			<div class="contact-item" id="emailContactItem" style="cursor: pointer; -webkit-tap-highlight-color: transparent;">
+				<div class="icon"><i class="icon-email"></i></div>
+				<div class="info" style="position: relative;">
+					<strong>이메일</strong> 
+					<span id="emailLink" style="display: inline; text-decoration: none; font-size: 16px; font-weight: normal; line-height: normal; padding: 0; margin: 2px; border: none; background: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;">help@allmycredit.co.kr</span>
+				</div>
+			</div>
+			<div class="button-group">
+				<a href="/cancel_allone.html" class="button -primary -white">
+				가입 해지하기
+			</a>
+			</div>
+		</section>
+		<!--이벤트 배너 주석처리 -->
+		<!-- <section class="event-banner">
+            <img src="./images/event_banner_dummy.png" alt="배너이미지">
+        </section> -->
+		<!--이벤트 배너 주석처리 -->
+		<div class="button-group">
+			<a href="subscribe_allone.html" class="button -primary">서비스 가입하기</a>
+		</div>
 	</div>
-</section><section>
-
+</div>
 
 
 
@@ -126,15 +172,18 @@
 			<div style="font-size: 16pt;font-weight: bold;color: #323232;text-align: -webkit-left;">
 				약속번호 복사하기
 			</div>
-			<div class="copyInfoDiv">
-				<div>
-					<span id="copyText"></span>
+			<div class="copyInfoDiv" style="position: relative;">
+				<div style="position: relative;">
+					<span id="copyText" style="display: inline-block; padding: 10px; background: #f0f0f0; border-radius: 8px; min-width: 200px; cursor: pointer; transition: all 0.3s ease; user-select: text; -webkit-user-select: text;"></span>
+					<div id="promiseNumberCopyIndicator" style="position: absolute; top: -5px; right: -5px; background: #4caf50; color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px; opacity: 0; transform: translateY(-10px); transition: all 0.3s ease; pointer-events: none; z-index: 10;">복사됨! ✓</div>
 				</div>
 				<div>
 					<img id="copyTextBtn" data-clipboard-text="" style="width: 55px;float: right;" src="images/button.png" alt="복사">
 				</div>
 			</div>
-
+			<div class="copy-instruction" style="font-size: 11pt; color: #8C8C8C; margin-top: 10px; text-align: center;">
+				💡 약속번호를 꾹 누르고 있으면 (1초) 자동으로 복사됩니다
+			</div>
 		</div>
 
 		<div style="text-align:-webkit-center">
@@ -188,6 +237,19 @@
 			document.getElementById('copy-btn').style.display='';
 			document.getElementById('qr-btn').style.display='';
 		}
+
+		// 꾹 누르기 복사 기능 초기화
+		activatePromiseNumberCopy();
+		
+		// iOS에서 더블탭 줌 방지
+		let lastTouchEnd = 0;
+		document.addEventListener('touchend', function(e) {
+			const now = (new Date()).getTime();
+			if (now - lastTouchEnd <= 300) {
+				e.preventDefault();
+			}
+			lastTouchEnd = now;
+		}, { passive: false });
 	});
 
 	// ===== 팝업 닫기 =====
@@ -251,7 +313,7 @@
 				if (data.code === 200) {
 					createQrcode(data.msg);
 				} else {
-					showServiceRequiredPopup();
+					alert(data.msg);
 				}
 			},
 			error: function (xhr, status, error) {
@@ -299,12 +361,19 @@
 		$('#mask').show();
 		$('#loadingImg').show();
 	}
+	
+	function LoadingWithMaskOff() {
+		$('#mask').remove();
+		$('#loadingImg').remove();
+	}
 	function createQrcode(serviceNumber) {
 		amcNumber = '15555551,1,' + serviceNumber + '#';
 		if(qrType === 'copy') {
 			copyCodeArea.style.display = 'block';
 			copyText.textContent= `${amcNumber}`;
 			copyTextBtn.setAttribute("data-clipboard-text", amcNumber);
+			// 약속번호 꾹 누르기 복사 기능 활성화
+			setTimeout(activatePromiseNumberCopy, 100);
 		} else {
 			// 이미 QR 코드가 있다면 초기화
 			qrCodeDiv.innerHTML = '';
@@ -341,9 +410,11 @@
 		showSuccessPopup();
 	});
 
-	function showSuccessPopup() {
+	function showSuccessPopup(type = null) {
 		let text = '';
-		if(qrType === 'copy') {
+		if(type === 'email') {
+			text = '이메일 주소가 복사되었습니다';
+		} else if(qrType === 'copy') {
 			text = '약속번호가 복사되었습니다';
 		} else {
 			text = 'QR 다운로드가 완료되었습니다'
@@ -371,43 +442,312 @@
 
 	const clipboard = new ClipboardJS('#copyTextBtn');
 	clipboard.on('success', function(e){
-		console.log("success");
 		e.clearSelection();
 		showSuccessPopup();
 	});
+
+	// 약속번호 꾹 누르기 복사 기능
+	function initPromiseNumberLongPress() {
+		const copyTextElement = document.getElementById('copyText');
+		const copyIndicator = document.getElementById('promiseNumberCopyIndicator');
+		
+		if (!copyTextElement) return;
+		
+		let touchTimeout;
+		let isTouching = false;
+
+		// 터치 시작
+		copyTextElement.addEventListener('touchstart', function(e) {
+			const text = copyTextElement.textContent.trim();
+			if (!text) return;
+			
+			isTouching = true;
+			
+			// 1초 후 복사 실행
+			touchTimeout = setTimeout(() => {
+				if (isTouching) {
+					copyPromiseNumberText();
+				}
+			}, 800);
+		});
+
+		// 터치 끝
+		copyTextElement.addEventListener('touchend', function(e) {
+			isTouching = false;
+			if (touchTimeout) {
+				clearTimeout(touchTimeout);
+			}
+		});
+
+		// 터치 취소 (스크롤 등으로 인한)
+		copyTextElement.addEventListener('touchcancel', function(e) {
+			isTouching = false;
+			if (touchTimeout) {
+				clearTimeout(touchTimeout);
+			}
+		});
+
+		// 데스크탑에서도 테스트할 수 있도록 마우스 이벤트 추가
+		copyTextElement.addEventListener('mousedown', function(e) {
+			const text = copyTextElement.textContent.trim();
+			if (!text) return;
+			
+			isTouching = true;
+			
+			touchTimeout = setTimeout(() => {
+				if (isTouching) {
+					copyPromiseNumberText();
+				}
+			}, 800);
+		});
+
+		copyTextElement.addEventListener('mouseup', function(e) {
+			isTouching = false;
+			if (touchTimeout) {
+				clearTimeout(touchTimeout);
+			}
+		});
+
+		copyTextElement.addEventListener('mouseleave', function(e) {
+			isTouching = false;
+			if (touchTimeout) {
+				clearTimeout(touchTimeout);
+			}
+		});
+
+		// 약속번호 복사 함수
+		async function copyPromiseNumberText() {
+			const text = copyTextElement.textContent.trim();
+			if (!text) return;
+
+			try {
+				// 최신 Clipboard API 사용
+				if (navigator.clipboard && window.isSecureContext) {
+					await navigator.clipboard.writeText(text);
+				} else {
+					// 폴백: 구 방식 사용
+					const textArea = document.createElement('textarea');
+					textArea.value = text;
+					textArea.style.position = 'fixed';
+					textArea.style.top = '-9999px';
+					document.body.appendChild(textArea);
+					textArea.select();
+					textArea.setSelectionRange(0, 99999);
+					document.execCommand('copy');
+					document.body.removeChild(textArea);
+				}
+
+				showPromiseNumberCopyFeedback();
+				showSuccessPopup();
+				
+			} catch (err) {
+				console.error('약속번호 복사 실패:', err);
+				// 폴백으로 기존 방식 시도
+				try {
+					const textArea = document.createElement('textarea');
+					textArea.value = text;
+					textArea.style.position = 'fixed';
+					textArea.style.top = '-9999px';
+					document.body.appendChild(textArea);
+					textArea.select();
+					document.execCommand('copy');
+					document.body.removeChild(textArea);
+					showPromiseNumberCopyFeedback();
+					showSuccessPopup();
+				} catch (fallbackErr) {
+					console.error('폴백 복사도 실패:', fallbackErr);
+					// 실패 시 조용히 처리, 사용자에게는 성공 메시지 표시하지 않음
+				}
+			}
+		}
+
+		// 약속번호 복사 완료 시각적 피드백
+		function showPromiseNumberCopyFeedback() {
+			// 텍스트 영역 애니메이션 클래스 적용
+			copyTextElement.classList.add('copying');
+			setTimeout(() => {
+				copyTextElement.classList.remove('copying');
+			}, 600);
+
+			// 복사 인디케이터 표시
+			copyIndicator.classList.add('show');
+			
+			// 바운스 애니메이션을 위해 기존 애니메이션 리셋
+			copyIndicator.style.animation = 'none';
+			setTimeout(() => {
+				copyIndicator.style.animation = '';
+			}, 10);
+			
+			setTimeout(() => {
+				copyIndicator.classList.remove('show');
+			}, 2000);
+		}
+	}
+
+	// 약속번호가 설정될 때 꾹 누르기 기능 활성화
+	function activatePromiseNumberCopy() {
+		// DOM이 준비되면 초기화
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', initPromiseNumberLongPress);
+		} else {
+			initPromiseNumberLongPress();
+		}
+	}
 
 	/* QR 기능*/
 	function qrPopup(type) {
 		const qrPopup = document.getElementById("popupOverlay");
 		qrPopup.style.display = 'flex';
-		if(type === 'copy') {
+		if (type === 'copy') {
 			qrType = 'copy';
 		} else {
 			qrType = 'download';
 		}
 	}
 
-	/* 서비스 가입 후 사용가능 팝업 */
-	function showServiceRequiredPopup() {
-		console.log('showServiceRequiredPopup 함수 실행됨'); // 디버그용
-
-		// 새로운 show-popup 사용
-		if (showPopup) {
-			// 팝업 보이기
-			showPopup.classList.add('active');
-			console.log('팝업에 active 클래스 추가됨'); // 디버그용
-
-			// 일정 시간 후 자동으로 숨기기 (예: 2초 후)
-			setTimeout(() => {
-				showPopup.classList.remove('active');
-				console.log('팝업에서 active 클래스 제거됨'); // 디버그용
-			}, 2000);
-		} else {
-			console.error('showPopup 요소를 찾을 수 없습니다'); // 디버그용
-			// 대안으로 alert 사용
-			alert('서비스 가입 후 사용 가능합니다');
+	/* 이메일 텍스트만 클릭으로 복사 기능 */
+	const emailLink = document.getElementById('emailLink');
+	
+	if (emailLink) {
+		// 간단한 클릭 이벤트로 즉시 복사
+		emailLink.addEventListener('click', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			copyEmailFromSpan();
+		});
+		
+		// 터치 이벤트도 추가 (모바일 대응)
+		emailLink.addEventListener('touchend', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			copyEmailFromSpan();
+		});
+		
+		// 호버 효과
+		emailLink.addEventListener('mouseenter', function(e) {
+			this.style.background = 'rgba(0, 122, 255, 0.1)';
+			this.style.transform = 'translateX(2px)';
+			this.style.borderRadius = '4px';
+		});
+		
+		emailLink.addEventListener('mouseleave', function(e) {
+			this.style.background = 'transparent';
+			this.style.transform = 'translateX(0)';
+		});
+		
+		// 컨텍스트 메뉴 방지
+		emailLink.addEventListener('contextmenu', function(e) {
+			e.preventDefault();
+		});
+		
+		// 드래그 방지
+		emailLink.addEventListener('dragstart', function(e) {
+			e.preventDefault();
+		});
+	}
+	
+	// span 요소에서 이메일 복사하는 함수 (아이폰 확실 방식)
+	function copyEmailFromSpan() {
+		const email = "help@allmycredit.co.kr"; // 직접 지정으로 확실하게
+		
+		// 아이폰에서 가장 확실한 방법
+		const tempTextarea = document.createElement('textarea');
+		tempTextarea.value = email;
+		tempTextarea.style.position = 'absolute';
+		tempTextarea.style.left = '-9999px';
+		tempTextarea.style.top = '-9999px';
+		tempTextarea.style.fontSize = '16px'; // 아이폰 줌 방지
+		tempTextarea.style.opacity = '1'; // 완전히 투명하면 안됨
+		tempTextarea.style.color = 'transparent';
+		tempTextarea.readOnly = false; // 아이폰에서 중요
+		
+		document.body.appendChild(tempTextarea);
+		
+		try {
+			// 현재 스크롤 위치 저장
+			const currentScrollY = window.scrollY;
+			
+			// 즉시 선택하고 복사
+			tempTextarea.focus();
+			tempTextarea.select();
+			tempTextarea.setSelectionRange(0, email.length);
+			
+			// execCommand - 아이폰에서 가장 안정적
+			document.execCommand('copy');
+			
+			// 스크롤 위치 복원
+			window.scrollTo(0, currentScrollY);
+			
+			// 이메일 영역 그 자리에 성공 메시지 표시 (모든 기기 동일)
+			showEmailCopySuccess();
+			
+		} catch (err) {
+			// 실패해도 성공으로 표시 (대부분 실제로는 복사됨)
+			showEmailCopySuccess();
+		} finally {
+			// 즉시 제거
+			document.body.removeChild(tempTextarea);
 		}
 	}
+	
+
+	
+	// 이메일 텍스트 영역 그 자리에 복사 완료 메시지 표시
+	function showEmailCopySuccess() {
+		const emailLink = document.getElementById('emailLink');
+		if (!emailLink) return;
+		
+		// 기존 복사 알림이 있다면 제거
+		const existingAlert = document.getElementById('emailCopyAlert');
+		if (existingAlert) {
+			existingAlert.remove();
+		}
+		
+		// 새로운 복사 완료 알림 생성
+		const copyAlert = document.createElement('div');
+		copyAlert.id = 'emailCopyAlert';
+		copyAlert.textContent = '이메일 주소가 복사되었습니다';
+		copyAlert.style.cssText = `
+			position: absolute;
+			top: -40px;
+			left: 50%;
+			transform: translateX(-50%);
+			background: #18973D;
+			color: white;
+			padding: 8px 16px;
+			border-radius: 8px;
+			font-size: 14px;
+			font-weight: 600;
+			z-index: 1000;
+			white-space: nowrap;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+			opacity: 0;
+			transition: opacity 0.3s ease;
+		`;
+		
+		// 이메일 텍스트에 상대적으로 위치시키기 위해 relative 설정
+		emailLink.style.position = 'relative';
+		emailLink.appendChild(copyAlert);
+		
+		// 애니메이션으로 나타나기
+		setTimeout(() => {
+			copyAlert.style.opacity = '1';
+		}, 10);
+		
+		// 2초 후 사라지기
+		setTimeout(() => {
+			if (copyAlert) {
+				copyAlert.style.opacity = '0';
+				setTimeout(() => {
+					if (copyAlert && copyAlert.parentNode) {
+						copyAlert.parentNode.removeChild(copyAlert);
+					}
+				}, 300);
+			}
+		}, 2000);
+	}
+
+
 </script>
 
 </html>

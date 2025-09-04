@@ -317,90 +317,134 @@ $(document).ready(function () {
 			agree2: $('#agree2').is(':checked'),
 			agree3: $('#agree3').is(':checked')
 		};
-		// PG결제 분기 처리 2025.02.10 양세용
-		if($('#spcode').val() !== 'SKT') {
-			if($('#payGbn').val() === 'phone') {
-				$.ajax({
-					type: 'POST',
-					url: '/api/v1.0/mobilians/precheck',
-					data: JSON.stringify(formData),
-					contentType: 'application/json',
-					caches: false,
-					beforeSend: function () {
-						LoadingWithMask(); // 요청 전 로딩 표시
-					},
-					success: function (response) {
-						LoadingWithMaskOff();
-						var data = JSON.parse(response);
-						if (data.code === 200) {
-							payRequest();
-						} else if (data.code === 901) {
-							alert('휴대폰약속번호 서비스에 가입이 된 전화번호입니다.[901]');
-						} else if (data.code === 912) {
-							alert('통신사에 가입되지 않은 전화번호입니다.[912]');
-						} else if (data.code === 923) {
-							alert('휴대폰약속번호 서비스에 가입이 불가한 전화번호입니다.[923]');
-						} else if(data.code === 902){
-							alert('입력하신 전화번호는 해지관련 전산처리 중으로 내일 가입이 가능합니다.[902]');
-						} else {
+		$.ajax({
+			type:'POST',
+			url: '/api/v1.0/subscribeEvent/firstUser?phoneNumber=' + encodeURIComponent(phoneNumber),
 
+			contentType : 'application/json',
+			cache: false,
+			beforeSend: function () {
+				LoadingWithMask(); // 로딩 표시
+			},
+			success: function (response) {
+				LoadingWithMaskOff();
+				console.log("response [] >??" , response)
+				console.log("response [] >??" , response.mobileno)
+
+				var data = response;
+
+				if (data.code === 200) {
+					var shouldProceed = !data.result;  // DB에 있으면(true) → false, 없으면(false) → true
+
+					// true/false 값 확인
+					if (data.result === true) {
+						// true일 때 알림창 표시
+						shouldProceed = confirm('최초 가입자가 아닙니다. 해당 이벤트에 해당이 되지않습니다 그래도 가입하시겠습니까?');
+					}
+					if (shouldProceed) {
+						// PG결제 분기 처리 2025.02.10 양세용
+						if($('#spcode').val() !== 'SKT') {
+							if($('#payGbn').val() === 'phone') {
+								$.ajax({
+									type: 'POST',
+									url: '/api/v1.0/mobilians/precheck',
+									data: JSON.stringify(formData),
+									contentType: 'application/json',
+									caches: false,
+									beforeSend: function () {
+										LoadingWithMask(); // 요청 전 로딩 표시
+									},
+									success: function (response) {
+										LoadingWithMaskOff();
+										var data = JSON.parse(response);
+										if (data.code === 200) {
+											payRequest();
+										} else if (data.code === 901) {
+											alert('휴대폰약속번호 서비스에 가입이 된 전화번호입니다.[901]');
+										} else if (data.code === 912) {
+											alert('통신사에 가입되지 않은 전화번호입니다.[912]');
+										} else if (data.code === 923) {
+											alert('휴대폰약속번호 서비스에 가입이 불가한 전화번호입니다.[923]');
+										} else if(data.code === 902){
+											alert('입력하신 전화번호는 해지관련 전산처리 중으로 내일 가입이 가능합니다.[902]');
+										} else {
+
+										}
+									},
+									error: function (xhr, status, error) {
+										LoadingWithMaskOff(); // 에러 발생 시 로딩 해제
+										alert('휴대폰약속번호 서비스 가입이 원활하지 않네요. 잠시 후 다시 해주세요.[9F5]');
+									},
+									complete: function () {
+										//hideLoading();
+										//LoadingWithMaskOff();
+									}
+								});
+							} else {
+								//payRequestCN();
+							}
+						} else {
+							$.ajax({
+								type: 'POST',
+								url: '/api/v1.0/subscribe',
+								data: JSON.stringify(formData),
+								contentType: 'application/json',
+								caches: false,
+								beforeSend: function () {
+									LoadingWithMask(); // 요청 전 로딩 표시
+								},
+								success: function (response) {
+									LoadingWithMaskOff();
+									var data = JSON.parse(response);
+									if (data.code === 200) {
+										//var ohc = setEventEntry(phoneNumber); // 여기서 closewindow를 함
+
+										// sessionStorage에 휴대폰 번호 저장 (키-값 쌍으로)
+										sessionStorage.setItem('allonePhoneNumber', phoneNumber);
+										console.log('sessionStorage에 휴대폰 번호 저장:', phoneNumber);
+
+										// 완료 페이지로 리다이렉트
+										window.location.href = "https://linksafe.kr/subscribe_allone_done.html";
+										//$('#subscriptionModal').modal('hide');
+									} else if (data.code === 901) {
+										alert('휴대폰약속번호 서비스에 가입이 된 전화번호입니다.[901]');
+									} else if (data.code === 912) {
+										alert('통신사에 가입되지 않은 전화번호입니다.[912]');
+									} else if (data.code === 923) {
+										alert('휴대폰약속번호 서비스에 가입이 불가한 전화번호입니다.[923]');
+									} else {
+										alert(data.msg);
+									}
+								},
+								error: function (xhr, status, error) {
+									LoadingWithMaskOff(); // 에러 발생 시 로딩 해제
+									alert('휴대폰약속번호 서비스 가입이 원활하지 않네요. 잠시 후 다시 해주세요.[9F5]');
+								},
+								complete: function () {
+									//hideLoading();
+									//LoadingWithMaskOff();
+								}
+							});
 						}
-					},
-					error: function (xhr, status, error) {
-						LoadingWithMaskOff(); // 에러 발생 시 로딩 해제
-						alert('휴대폰약속번호 서비스 가입이 원활하지 않네요. 잠시 후 다시 해주세요.[9F5]');
-					},
-					complete: function () {
-						//hideLoading();
-						//LoadingWithMaskOff();
-					}
-				});
-			} else {
-				//payRequestCN();
-			}
-		} else {
-			$.ajax({
-				type: 'POST',
-				url: '/api/v1.0/subscribe',
-				data: JSON.stringify(formData),
-				contentType: 'application/json',
-				caches: false,
-				beforeSend: function () {
-					LoadingWithMask(); // 요청 전 로딩 표시
-				},
-				success: function (response) {
-					LoadingWithMaskOff();
-					var data = JSON.parse(response);
-					if (data.code === 200) {
-						//var ohc = setEventEntry(phoneNumber); // 여기서 closewindow를 함
-						
-						// sessionStorage에 휴대폰 번호 저장 (키-값 쌍으로)
-						sessionStorage.setItem('allonePhoneNumber', phoneNumber);
-						console.log('sessionStorage에 휴대폰 번호 저장:', phoneNumber);
-						
-						// 완료 페이지로 리다이렉트
-						window.location.href = "https://linksafe.kr/subscribe_allone_done.html";
-						//$('#subscriptionModal').modal('hide');
-					} else if (data.code === 901) {
-						alert('휴대폰약속번호 서비스에 가입이 된 전화번호입니다.[901]');
-					} else if (data.code === 912) {
-						alert('통신사에 가입되지 않은 전화번호입니다.[912]');
-					} else if (data.code === 923) {
-						alert('휴대폰약속번호 서비스에 가입이 불가한 전화번호입니다.[923]');
+
 					} else {
-						alert(data.msg);
+						// false일 때 기존 로직 실행
+						callback(); // 기존 코드 실행
 					}
-				},
-				error: function (xhr, status, error) {
-					LoadingWithMaskOff(); // 에러 발생 시 로딩 해제
-					alert('휴대폰약속번호 서비스 가입이 원활하지 않네요. 잠시 후 다시 해주세요.[9F5]');
-				},
-				complete: function () {
-					//hideLoading();
-					//LoadingWithMaskOff();
+				} else {
+					alert('사전 체크 중 오류가 발생했습니다. 다시 시도해주세요.');
 				}
-			});
-		}
+			},
+			error: function (xhr, status, error) {
+				LoadingWithMaskOff();
+				alert('사전 체크 서비스에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
+			}
+		});
+
+
+
+
+
 		// ===============================
 
 	});

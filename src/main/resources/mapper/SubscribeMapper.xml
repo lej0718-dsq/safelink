@@ -100,5 +100,13 @@
             AND spcode = 'SKT'
 		ORDER BY 
 			created_at ASC; 
-    </select>   
+    </select>
+
+
+    <select id="getFirstSubscriber" resultType="String">
+        SELECT if(count(*) > 0, 'true', 'false') as exists_flag
+        FROM subscribe
+        WHERE mobileno =#{mobileno}
+    </select>
+
 </mapper>
