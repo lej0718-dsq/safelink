@@ -52,7 +52,7 @@ public class CouponService {
         }
     }
     //allone mega coupon
-    public List<Subscribe> getNhCouponTargetList(HashMap<String,Object> data) {
+    public List<Subscribe> getMegaCouponTargetList(HashMap<String,Object> data) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             CouponMapper mapper = session.getMapper(CouponMapper.class);
             return mapper.getMegaCouponTargetList(data);
@@ -211,7 +211,7 @@ public class CouponService {
         // 로컬 테스트
         //params.put("targetDate", "2025-02-26");
 
-        List<Subscribe> NhcouponTargetList = getNhCouponTargetList(params);
+        List<Subscribe> NhcouponTargetList = getMegaCouponTargetList(params);
 
 
         Properties properties = new Properties();
