@@ -204,15 +204,9 @@ public class CouponService {
     public void sendNHCouponRequest() {
         // 모바일 쿠폰 발행 리스트 조회
         LocalDate today = LocalDate.now();
-        String targetDate = today.minusMonths(1).toString();
         HashMap<String,Object> params = new HashMap<>();
-        //params.put("targetDate", targetDate);
-        //params.put("offerCode", "20");
-        // 로컬 테스트
-        //params.put("targetDate", "2025-02-26");
 
         List<Subscribe> NhcouponTargetList = getMegaCouponTargetList(params);
-
 
         Properties properties = new Properties();
         try {
@@ -232,6 +226,9 @@ public class CouponService {
                 // POST 요청을 보낼 URL 설정
                 HttpPost httpPost = new HttpPost(properties.getProperty("coupon.server"));
 
+                // 로컬 테스트
+                //HttpPost httpPost = new HttpPost("https://atom.donutbook.co.kr/b2ccoupon/b2cservice.aspx");
+
                 // 전송할 파라미터 설정 (x-www-form-urlencoded 형식)
                 List<NameValuePair> requestParams = new ArrayList<>();
                 requestParams.add(new BasicNameValuePair("ACTION", "CI102_ISSUECPN_TITLE_WITHPAY"));
@@ -240,11 +237,9 @@ public class CouponService {
                 requestParams.add(new BasicNameValuePair("SITE_ID", properties.getProperty("coupon.megasiteid")));
                 requestParams.add(new BasicNameValuePair("NO_REQ", target.getNo_req()));
                 requestParams.add(new BasicNameValuePair("COOPER_ORDER", target.getMobileno()+new Date().getTime()));
-                //requestParams.add(new BasicNameValuePair("COOPER_ORDER", "01045273143"+new Date().getTime()));
                 requestParams.add(new BasicNameValuePair("ISSUE_COUNT", "1"));
                 requestParams.add(new BasicNameValuePair("CALL_CTN", properties.getProperty("coupon.callctn")));
                 requestParams.add(new BasicNameValuePair("RCV_CTN", target.getMobileno()));
-                //requestParams.add(new BasicNameValuePair("RCV_CTN", "01045273143"));
                 requestParams.add(new BasicNameValuePair("SEND_MSG", "휴대폰약속번호 서비스 신규가입 이벤트"));
                 requestParams.add(new BasicNameValuePair("VALID_START", today.format(DateTimeFormatter.ofPattern("yyyyMMdd"))));
                 requestParams.add(new BasicNameValuePair("VALID_END", today.plusMonths(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"))));
@@ -274,9 +269,9 @@ public class CouponService {
                     if (entity != null) {
                         String responseBody = EntityUtils.toString(entity, "UTF-8");
                         insertCouponResponse(xmlParse(responseBody));
+                        updateCouponRequestCount(target.getOffercode(), target.getNo_req(), firstTarget.getCoupon_count() + (i + 1));
                     }
                 }
-                updateCouponRequestCount(target.getOffercode(), target.getNo_req(), firstTarget.getCoupon_count() + (i + 1));
 
 
             } catch (Exception e) {

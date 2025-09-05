@@ -1,14 +1,10 @@
 package com.dsqd.amc.linkedmo.util;
 
-import com.dsqd.amc.linkedmo.batch.Batch03;
-import com.dsqd.amc.linkedmo.batch.Batch04;
+import com.dsqd.amc.linkedmo.batch.*;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.dsqd.amc.linkedmo.batch.Batch01;
-import com.dsqd.amc.linkedmo.batch.Batch02;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -105,6 +101,8 @@ public class SchedulerModule {
                 scheduledFuture = executorService.schedule(() -> requestCoupon(params, triggerId), 0, TimeUnit.SECONDS);
             } else if (triggerId == 4) {
                 scheduledFuture = executorService.schedule(() -> autoPayBatch(params, triggerId), 0, TimeUnit.SECONDS);
+            } else if (triggerId == 5) {
+                scheduledFuture = executorService.schedule(() -> requestCouponMega(params, triggerId), 0, TimeUnit.SECONDS);
             }
         }
     }
@@ -126,6 +124,11 @@ public class SchedulerModule {
 
     public static void autoPayBatch(Map<String, Object> params, int triggerId) {
         Task task = new Batch04();
+        task.executeTask(params, triggerId);
+    }
+
+    public static void requestCouponMega(Map<String, Object> params, int triggerId) {
+        Task task = new Batch05();
         task.executeTask(params, triggerId);
     }
 }

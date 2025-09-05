@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Properties;
 
 public class Batch05 implements Task {
-	// PING Query 수행
 	
 	private static final Logger logger = LoggerFactory.getLogger(Batch05.class);
 	
@@ -23,7 +22,7 @@ public class Batch05 implements Task {
     public void executeTask(Map<String, Object> params, int triggerId) {
 		Properties prop = MyBatisConfig.getApplicationProperties();
 		String env = System.getProperty("argEnv"); // local, dev, prod
-		String batch_name = "Batch05-requestCoupon";
+		String batch_name = "Batch05-requestCouponMega";
 
 		CouponService couponService = new CouponService();
 		

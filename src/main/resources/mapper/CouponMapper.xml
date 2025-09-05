@@ -59,7 +59,7 @@
         <result column="spuserid" property="spuserid" />
         <result column="coupon_max_count" property="coupon_max_count" />
         <result column="coupon_count" property="coupon_count" />
-        <result column="no_req" property="noReq" />
+        <result column="no_req" property="no_req" />
     </resultMap>
     <resultMap id="couponRequestCountUpdate" type="com.dsqd.amc.linkedmo.model.CouponRequestCount">
         <id column="coupon_request_count_id" property="coupon_request_count_id" />
@@ -103,33 +103,29 @@
 
     <select id ="getMegaCouponTargetList" resultMap="subscribe">
         select
-            s.id,s.spcode, s.mobileno,s.status,s.agree1,s.agree2,s.agree3,s.bFP,s.linkno,s.created_at,s.updated_at, eo.no_req,
+            s.id,s.spcode, s.mobileno,s.status,s.agree1,s.agree2,s.agree3,s.bFP,s.linkno,s.created_at,s.updated_at, c.no_req,
             s.canceled_at,s.cancelcode,s.cancelmanager,s.cancelreason,s.offercode,s.spuserid,
             c.count as coupon_count,
             c.max_count as coupon_max_count
         from subscribe s
-                 inner join event_offercode eo
-                            on s.offercode = eo.offercode
-                 inner join coupon_request_cnt c
-                            on s.offercode = c.offercode
-                                and eo.no_req   = c.no_req
+        inner join coupon_request_cnt c on s.offercode = c.offercode
         where
             s.offercode = 'allone' and s.status = 'A'
-          and date(s.created_at) = date(date_sub(curdate(), interval 1 day))
-          and curdate() between eo.startdate and eo.enddate;
-
+            and date(s.created_at) = date(date_sub(curdate(), interval 1 day))
+            and date(date_sub(curdate(), interval 1 day)) between c.startdate and c.enddate
+        order by s.created_at
     </select>
 
     <update id ="updateCouponRequestCount">
         update
             coupon_request_cnt c
         set
-            c.count = #{coupon_count},
+            c.count = #{param3},
             updated_at = now()
         where
-            offercode = #{offercode}
-            and no_req = #{no_req}
-            and curdate() between eo.startdate and eo.enddate;
+            offercode = #{param1}
+            and no_req = #{param2}
+            and date(date_sub(curdate(), interval 1 day)) between startdate and enddate
     </update>
 
 
