@@ -55,6 +55,39 @@ public class SubscribeController {
 	private void setupEndpoints() {
 		path("/api", () -> {
 			path("/v1.0", () -> {
+				// 연결번호 변경 API
+				post("/changelinkno", (req, res) -> {
+					try {
+						JSONObject jsonObject = (JSONObject) JSONValue.parse(req.body());
+						logger.info("ChangeLinkno Request: {}", jsonObject.toJSONString());
+						logger.info(jsonObject.toJSONString());
+						Subscribe data = JSONValue.parse(req.body(), Subscribe.class);
+
+						String spcode = jsonObject.getAsString("spcode");
+						String mobileno = jsonObject.getAsString("mobileno");
+						String linkno = jsonObject.getAsString("linkno");
+						
+						// 기본적인 null 체크만 수행 (비즈니스 검증은 Naru API에서 처리)
+						if (spcode == null || mobileno == null || linkno == null) {
+							logger.warn("Required parameters missing - spcode: {}, mobileno: {}, linkno: {}", 
+								spcode, mobileno, linkno);
+							return JSONHelper.assembleResponse(999, "필수 파라미터가 누락되었습니다.");
+						}
+						
+						// NARU API 호출하여 결과를 그대로 반환
+						SubscribeNaru naru = new SubscribeNaru();
+						JSONObject response = naru.changeLinkno(data);
+						
+						logger.info("ChangeLinkno Response: {}", response.toJSONString());
+						res.type("application/json");
+						return response.toJSONString();
+						
+					} catch (Exception e) {
+						logger.error("ChangeLinkno API Error: ", e);
+						return JSONHelper.assembleResponse(999, "서비스 처리 중 오류가 발생했습니다.");
+					}
+				});
+				
 				// 콜센터 등 관리자용
 				path("/admin", () -> {
 					// 전체 가입자 정보 조회

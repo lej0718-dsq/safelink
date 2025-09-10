@@ -20,7 +20,8 @@ public class SubscribeNaru {
 		JSONObject jsonParam = new JSONObject();
 		jsonParam.put("spcode", data.getSpcode());
 		jsonParam.put("mobileno", data.getMobileno());
-		
+		jsonParam.put("regcd", data.getOffercode());
+
 		JSONObject itfJSON = new JSONObject();
 		try {
 			itfJSON = (JSONObject) JSONValue.parse(itfMgr.sendRequest(method, uri, jsonParam.toJSONString()));
@@ -79,6 +80,39 @@ public class SubscribeNaru {
 		}
 		
 		return JSONHelper.assembleResponse(code, itfJSON);
+	}
+	
+	/**
+	 * 연결번호 변경 요청
+	 * @param spcode 서비스 제공자 코드
+	 * @param mobileno 휴대폰 번호
+	 * @param linkno 새로운 연결번호
+	 * @return 결과 코드와 메시지
+	 */
+	public JSONObject changeLinkno(Subscribe data) {
+		InterfaceManager itfMgr = InterfaceManager.getInstance();
+		
+		int code = 998;
+		String msg = "";
+		
+		String method = "POST";
+		String uri = "/api/v1.0/linksafe/changelinkno";
+
+		JSONObject jsonParam = new JSONObject();
+		jsonParam.put("spcode", data.getSpcode());
+		jsonParam.put("mobileno", data.getMobileno());
+		jsonParam.put("linkno", data.getLinkno());
+
+		JSONObject itfJSON = new JSONObject();
+		try {
+			itfJSON = (JSONObject) JSONValue.parse(itfMgr.sendRequest(method, uri, jsonParam.toJSONString()));
+			code = Integer.parseInt(itfJSON.getAsString("code"));
+			msg = itfJSON.getAsString("msg");
+		} catch (Exception e) {
+			return JSONHelper.assembleResponse(923, "연결번호 변경 서비스 중 오류 발생: " + e.getMessage());
+		}
+		
+		return JSONHelper.assembleResponse(code, msg);
 	}
 	
 }

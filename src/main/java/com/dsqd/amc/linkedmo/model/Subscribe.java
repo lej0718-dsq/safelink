@@ -35,6 +35,7 @@ public class Subscribe {
     private String no_req;
     private int coupon_count;
     private int coupon_max_count;
+    private String linkno;
 
     public String toJSONString() {
         JSONObject jsonObject = new JSONObject();
