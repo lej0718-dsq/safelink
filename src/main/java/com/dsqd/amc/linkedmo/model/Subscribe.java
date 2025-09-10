@@ -56,6 +56,7 @@ public class Subscribe {
         jsonObject.put("no_req", no_req);
         jsonObject.put("coupon_count", coupon_count);
         jsonObject.put("coupon_max_count", coupon_max_count);
+        jsonObject.put("linkno", linkno);
         return jsonObject.toJSONString();
     }
 }

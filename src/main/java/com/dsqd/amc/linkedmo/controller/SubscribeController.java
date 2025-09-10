@@ -478,6 +478,7 @@ public class SubscribeController {
 							// ========================================================
 							// 부가서비스 제공사로 가입요청 -- START
 							// ========================================================
+							data.setOffercode(targets.get(0).getOffercode());
 							SubscribeNaru naru = new SubscribeNaru();
 							responseJSON = naru.cancel(data);
 							if ((int) responseJSON.get("code") != 200)
@@ -769,7 +770,7 @@ public class SubscribeController {
 							logger.info("spcode : {}", spcode);
 
 							JSONObject responseJSON = new JSONObject();
-							Subscribe data = Subscribe.builder().mobileno(mobilians.getNo()).spcode(spcode).build();
+							Subscribe data = Subscribe.builder().mobileno(mobilians.getNo()).spcode(spcode).offercode(tempData.getOffercode()).build();
 							String msg = null;
 							String result = null;    // KG모빌리언스 notiurl에서 리턴 값은 FAIL / SUCCESS 문자만 리턴.
 

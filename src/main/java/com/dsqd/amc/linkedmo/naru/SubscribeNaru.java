@@ -46,6 +46,7 @@ public class SubscribeNaru {
 		jsonParam.put("spcode", data.getSpcode());
 		jsonParam.put("mobileno", data.getMobileno());
 		jsonParam.put("status", "C");
+		jsonParam.put("regcd", data.getOffercode());
 
 		JSONObject itfJSON = new JSONObject();
 		try {
