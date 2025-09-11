@@ -1165,15 +1165,14 @@ div.button-container a#agreeButton,
     justify-content: center;
 }
 
-.contact-item .texts {
-    display: flex;
-    align-items: center; /* 세로 중앙 정렬 */
-    gap: 8px; /* 아이콘과 텍스트 사이 간격 */
+
+.contact-item .texts{
+    display:flex;
+    justify-content:center;  /* 수평 가운데 */
+    align-items:center;      /* 세로 가운데 */
+    gap:8px;                 /* 아이콘-문구 간격 */
 }
-.contact-item .texts .infotext{
-    font-size: 15px;
-    color:#909090;
-}
+.contact-item .infotext{ margin:0;font-size: 15px; color:#909090; text-align:center; }
 
 .contact-item .icon .icon-qcmark {
     width: 16px;
