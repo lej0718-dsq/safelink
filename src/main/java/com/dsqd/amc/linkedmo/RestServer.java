@@ -87,7 +87,8 @@ public class RestServer {
         if ("local".equals(env)) {
 //		staticFiles.externalLocation("/Users/eunjun/Documents/dsqf/AMCProject/public2"); // Static files
         	//staticFiles.externalLocation("C:\\Users\\silve\\git\\safelink\\public2"); // Static files
-			staticFiles.externalLocation("/Users/eom-inguk/documents/safelink/public2"); // Static files YangSeyong
+			staticFiles.externalLocation("C:\\Yang\\99.project\\01.workspace\\safelink\\public2"); // Static files YangSeyong
+			//staticFiles.externalLocation("/Users/eom-inguk/documents/safelink/public2"); // Static files YangSeyong
         }
 
         GlobalCache cache = GlobalCache.getInstance();
@@ -171,6 +172,9 @@ public class RestServer {
 		get("/api/v2.0/test/naru/:spcode/:mobileno/on", (req, res) -> adminNaruSubscribe(req, res));
 		get("/api/v2.0/test/naru/:spcode/:mobileno/off", (req, res) -> adminNaruCancel(req, res));
 		
+		// 연결번호 변경 테스트 엔드포인트
+		get("/api/v2.0/test/naru/:spcode/:mobileno/linkno/:linkno", (req, res) -> adminNaruChangeLinkno(req, res));
+		
 		get("/api/v2.0/test/sms/change/:mobileno", (req, res) -> changeTestmobileno(req, res));
 		get("/api/v2.0/test/sms/:mobileno", (req, res) -> mobiletown(req, res));
 		get("/api/v2.0/test/sms/:mobileno/:rnumber", (req, res) -> mobiletownOtp(req, res));
@@ -239,6 +243,16 @@ public class RestServer {
 		SubscribeNaru sn = new SubscribeNaru();
 		JSONObject retJson = sn.subscribe(s);
 		// 직접 DB에 내용을 기입해야 함
+		return retJson.toJSONString();
+	}
+	
+	private static String adminNaruChangeLinkno(Request req, Response res) {
+		String spcode = req.params(":spcode");
+		String mobileno = req.params(":mobileno");
+		String linkno = req.params(":linkno");
+		Subscribe s = Subscribe.builder().spcode(spcode).mobileno(mobileno).linkno(linkno).build();
+		SubscribeNaru sn = new SubscribeNaru();
+		JSONObject retJson = sn.changeLinkno(s);
 		return retJson.toJSONString();
 	}
 
@@ -497,16 +511,16 @@ public class RestServer {
 
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 			// POST 요청을 보낼 URL 설정
-			HttpPost httpPost = new HttpPost(properties.getProperty("coupon.server"));
+			HttpPost httpPost = new HttpPost("https://atom.donutbook.co.kr/b2ccoupon/b2cservice.aspx");
 
 			String mobileNumber = req.queryParams("mobileNumber");
 			// 전송할 파라미터 설정 (x-www-form-urlencoded 형식)
 			List<NameValuePair> requestParams = new ArrayList<>();
 			requestParams.add(new BasicNameValuePair("ACTION", "CI102_ISSUECPN_TITLE_WITHPAY"));
-			requestParams.add(new BasicNameValuePair("COOPER_ID", properties.getProperty("coupon.cooperid")));
-			requestParams.add(new BasicNameValuePair("COOPER_PW", properties.getProperty("coupon.cooperpw")));
-			requestParams.add(new BasicNameValuePair("SITE_ID", properties.getProperty("coupon.siteid")));
-			requestParams.add(new BasicNameValuePair("NO_REQ", properties.getProperty("coupon.noreq")));
+			requestParams.add(new BasicNameValuePair("COOPER_ID", "SC2498"));
+			requestParams.add(new BasicNameValuePair("COOPER_PW", "srar81!@"));
+			requestParams.add(new BasicNameValuePair("SITE_ID", "10003754"));
+			requestParams.add(new BasicNameValuePair("NO_REQ", "607127"));
 			requestParams.add(new BasicNameValuePair("COOPER_ORDER", mobileNumber+new Date().getTime()));
 			requestParams.add(new BasicNameValuePair("ISSUE_COUNT", "1"));
 			requestParams.add(new BasicNameValuePair("CALL_CTN", properties.getProperty("coupon.callctn")));
