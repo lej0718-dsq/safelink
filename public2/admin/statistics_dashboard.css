@@ -1,0 +1,418 @@
+/* 통계 대시보드 전용 스타일 */
+
+/* 대시보드 헤더 */
+.dashboard-header {
+    border-bottom: 3px solid #007bff;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.last-updated {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* 필터 섹션 */
+.filter-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 통계 카드 스타일 */
+.statistics-cards {
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid #e9ecef;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+}
+
+.stat-icon {
+    font-size: 3rem;
+    margin-right: 20px;
+    opacity: 0.8;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-title {
+    font-size: 1rem;
+    color: #6c757d;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    line-height: 1.2;
+}
+
+.stat-subtitle {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.stat-change {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* 각 카드별 색상 테마 */
+.new-subscribers .stat-icon {
+    color: #28a745;
+}
+.new-subscribers::before {
+    background: linear-gradient(90deg, #28a745, #20c997);
+}
+.new-subscribers .stat-change {
+    color: #28a745;
+}
+
+.monthly-cancellations .stat-icon {
+    color: #dc3545;
+}
+.monthly-cancellations::before {
+    background: linear-gradient(90deg, #dc3545, #e74c3c);
+}
+.monthly-cancellations .stat-change {
+    color: #dc3545;
+}
+
+.total-subscribers .stat-icon {
+    color: #007bff;
+}
+.total-subscribers::before {
+    background: linear-gradient(90deg, #007bff, #0056b3);
+}
+.total-subscribers .stat-change {
+    color: #007bff;
+}
+
+.usage-days .stat-icon {
+    color: #ffc107;
+}
+.usage-days::before {
+    background: linear-gradient(90deg, #ffc107, #f39c12);
+}
+
+.settlement-amount .stat-icon {
+    color: #6f42c1;
+}
+.settlement-amount::before {
+    background: linear-gradient(90deg, #6f42c1, #5a2d91);
+}
+
+/* 5개 카드 레이아웃을 위한 커스텀 그리드 */
+.col-lg-2-4 {
+    flex: 0 0 auto;
+    width: 20%;
+}
+
+@media (max-width: 1199.98px) {
+    .col-lg-2-4 {
+        width: 50%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .col-lg-2-4 {
+        width: 100%;
+    }
+}
+
+/* 정산 섹션 */
+.settlement-section {
+    background: #fff;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid #e9ecef;
+    margin-bottom: 30px;
+}
+
+.section-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.settlement-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.settlement-card:hover {
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+    transform: translateY(-2px);
+}
+
+.settlement-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.settlement-amount {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 2px;
+}
+
+.settlement-unit {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+/* 정산 카드별 색상 */
+.total-revenue .settlement-amount {
+    color: #28a745;
+}
+
+.monthly-revenue .settlement-amount {
+    color: #007bff;
+}
+
+.pending-settlement .settlement-amount {
+    color: #ffc107;
+}
+
+/* 차트 컨테이너 */
+.chart-container {
+    background: #fff;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid #e9ecef;
+    height: 400px;
+}
+
+.chart-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.chart-placeholder {
+    height: 300px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #dee2e6;
+}
+
+.placeholder-content {
+    text-align: center;
+    color: #6c757d;
+}
+
+.placeholder-content i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.placeholder-content p {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+/* 상세 테이블 섹션 */
+.detail-table-section {
+    background: #fff;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid #e9ecef;
+}
+
+.table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background-color: #343a40;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    padding: 15px;
+}
+
+.table td {
+    padding: 12px 15px;
+    vertical-align: middle;
+    border-color: #e9ecef;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f8f9fa;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #e3f2fd;
+}
+
+/* 로딩 스피너 */
+.loading-spinner {
+    padding: 40px;
+    text-align: center;
+}
+
+.loading-spinner p {
+    color: #6c757d;
+    margin: 0;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .statistics-cards .col-md-6,
+    .statistics-cards .col-lg-3 {
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        height: auto;
+        min-height: 150px;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .stat-icon {
+        margin-right: 0;
+        margin-bottom: 15px;
+        font-size: 2.5rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+    }
+
+    .settlement-card {
+        height: auto;
+        min-height: 100px;
+        margin-bottom: 15px;
+    }
+
+    .chart-container {
+        height: 300px;
+        margin-bottom: 20px;
+    }
+
+    .chart-placeholder {
+        height: 200px;
+    }
+
+    .filter-section .d-flex {
+        flex-direction: column;
+        gap: 15px !important;
+    }
+
+    .filter-section .form-select,
+    .filter-section .form-control {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .settlement-section,
+    .detail-table-section {
+        padding: 20px;
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+    }
+
+    .settlement-amount {
+        font-size: 1.5rem;
+    }
+}
+
+/* 애니메이션 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card,
+.settlement-section,
+.chart-container,
+.detail-table-section {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* 기존 admin_styles.css와의 호환성 */
+.main-content {
+    background-color: #f4f6f9;
+    min-height: calc(100vh - 120px);
+}
