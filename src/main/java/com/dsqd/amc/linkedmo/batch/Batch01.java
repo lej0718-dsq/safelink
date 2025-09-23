@@ -88,75 +88,79 @@ public class Batch01 implements Task {
     			total_user = data.size();
     			logger.info("BatchName : [{}/{}] - Work Size : {}", batch_name, env, data.size());
     			for (Subscribe u: data ) {
-    				if ("A".equals(u.getStatus()) ) { // 유효한 사용자 목록
-    					subscribe_user++;
-    					String category = "";
-    					String mobileno = u.getMobileno();
-    					APICall api = new APICall();
+					try {
+						if ("A".equals(u.getStatus()) ) { // 유효한 사용자 목록
+							subscribe_user++;
+							String category = "";
+							String mobileno = u.getMobileno();
+							APICall api = new APICall();
 
-    					//어제 가입자 분류
-    					if (checkToday(u.getCreateDate()) == 0) {
-    						subscribe_yesterday_user++;
-    						logger.info("YESTERDAY DESCRIBE USER : {} | {}", u.getMobileno(), u.getCreateDate() );
-    					}
-    					
-    					// SK 사용자 확인
-    					SubscribeSK skt = new SubscribeSK();
-    					JSONObject responseJSON = skt.prove(u.getMobileno());
-    					if (200 != (int) responseJSON.get("code")) {
-    						//type : T01 - SK콜센터 취소 , T02 - KT콜센터 취소 , T03 - LGU콜센터 취소
-    						category = "T0";
-    						Batchlog blog = Batchlog.builder().batch_txid(batch01.getTxid()).type("T01").comment(u.getSpcode() + ":" + u.getMobileno()).actcode("000").build();
-    						logger.info("[{}] = [{}]CALLCENTER CANCELED : MOBILENO - {}", blog.getType(), u.getSpcode(), u.getMobileno());
-    						blogService.insertBatchlog(blog); // 배치DB에 남김 
-    						service.deleteSubscribeT0(u.getId()); // 삭제처리
-    					}
-    					//String resp = api.ISICS00022(mobileno); 
-    					//해지된 사용자라면 우리쪽도 해지처리함 -> RESULT가 F이면 안되는 것임 
-    					// @TODO
-    					
-    					
-    					// 나루의 사용자 확인
-    					String method = "POST";
-    					String uri = "/api/v1.0/linksafe/getdata";
-    					
-    					SubscribeNaru naru = new SubscribeNaru(); 
-    					responseJSON = naru.getData(u);
-						logger.info("({}) NARU DATA STATUS: [{}][{}]", String.format("%06d", subscribe_user), responseJSON.getAsString("nowstatutsut"), u.getMobileno());
-						
-						if ("T0".equals(category)) {
-    						Batchlog blog = Batchlog.builder().batch_txid(batch01.getTxid()).type("T01").comment("NARU" + ":" + u.getMobileno()).actcode("000").build();
-    						logger.info("[{}] = [{}]-RELAYED CANCEL TO NARU : MOBILENO - {}", "T0", u.getSpcode(), u.getMobileno());
-							naru.cancel(u);
+							//어제 가입자 분류
+							if (checkToday(u.getCreateDate()) == 0) {
+								subscribe_yesterday_user++;
+								logger.info("YESTERDAY DESCRIBE USER : {} | {}", u.getMobileno(), u.getCreateDate() );
+							}
+
+							// SK 사용자 확인
+							SubscribeSK skt = new SubscribeSK();
+							JSONObject responseJSON = skt.prove(u.getMobileno());
+							if (200 != (int) responseJSON.get("code")) {
+								//type : T01 - SK콜센터 취소 , T02 - KT콜센터 취소 , T03 - LGU콜센터 취소
+								category = "T0";
+								Batchlog blog = Batchlog.builder().batch_txid(batch01.getTxid()).type("T01").comment(u.getSpcode() + ":" + u.getMobileno()).actcode("000").build();
+								logger.info("[{}] = [{}]CALLCENTER CANCELED : MOBILENO - {}", blog.getType(), u.getSpcode(), u.getMobileno());
+								blogService.insertBatchlog(blog); // 배치DB에 남김
+								service.deleteSubscribeT0(u.getId()); // 삭제처리
+							}
+							//String resp = api.ISICS00022(mobileno);
+							//해지된 사용자라면 우리쪽도 해지처리함 -> RESULT가 F이면 안되는 것임
+							// @TODO
+
+
+							// 나루의 사용자 확인
+							String method = "POST";
+							String uri = "/api/v1.0/linksafe/getdata";
+
+							SubscribeNaru naru = new SubscribeNaru();
+							responseJSON = naru.getData(u);
+							logger.info("({}) NARU DATA STATUS: [{}][{}]", String.format("%06d", subscribe_user), responseJSON.getAsString("nowstatutsut"), u.getMobileno());
+
+							if ("T0".equals(category)) {
+								Batchlog blog = Batchlog.builder().batch_txid(batch01.getTxid()).type("T01").comment("NARU" + ":" + u.getMobileno()).actcode("000").build();
+								logger.info("[{}] = [{}]-RELAYED CANCEL TO NARU : MOBILENO - {}", "T0", u.getSpcode(), u.getMobileno());
+								naru.cancel(u);
+							}
+
+						} else {
+							// 해지자
+							cancel_user++;
+							//System.out.println(u.getStatus());
+							//어제 해지자 분류 (0)
+							String just = "";
+							if (checkToday(u.getCancelDate()) == -1) {
+
+							} else if (checkToday(u.getCancelDate()) == 0) {
+								just="** YESTERDAY ";
+								cancel_yesterday_user++;
+								// 어제 해지한 사람이 정상적으로 해지되었는지 상태 확인 필요 -> 안되어 있다면 다시 해지
+								SubscribeSK skt = new SubscribeSK();
+								JSONObject responseJSON = skt.prove(u.getMobileno());
+								if (200 == (int) responseJSON.get("code")) { // 서비스가 가입되어 있다면 문제 => 관리자에 알려야 함
+									// actcode : A01 -> 관리자 처리사항
+									//type : U01 - SK 시스템과 싱크가 맞지 않음, 확인 필요
+									Batchlog blog = Batchlog.builder().batch_txid(batch01.getTxid()).type("T01").comment("NOT SYNC:" + u.getSpcode() + ":" + u.getMobileno()).actcode("A01").build();
+									logger.info("[{}] = [{}] SYNC FAULT : MOBILENO - {}", blog.getType(), u.getSpcode(), u.getMobileno());
+									blogService.insertBatchlog(blog); // 배치DB에 남김
+								}
+
+							} if (checkToday(u.getCancelDate()) == 1) {
+								just="TODAY ";
+							}
+							logger.info("{}CANCEL USER : {} [{}] at {}", just, u.getMobileno(), u.getCncode(), u.getCancelDate() );
 						}
-    					
-    				} else {
-    					// 해지자
-    					cancel_user++;
-    					//System.out.println(u.getStatus());
-    					//어제 해지자 분류 (0)
-    					String just = "";
-    					if (checkToday(u.getCancelDate()) == -1) {
-    						
-    					} else if (checkToday(u.getCancelDate()) == 0) {
-    						just="** YESTERDAY ";
-    						cancel_yesterday_user++;
-    						// 어제 해지한 사람이 정상적으로 해지되었는지 상태 확인 필요 -> 안되어 있다면 다시 해지 
-    						SubscribeSK skt = new SubscribeSK();
-        					JSONObject responseJSON = skt.prove(u.getMobileno());
-        					if (200 == (int) responseJSON.get("code")) { // 서비스가 가입되어 있다면 문제 => 관리자에 알려야 함
-        						// actcode : A01 -> 관리자 처리사항
-        						//type : U01 - SK 시스템과 싱크가 맞지 않음, 확인 필요 
-        						Batchlog blog = Batchlog.builder().batch_txid(batch01.getTxid()).type("T01").comment("NOT SYNC:" + u.getSpcode() + ":" + u.getMobileno()).actcode("A01").build();
-        						logger.info("[{}] = [{}] SYNC FAULT : MOBILENO - {}", blog.getType(), u.getSpcode(), u.getMobileno());
-        						blogService.insertBatchlog(blog); // 배치DB에 남김
-        					}
-    						
-    					} if (checkToday(u.getCancelDate()) == 1) {
-    						just="TODAY ";
-    					}
-    					logger.info("{}CANCEL USER : {} [{}] at {}", just, u.getMobileno(), u.getCncode(), u.getCancelDate() );
-    				}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
     				
     			}
     			//return;

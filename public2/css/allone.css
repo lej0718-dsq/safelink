@@ -1062,6 +1062,12 @@ div.button-container a#agreeButton,
     height: 32px;
     background: url(../images/icon_card_qr.png) no-repeat center / contain;
 }
+#service_join_wrap.index_wrap .pass-on-desc .card_wrap .card .card-icon .icon-change {
+    display: block;
+    width: 32px;
+    height: 32px;
+    background: url(../images/icon_card_change.png) no-repeat center / contain;
+}
 #service_join_wrap.index_wrap .pass-on-desc .card_wrap .card .texts {
     flex: 1;
     word-break: keep-all;
