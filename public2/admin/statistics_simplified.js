@@ -47,16 +47,12 @@ $(document).ready(function() {
             // admin 그룹: 모든 제휴사 선택 가능
             partnerSelect.append('<option value="all">전체</option>');
             partnerSelect.append('<option value="allone">올원뱅크</option>');
-            partnerSelect.append('<option value="12">버즈빌</option>');
             partnerSelect.val('all'); // 기본값: 전체
         } else if (userGroup === 'partner') {
             // partner 그룹: username과 동일한 제휴사만 선택 가능
             if (username === 'allone') {
                 partnerSelect.append('<option value="allone">올원뱅크</option>');
                 partnerSelect.val('allone');
-            } else if (username === '12' || username === 'buzzvil') {
-                partnerSelect.append('<option value="12">버즈빌</option>');
-                partnerSelect.val('12');
             } else {
                 // 기타 partner 사용자의 경우 기본적으로 제한
                 console.warn('Unknown partner username:', username);
