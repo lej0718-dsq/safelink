@@ -87,7 +87,7 @@ public class RestServer {
         if ("local".equals(env)) {
 //		staticFiles.externalLocation("/Users/eunjun/Documents/dsqf/AMCProject/public2"); // Static files
         	//staticFiles.externalLocation("C:\\Users\\silve\\git\\safelink\\public2"); // Static files
-			staticFiles.externalLocation("/Users/eom-inguk/documents/safelink/public2"); // Static files YangSeyong
+			staticFiles.externalLocation("/Users/nurier/project/safelink/public2"); // Static files YangSeyong
         }
 
         GlobalCache cache = GlobalCache.getInstance();
@@ -140,13 +140,14 @@ public class RestServer {
                 String tokenClientIP = JwtUtil.getClientIP(decodedJWT);
                 String tokenUsername = JwtUtil.getUsername(decodedJWT);
                 String tokenKorname = JwtUtil.getKorname(decodedJWT);
+                String tokenGroup = JwtUtil.getGroup(decodedJWT);
 
                 if (!clientIP.equals(tokenClientIP)) {
                     halt(401, "Token IP mismatch");
                 }
 
                 // Token is valid, generate new token
-                String newToken = JwtUtil.createToken(clientIP, tokenUsername, tokenKorname);
+                String newToken = JwtUtil.createToken(clientIP, tokenUsername, tokenKorname, tokenGroup);
                 response.header("Authorization", "Bearer " + newToken);
             } catch (JWTVerificationException e) {
                 halt(401, "Token is not valid or IP mismatch");

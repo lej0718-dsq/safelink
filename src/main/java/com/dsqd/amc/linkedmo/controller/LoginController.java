@@ -46,7 +46,7 @@ public class LoginController {
 							logined.setFailcount(0);
 							code = 200;
 							msg = "LOGIN SUCCESS";
-							token = JwtUtil.createToken(logined.getLastloginip(), logined.getUsername(),logined.getKorname() );
+							token = JwtUtil.createToken(logined.getLastloginip(), logined.getUsername(),logined.getKorname(), logined.getGroup());
 							token = "Bearer " + token;
 							logger.info("LOGIN SUCCESS : {}", logined);
 						} else {

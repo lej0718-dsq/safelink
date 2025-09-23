@@ -16,10 +16,11 @@
         <result column="lastlogined" property="lastlogined" />
         <result column="lastloginip" property="lastloginip" />
         <result column="failcount" property="failcount" />
+        <result column="group" property="group" />
     </resultMap>
 
     <select id="login" resultMap="LoginMap">
-        SELECT username, korname FROM managers where username=#{username} and password=#{password}
+        SELECT username, korname, `group` FROM managers where username=#{username} and password=#{password}
     </select>
 
     <select id="write" resultMap="LoginMap">

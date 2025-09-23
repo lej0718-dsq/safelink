@@ -10,12 +10,17 @@ $(document).ready(function () {
 	});
 
 	$("#footerPanel").load("./admin_menu.html #footerPanel");
-	$("#menuPanel").load("./admin_menu.html #menuPanel");
+    if(group === 'admin') {
+        $("#menuPanel").load("./admin_menu.html #menuPanel");
+    } else {
+        $("#menuPanel").load("./admin_menu.html #menuPanelGroup");
+    }
   });
   
 var token = sessionStorage.getItem("token");
 var username = sessionStorage.getItem("username");
 var korname = sessionStorage.getItem("korname");
+var group = sessionStorage.getItem("group");
 console.log(token);
 
 function formatStatus(code) {

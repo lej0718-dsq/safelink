@@ -104,5 +104,231 @@
 			AND DATE(CANCELED_AT) = DATE(NOW())
 	) AS TB
     </select>
+
+    <select id="getMonthlyStatistics" resultType="map">
+        <![CDATA[
+        WITH month_bounds AS (
+            SELECT
+                STR_TO_DATE(CONCAT(#{year}, '-', LPAD(#{month}, 2, '0'), '-01'), '%Y-%m-%d') as current_month_start,
+                LAST_DAY(STR_TO_DATE(CONCAT(#{year}, '-', LPAD(#{month}, 2, '0'), '-01'), '%Y-%m-%d')) as current_month_end,
+                -- 전월 경계 계산
+                CASE
+                    WHEN #{month} = '01' THEN STR_TO_DATE(CONCAT((#{year} - 1), '-12-01'), '%Y-%m-%d')
+                    ELSE STR_TO_DATE(CONCAT(#{year}, '-', LPAD((#{month} - 1), 2, '0'), '-01'), '%Y-%m-%d')
+                END as prev_month_start,
+                CASE
+                    WHEN #{month} = '01' THEN LAST_DAY(STR_TO_DATE(CONCAT((#{year} - 1), '-12-01'), '%Y-%m-%d'))
+                    ELSE LAST_DAY(STR_TO_DATE(CONCAT(#{year}, '-', LPAD((#{month} - 1), 2, '0'), '-01'), '%Y-%m-%d'))
+                END as prev_month_end,
+                ROUND(165.00 / DAY(LAST_DAY(STR_TO_DATE(CONCAT(#{year}, '-', LPAD(#{month}, 2, '0'), '-01'), '%Y-%m-%d'))), 2) as daily_rate
+        ),
+        base_calculations AS (
+            SELECT
+                s.*,
+                mb.*,
+                -- 이번 달 가입 여부 (날짜 부분만 비교)
+                CASE WHEN DATE(s.created_at) >= DATE(mb.current_month_start) AND DATE(s.created_at) <= DATE(mb.current_month_end) THEN 1 ELSE 0 END as is_new_subscriber,
+                -- 이번 달 해지 여부 (날짜 부분만 비교)
+                CASE WHEN DATE(s.canceled_at) >= DATE(mb.current_month_start) AND DATE(s.canceled_at) <= DATE(mb.current_month_end) AND s.canceled_at IS NOT NULL THEN 1 ELSE 0 END as is_monthly_cancellation,
+                -- 전월 가입 여부 (날짜 부분만 비교)
+                CASE WHEN DATE(s.created_at) >= DATE(mb.prev_month_start) AND DATE(s.created_at) <= DATE(mb.prev_month_end) THEN 1 ELSE 0 END as is_prev_new_subscriber,
+                -- 전월 해지 여부 (날짜 부분만 비교)
+                CASE WHEN DATE(s.canceled_at) >= DATE(mb.prev_month_start) AND DATE(s.canceled_at) <= DATE(mb.prev_month_end) AND s.canceled_at IS NOT NULL THEN 1 ELSE 0 END as is_prev_monthly_cancellation,
+                -- 현재 월말 기준 활성 사용자 여부 (날짜 부분만 비교)
+                CASE WHEN DATE(s.created_at) <= DATE(mb.current_month_end) AND (s.canceled_at IS NULL OR DATE(s.canceled_at) > DATE(mb.current_month_end)) THEN 1 ELSE 0 END as is_current_active,
+                -- 전월말 기준 활성 사용자 여부 (날짜 부분만 비교)
+                CASE WHEN DATE(s.created_at) <= DATE(mb.prev_month_end) AND (s.canceled_at IS NULL OR DATE(s.canceled_at) > DATE(mb.prev_month_end)) THEN 1 ELSE 0 END as is_prev_active,
+                -- 사용일수 계산 (날짜 부분만 비교)
+                CASE
+                    WHEN (DATE(s.created_at) >= DATE(mb.current_month_start) AND DATE(s.created_at) <= DATE(mb.current_month_end))
+                         OR (DATE(s.created_at) < DATE(mb.current_month_start) AND (s.canceled_at IS NULL OR DATE(s.canceled_at) > DATE(mb.current_month_start))) THEN
+                        CASE
+                            WHEN s.canceled_at IS NOT NULL THEN
+                                GREATEST(0, DATEDIFF(
+                                    LEAST(DATE(s.canceled_at), DATE_ADD(DATE(mb.current_month_end), INTERVAL 1 DAY)),
+                                    GREATEST(DATE(s.created_at), DATE(mb.current_month_start))
+                                ))
+                            ELSE
+                                GREATEST(0, DATEDIFF(
+                                    LEAST(CURDATE(), DATE(mb.current_month_end)),
+                                    GREATEST(DATE(s.created_at), DATE(mb.current_month_start))
+                                ) + 1)
+                        END
+                    ELSE 0
+                END as usage_days
+            FROM subscribe s
+            CROSS JOIN month_bounds mb
+            WHERE (#{partner} = 'all' OR s.offercode = #{partner})
+              AND (
+                  -- 현재 월 관련 사용자 (날짜 부분만 비교)
+                  (DATE(s.created_at) <= DATE(mb.current_month_end) AND (s.canceled_at IS NULL OR DATE(s.canceled_at) >= DATE(mb.current_month_start)))
+                  OR
+                  -- 전월 관련 사용자 (변화율 계산용, 날짜 부분만 비교)
+                  (DATE(s.created_at) <= DATE(mb.prev_month_end) AND (s.canceled_at IS NULL OR DATE(s.canceled_at) >= DATE(mb.prev_month_start)))
+              )
+        )
+        SELECT
+            SUM(bc.is_new_subscriber) as newSubscribers,
+            SUM(bc.is_monthly_cancellation) as monthlyCancellations,
+            SUM(bc.is_current_active) as totalSubscribers,
+            IFNULL(SUM(CASE WHEN bc.usage_days > 0 THEN bc.usage_days ELSE 0 END), 0) as usageDays,
+            ROUND(SUM(CASE WHEN bc.usage_days > 0 THEN bc.usage_days * bc.daily_rate ELSE 0 END), 0) as settlementAmount,
+            -- 변화율 계산 (0으로 나누기 방지 및 논리적 처리)
+            CASE
+                WHEN SUM(bc.is_prev_new_subscriber) = 0 AND SUM(bc.is_new_subscriber) = 0 THEN 0.0  -- 둘 다 0이면 변화 없음
+                WHEN SUM(bc.is_prev_new_subscriber) = 0 AND SUM(bc.is_new_subscriber) > 0 THEN NULL  -- 0에서 증가는 무한대 (NULL로 표시)
+                WHEN SUM(bc.is_prev_new_subscriber) > 0 THEN
+                    ROUND(((SUM(bc.is_new_subscriber) - SUM(bc.is_prev_new_subscriber)) / SUM(bc.is_prev_new_subscriber)) * 100, 1)
+                ELSE 0.0
+            END as newSubscribersChangeValue,
+            CASE
+                WHEN SUM(bc.is_prev_monthly_cancellation) = 0 AND SUM(bc.is_monthly_cancellation) = 0 THEN 0.0  -- 둘 다 0이면 변화 없음
+                WHEN SUM(bc.is_prev_monthly_cancellation) = 0 AND SUM(bc.is_monthly_cancellation) > 0 THEN NULL  -- 0에서 증가는 무한대
+                WHEN SUM(bc.is_prev_monthly_cancellation) > 0 THEN
+                    ROUND(((SUM(bc.is_monthly_cancellation) - SUM(bc.is_prev_monthly_cancellation)) / SUM(bc.is_prev_monthly_cancellation)) * 100, 1)
+                ELSE 0.0
+            END as monthlyCancellationsChangeValue,
+            CASE
+                WHEN SUM(bc.is_prev_active) = 0 AND SUM(bc.is_current_active) = 0 THEN 0.0  -- 둘 다 0이면 변화 없음
+                WHEN SUM(bc.is_prev_active) = 0 AND SUM(bc.is_current_active) > 0 THEN NULL  -- 0에서 증가는 무한대
+                WHEN SUM(bc.is_prev_active) > 0 THEN
+                    ROUND(((SUM(bc.is_current_active) - SUM(bc.is_prev_active)) / SUM(bc.is_prev_active)) * 100, 1)
+                ELSE 0.0
+            END as totalSubscribersChangeValue
+        FROM base_calculations bc
+        ]]>
+    </select>
+
+    <select id="getDailyStatistics" resultType="map">
+        <![CDATA[
+        WITH RECURSIVE date_series AS (
+            -- 월의 첫 날
+            SELECT STR_TO_DATE(CONCAT(#{year}, '-', LPAD(#{month}, 2, '0'), '-01'), '%Y-%m-%d') as target_date
+            UNION ALL
+            -- 다음 날 추가 (조회일 기준으로 제한)
+            SELECT DATE_ADD(target_date, INTERVAL 1 DAY)
+            FROM date_series
+            WHERE target_date < LEAST(
+                CURDATE(),  -- 현재 날짜
+                LAST_DAY(STR_TO_DATE(CONCAT(#{year}, '-', LPAD(#{month}, 2, '0'), '-01'), '%Y-%m-%d'))  -- 조회 월 마지막 날
+            )
+        ),
+        daily_rate AS (
+            SELECT ROUND(165.00 / DAY(LAST_DAY(STR_TO_DATE(CONCAT(#{year}, '-', LPAD(#{month}, 2, '0'), '-01'), '%Y-%m-%d'))), 2) as rate
+        ),
+        daily_calculations AS (
+            SELECT
+                ds.target_date as date,
+                dr.rate as daily_rate,
+                -- 당일 신규가입자
+                IFNULL(SUM(CASE WHEN DATE(s.created_at) = ds.target_date THEN 1 ELSE 0 END), 0) as dailyNewSubscribers,
+                -- 당일 해지자
+                IFNULL(SUM(CASE WHEN DATE(s.canceled_at) = ds.target_date AND s.canceled_at IS NOT NULL THEN 1 ELSE 0 END), 0) as dailyCancellations,
+                -- 당일 종료 시점 누적가입자 (해지는 다음날부터 반영)
+                IFNULL(SUM(CASE WHEN s.created_at IS NOT NULL AND DATE(s.created_at) <= ds.target_date AND (s.canceled_at IS NULL OR DATE(s.canceled_at) > ds.target_date) THEN 1 ELSE 0 END), 0) as totalSubscribers,
+                -- 당일 사용일수 (월별과 동일한 기준: 가입일부터 해지일 전날까지)
+                IFNULL(SUM(
+                    CASE
+                        -- 데이터가 없는 경우 (LEFT JOIN으로 인한 NULL)
+                        WHEN s.created_at IS NULL THEN 0
+                        -- 가입일 >= 해당 일자: 아직 가입 전이므로 0
+                        WHEN DATE(s.created_at) > ds.target_date THEN 0
+                        -- 해지일 <= 해당 일자: 이미 해지했으므로 0 (해지당일부터 사용 안함)
+                        WHEN s.canceled_at IS NOT NULL AND DATE(s.canceled_at) <= ds.target_date THEN 0
+                        -- 위 조건에 해당하지 않으면 해당 일자에 서비스 사용 중이므로 1
+                        ELSE 1
+                    END
+                ), 0) as dailyUsageDays,
+                -- 당일 정산금액 (당일 사용일수 × 일일단가)
+                ROUND(IFNULL(SUM(
+                    CASE
+                        -- 데이터가 없는 경우 (LEFT JOIN으로 인한 NULL)
+                        WHEN s.created_at IS NULL THEN 0
+                        -- 가입일 >= 해당 일자: 아직 가입 전이므로 0
+                        WHEN DATE(s.created_at) > ds.target_date THEN 0
+                        -- 해지일 <= 해당 일자: 이미 해지했으므로 0 (해지당일부터 사용 안함)
+                        WHEN s.canceled_at IS NOT NULL AND DATE(s.canceled_at) <= ds.target_date THEN 0
+                        -- 위 조건에 해당하지 않으면 해당 일자에 서비스 사용 중이므로 일일단가 적용
+                        ELSE dr.rate
+                    END
+                ), 0), 1) as dailySettlementAmount
+            FROM date_series ds
+            CROSS JOIN daily_rate dr
+            LEFT JOIN subscribe s ON (#{partner} = 'all' OR s.offercode = #{partner})
+                AND (
+                    -- 해당 일자와 관련된 사용자들
+                    s.created_at <= ds.target_date
+                    OR DATE(s.created_at) = ds.target_date
+                    OR DATE(s.canceled_at) = ds.target_date
+                )
+            GROUP BY ds.target_date, dr.rate
+        )
+        SELECT
+            DATE_FORMAT(dc.date, '%Y-%m-%d') as date,
+            dc.dailyNewSubscribers,
+            dc.dailyCancellations,
+            dc.totalSubscribers,
+            dc.dailyUsageDays,
+            dc.dailySettlementAmount
+        FROM daily_calculations dc
+        ORDER BY dc.date
+        ]]>
+    </select>
+
+    <select id="getUserListForExport" resultType="map">
+        <![CDATA[
+        WITH month_bounds AS (
+            SELECT
+                STR_TO_DATE(CONCAT(#{year}, '-', LPAD(#{month}, 2, '0'), '-01'), '%Y-%m-%d') as current_month_start,
+                LAST_DAY(STR_TO_DATE(CONCAT(#{year}, '-', LPAD(#{month}, 2, '0'), '-01'), '%Y-%m-%d')) as current_month_end,
+                ROUND(165.00 / DAY(LAST_DAY(STR_TO_DATE(CONCAT(#{year}, '-', LPAD(#{month}, 2, '0'), '-01'), '%Y-%m-%d'))), 2) as daily_rate
+        ),
+        user_calculations AS (
+            SELECT
+                s.*,
+                mb.*,
+                -- 사용일수 계산
+                CASE
+                    WHEN (DATE(s.created_at) >= DATE(mb.current_month_start) AND DATE(s.created_at) <= DATE(mb.current_month_end))
+                         OR (DATE(s.created_at) < DATE(mb.current_month_start) AND (s.canceled_at IS NULL OR DATE(s.canceled_at) > DATE(mb.current_month_start))) THEN
+                        CASE
+                            WHEN s.canceled_at IS NOT NULL THEN
+                                GREATEST(0, DATEDIFF(
+                                    LEAST(DATE(s.canceled_at), DATE_ADD(DATE(mb.current_month_end), INTERVAL 1 DAY)),
+                                    GREATEST(DATE(s.created_at), DATE(mb.current_month_start))
+                                ))
+                            ELSE
+                                GREATEST(0, DATEDIFF(
+                                    LEAST(CURDATE(), DATE(mb.current_month_end)),
+                                    GREATEST(DATE(s.created_at), DATE(mb.current_month_start))
+                                ) + 1)
+                        END
+                    ELSE 0
+                END as usage_days,
+                ROW_NUMBER() OVER (ORDER BY s.created_at DESC) as row_num
+            FROM subscribe s
+            CROSS JOIN month_bounds mb
+            WHERE (#{partner} = 'all' OR s.offercode = #{partner})
+              AND (
+                  -- 현재 월 관련 사용자
+                  (DATE(s.created_at) <= DATE(mb.current_month_end) AND (s.canceled_at IS NULL OR DATE(s.canceled_at) >= DATE(mb.current_month_start)))
+              )
+        )
+        SELECT
+            uc.row_num as no,
+            uc.spcode,
+            uc.mobileno,
+            uc.status,
+            uc.offercode,
+            DATE_FORMAT(uc.created_at, '%Y-%m-%d') as created_date,
+            CASE
+                WHEN uc.canceled_at IS NOT NULL THEN DATE_FORMAT(uc.canceled_at, '%Y-%m-%d')
+                ELSE NULL
+            END as canceled_date,
+            uc.usage_days
+        FROM user_calculations uc
+        ORDER BY uc.created_at DESC
+        ]]>
+    </select>
 </mapper>
 

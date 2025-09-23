@@ -27,6 +27,7 @@ public class Manager {
 	private Date lastlogined; // 최종로그인시간
 	private String lastloginip; // 최종로그인IP
 	private int failcount;
+    private String group;
 
 	public String toJSONString() {
 		JSONObject jsonObject = new JSONObject();
