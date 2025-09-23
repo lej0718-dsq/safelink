@@ -141,13 +141,14 @@ public class RestServer {
                 String tokenClientIP = JwtUtil.getClientIP(decodedJWT);
                 String tokenUsername = JwtUtil.getUsername(decodedJWT);
                 String tokenKorname = JwtUtil.getKorname(decodedJWT);
+                String tokenGroup = JwtUtil.getGroup(decodedJWT);
 
                 if (!clientIP.equals(tokenClientIP)) {
                     halt(401, "Token IP mismatch");
                 }
 
                 // Token is valid, generate new token
-                String newToken = JwtUtil.createToken(clientIP, tokenUsername, tokenKorname);
+                String newToken = JwtUtil.createToken(clientIP, tokenUsername, tokenKorname, tokenGroup);
                 response.header("Authorization", "Bearer " + newToken);
             } catch (JWTVerificationException e) {
                 halt(401, "Token is not valid or IP mismatch");
@@ -174,7 +175,7 @@ public class RestServer {
 		
 		// 연결번호 변경 테스트 엔드포인트
 		get("/api/v2.0/test/naru/:spcode/:mobileno/linkno/:linkno", (req, res) -> adminNaruChangeLinkno(req, res));
-		
+
 		get("/api/v2.0/test/sms/change/:mobileno", (req, res) -> changeTestmobileno(req, res));
 		get("/api/v2.0/test/sms/:mobileno", (req, res) -> mobiletown(req, res));
 		get("/api/v2.0/test/sms/:mobileno/:rnumber", (req, res) -> mobiletownOtp(req, res));
@@ -245,7 +246,7 @@ public class RestServer {
 		// 직접 DB에 내용을 기입해야 함
 		return retJson.toJSONString();
 	}
-	
+
 	private static String adminNaruChangeLinkno(Request req, Response res) {
 		String spcode = req.params(":spcode");
 		String mobileno = req.params(":mobileno");
@@ -511,16 +512,16 @@ public class RestServer {
 
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 			// POST 요청을 보낼 URL 설정
-			HttpPost httpPost = new HttpPost("https://atom.donutbook.co.kr/b2ccoupon/b2cservice.aspx");
+			HttpPost httpPost = new HttpPost(properties.getProperty("coupon.server"));
 
 			String mobileNumber = req.queryParams("mobileNumber");
 			// 전송할 파라미터 설정 (x-www-form-urlencoded 형식)
 			List<NameValuePair> requestParams = new ArrayList<>();
 			requestParams.add(new BasicNameValuePair("ACTION", "CI102_ISSUECPN_TITLE_WITHPAY"));
-			requestParams.add(new BasicNameValuePair("COOPER_ID", "SC2498"));
-			requestParams.add(new BasicNameValuePair("COOPER_PW", "srar81!@"));
-			requestParams.add(new BasicNameValuePair("SITE_ID", "10003754"));
-			requestParams.add(new BasicNameValuePair("NO_REQ", "607127"));
+			requestParams.add(new BasicNameValuePair("COOPER_ID", properties.getProperty("coupon.cooperid")));
+			requestParams.add(new BasicNameValuePair("COOPER_PW", properties.getProperty("coupon.cooperpw")));
+			requestParams.add(new BasicNameValuePair("SITE_ID", properties.getProperty("coupon.siteid")));
+			requestParams.add(new BasicNameValuePair("NO_REQ", properties.getProperty("coupon.noreq")));
 			requestParams.add(new BasicNameValuePair("COOPER_ORDER", mobileNumber+new Date().getTime()));
 			requestParams.add(new BasicNameValuePair("ISSUE_COUNT", "1"));
 			requestParams.add(new BasicNameValuePair("CALL_CTN", properties.getProperty("coupon.callctn")));

@@ -138,6 +138,33 @@ function cancelDB(spcode, mobileno) {
 	alert('개발중');
 }
 
+function cancelAll(spcode, mobileno) {
+    if (!confirm ( '통합 해지 하시겠습니까?' + "-" + spcode +": "+ mobileno )) return;
+
+    const url = '/api/v1.0/cancel';
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token }, // Authorization 헤더 추가
+        body: JSON.stringify({
+            mobileno: mobileno,
+            spcode: spcode
+        })
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('Response: ' + JSON.stringify(data));})
+
+        .catch(error => {
+            alert('Error: ' + error);
+        });
+
+}
+
 
 $(document).ready(function() {
 
@@ -170,6 +197,7 @@ $(document).ready(function() {
             		sessionStorage.setItem("token", "");
             		sessionStorage.setItem("username", "");
             		sessionStorage.setItem("korname", "");
+            		sessionStorage.setItem("group", "");
             		// 필요에 따라 로그인 페이지로 리디렉션 
             		window.location.href = './login.html'; 
            		} else { 

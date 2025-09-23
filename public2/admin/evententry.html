@@ -164,7 +164,8 @@ $(document).ready(function() {
             		sessionStorage.setItem("token", "");
             		sessionStorage.setItem("username", "");
             		sessionStorage.setItem("korname", "");
-            		// 필요에 따라 로그인 페이지로 리디렉션 
+            		sessionStorage.setItem("group", "");
+            		// 필요에 따라 로그인 페이지로 리디렉션
             		window.location.href = './login.html'; 
            		} else { 
            			console.error('AJAX 요청 실패:', error, thrown);

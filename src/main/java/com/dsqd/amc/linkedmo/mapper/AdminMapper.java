@@ -15,7 +15,11 @@ public interface AdminMapper {
 	
 	List<Map<String, Object>> summaryNet(Map<String, Object> jsonData); 
 
-	Map<String, Object> dashbdToday(); 
+	Map<String, Object> dashbdToday();
 
-	List<Map<String, Object>> summaryOffer(); 
+	List<Map<String, Object>> summaryOffer();
+
+	Map<String, Object> getMonthlyStatistics(Map<String, Object> params);
+    List<Map<String, Object>> getDailyStatistics(Map<String, Object> params);
+    List<Map<String, Object>> getUserListForExport(Map<String, Object> params);
 }

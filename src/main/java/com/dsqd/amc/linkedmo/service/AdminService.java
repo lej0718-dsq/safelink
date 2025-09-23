@@ -96,4 +96,25 @@ public class AdminService {
     		return mapper.pingQuery();
         }
     }
+
+    public Map<String, Object> getMonthlyStatistics(JSONObject params) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            AdminMapper mapper = session.getMapper(AdminMapper.class);
+            return mapper.getMonthlyStatistics(params);
+        }
+    }
+
+    public List<Map<String, Object>> getDailyStatistics(JSONObject params) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            AdminMapper mapper = session.getMapper(AdminMapper.class);
+            return mapper.getDailyStatistics(params);
+        }
+    }
+
+    public List<Map<String, Object>> getUserListForExport(JSONObject params) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            AdminMapper mapper = session.getMapper(AdminMapper.class);
+            return mapper.getUserListForExport(params);
+        }
+    }
 }

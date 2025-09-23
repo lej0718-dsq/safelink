@@ -167,12 +167,17 @@
                         sessionStorage.setItem("token", token);
                         sessionStorage.setItem("username", username);
                         sessionStorage.setItem("korname", getTextFromToken("korname", token));
+                        sessionStorage.setItem("group", getTextFromToken("group", token));
                     } else {
                         console.error("Authorization 헤더에 Bearer 토큰이 없습니다.");
                     }
 
                     // 응답 처리 (예: 리디렉션)
-                    redirectTo("./dashboard.html", sessionStorage.getItem("token"));
+                    if(getTextFromToken("group", authorizationHeader.substring(7)) === 'admin') {
+                        redirectTo("./dashboard.html", sessionStorage.getItem("token"));
+                    } else {
+                        redirectTo("./statistics_dashboard.html", sessionStorage.getItem("token"));
+                    }
                 },
                 error: function(xhr, status, error) {
                     console.error("Error:", error);

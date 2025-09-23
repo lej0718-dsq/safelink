@@ -40,7 +40,7 @@ public class JwtUtil {
 		}
     }
     
-    public static String createToken(String clientIP, String username, String korname) throws Exception {
+    public static String createToken(String clientIP, String username, String korname, String group) throws Exception {
         String encryptedIP = AES256Util.encrypt(clientIP);
         String encryptedUsername = AES256Util.encrypt(username);
         return JWT.create()
@@ -49,6 +49,7 @@ public class JwtUtil {
                 .withClaim("clientIP", encryptedIP)
                 .withClaim("username", encryptedUsername)
                 .withClaim("korname", korname)
+                .withClaim("group", group)
                 .sign(algorithm);
     }
     
@@ -111,6 +112,10 @@ public class JwtUtil {
 
     public static String getKorname(DecodedJWT decodedJWT) throws Exception {
     	return  decodedJWT.getClaim("korname").asString();
+    }
+
+    public static String getGroup(DecodedJWT decodedJWT) throws Exception {
+    	return  decodedJWT.getClaim("group").asString();
     }
     
     // 서버 토큰용 

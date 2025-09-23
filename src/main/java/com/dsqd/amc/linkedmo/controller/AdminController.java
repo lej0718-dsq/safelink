@@ -68,6 +68,13 @@ public class AdminController {
                 	// 당일현황
                 	get("/today", this::adminDashbdToday);
                 });
+
+                path("/admin/statistics", () -> {
+                    // 당일현황
+                    get("/monthly", this::adminStatisticsMonthly);
+                    get("/daily", this::adminStatisticsDaily);
+                    get("/export", this::adminStatisticsExport);
+                });
             });
         });
     }
@@ -199,5 +206,244 @@ public class AdminController {
                      .map(Evententry::toJSONString)
                      .reduce("[", (acc, json) -> acc + json + ",")
                      .replaceAll(",$", "]");  // JSON Array 형식으로 반환
+    }
+
+    private String adminStatisticsMonthly(Request req, Response res) {
+        try {
+            // 요청 파라미터 추출
+            String partner = req.queryParams("partner");
+            String year = req.queryParams("year");
+            String month = req.queryParams("month");
+
+            // 기본값 설정
+            if (partner == null) partner = "all";
+            if (year == null) year = "2025";
+            if (month == null) month = "09";
+
+            // 파라미터 검증
+            if (!isValidYear(year) || !isValidMonth(month)) {
+                res.status(400);
+                return JSONHelper.assembleResponse(400, "Invalid year or month parameter").toJSONString();
+            }
+
+            JSONObject params = new JSONObject();
+            params.put("partner", partner);
+            params.put("year", year);
+            params.put("month", month);
+
+            // 월별 통계 데이터 조회
+            Map<String, Object> monthlyStats = adminService.getMonthlyStatistics(params);
+
+            if (monthlyStats == null) {
+                res.status(404);
+                return JSONHelper.assembleResponse(404, "No data found for the specified period").toJSONString();
+            }
+
+            // 응답 JSON 구성
+            JSONObject response = new JSONObject();
+            response.put("success", true);
+
+            JSONObject data = new JSONObject();
+            data.put("partner", partner);
+            data.put("year", year);
+            data.put("month", month);
+
+            // monthlyStatistics 객체 구성
+            JSONObject monthlyStatistics = new JSONObject();
+            monthlyStatistics.put("newSubscribers", monthlyStats.get("newSubscribers"));
+            monthlyStatistics.put("monthlyCancellations", monthlyStats.get("monthlyCancellations"));
+            monthlyStatistics.put("totalSubscribers", monthlyStats.get("totalSubscribers"));
+            monthlyStatistics.put("usageDays", monthlyStats.get("usageDays"));
+            monthlyStatistics.put("settlementAmount", monthlyStats.get("settlementAmount"));
+
+            // 변화율 정보 추가
+            JSONObject newSubscribersChange = new JSONObject();
+            newSubscribersChange.put("value", monthlyStats.get("newSubscribersChangeValue"));
+            newSubscribersChange.put("period", "전월 대비");
+            monthlyStatistics.put("newSubscribersChange", newSubscribersChange);
+
+            JSONObject monthlyCancellationsChange = new JSONObject();
+            monthlyCancellationsChange.put("value", monthlyStats.get("monthlyCancellationsChangeValue"));
+            monthlyCancellationsChange.put("period", "전월 대비");
+            monthlyStatistics.put("monthlyCancellationsChange", monthlyCancellationsChange);
+
+            JSONObject totalSubscribersChange = new JSONObject();
+            totalSubscribersChange.put("value", monthlyStats.get("totalSubscribersChangeValue"));
+            totalSubscribersChange.put("period", "전월 대비");
+            monthlyStatistics.put("totalSubscribersChange", totalSubscribersChange);
+
+            data.put("monthlyStatistics", monthlyStatistics);
+
+            response.put("data", data);
+
+            // 메타데이터 추가
+            response.put("timestamp", new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new java.util.Date()));
+
+            res.type("application/json");
+            return response.toJSONString();
+
+        } catch (Exception e) {
+            logger.error("Error in adminStatisticsMonthly: {}", e.getMessage(), e);
+            res.status(500);
+            return JSONHelper.assembleResponse(500, "Internal server error: " + e.getMessage()).toJSONString();
+        }
+    }
+
+    private boolean isValidYear(String year) {
+        try {
+            int y = Integer.parseInt(year);
+            return y >= 2020 && y <= 2030;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private boolean isValidMonth(String month) {
+        try {
+            int m = Integer.parseInt(month);
+            return m >= 1 && m <= 12;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private String adminStatisticsDaily(Request req, Response res) {
+        try {
+            // 요청 파라미터 추출
+            String partner = req.queryParams("partner");
+            String year = req.queryParams("year");
+            String month = req.queryParams("month");
+
+            // 기본값 설정
+            if (partner == null) partner = "all";
+            if (year == null) year = "2025";
+            if (month == null) month = "09";
+
+            // 파라미터 검증
+            if (!isValidYear(year) || !isValidMonth(month)) {
+                res.status(400);
+                return JSONHelper.assembleResponse(400, "Invalid year or month parameter").toJSONString();
+            }
+
+            JSONObject params = new JSONObject();
+            params.put("partner", partner);
+            params.put("year", year);
+            params.put("month", month);
+
+            // 일별 상세 통계 데이터 조회
+            List<Map<String, Object>> dailyStats = adminService.getDailyStatistics(params);
+
+            if (dailyStats == null || dailyStats.isEmpty()) {
+                res.status(404);
+                return JSONHelper.assembleResponse(404, "No daily statistics data found for the specified period").toJSONString();
+            }
+
+            // 응답 JSON 구성
+            JSONObject response = new JSONObject();
+            response.put("success", true);
+
+            JSONObject data = new JSONObject();
+            data.put("partner", partner);
+            data.put("year", year);
+            data.put("month", month);
+
+            // dailyDetails 배열 구성
+            JSONArray dailyDetails = new JSONArray();
+            for (Map<String, Object> dailyStat : dailyStats) {
+                JSONObject dailyDetail = new JSONObject();
+                dailyDetail.put("date", dailyStat.get("date"));
+                dailyDetail.put("dailyNewSubscribers", dailyStat.get("dailyNewSubscribers"));
+                dailyDetail.put("dailyCancellations", dailyStat.get("dailyCancellations"));
+                dailyDetail.put("totalSubscribers", dailyStat.get("totalSubscribers"));
+                dailyDetail.put("dailyUsageDays", dailyStat.get("dailyUsageDays"));
+                dailyDetail.put("dailySettlementAmount", dailyStat.get("dailySettlementAmount"));
+                dailyDetails.add(dailyDetail);
+            }
+
+            data.put("dailyDetails", dailyDetails);
+            response.put("data", data);
+
+            // 메타데이터 추가
+            response.put("timestamp", new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new java.util.Date()));
+
+            res.type("application/json");
+            return response.toJSONString();
+
+        } catch (Exception e) {
+            logger.error("Error in adminStatisticsDaily: {}", e.getMessage(), e);
+            res.status(500);
+            return JSONHelper.assembleResponse(500, "Internal server error: " + e.getMessage()).toJSONString();
+        }
+    }
+
+    private String adminStatisticsExport(Request req, Response res) {
+        try {
+            // 요청 파라미터 추출
+            String partner = req.queryParams("partner");
+            String year = req.queryParams("year");
+            String month = req.queryParams("month");
+
+            // 기본값 설정
+            if (partner == null) partner = "all";
+            if (year == null) year = "2025";
+            if (month == null) month = "09";
+
+            // 파라미터 검증
+            if (!isValidYear(year) || !isValidMonth(month)) {
+                res.status(400);
+                return JSONHelper.assembleResponse(400, "Invalid year or month parameter").toJSONString();
+            }
+
+            JSONObject params = new JSONObject();
+            params.put("partner", partner);
+            params.put("year", year);
+            params.put("month", month);
+
+            // 사용자 리스트 데이터 조회
+            List<Map<String, Object>> userList = adminService.getUserListForExport(params);
+
+            if (userList == null || userList.isEmpty()) {
+                res.status(404);
+                return JSONHelper.assembleResponse(404, "No user data found for the specified period").toJSONString();
+            }
+
+            // 응답 JSON 구성
+            JSONObject response = new JSONObject();
+            response.put("success", true);
+
+            JSONObject data = new JSONObject();
+            data.put("partner", partner);
+            data.put("year", year);
+            data.put("month", month);
+
+            // 사용자 리스트 데이터 추가
+            JSONArray userArray = new JSONArray();
+            for (Map<String, Object> user : userList) {
+                JSONObject userObj = new JSONObject();
+                userObj.put("no", user.get("no"));
+                userObj.put("spcode", user.get("spcode"));
+                userObj.put("mobileno", user.get("mobileno"));
+                userObj.put("status", user.get("status"));
+                userObj.put("offercode", user.get("offercode"));
+                userObj.put("created_date", user.get("created_date"));
+                userObj.put("canceled_date", user.get("canceled_date"));
+                userObj.put("usage_days", user.get("usage_days"));
+                userArray.add(userObj);
+            }
+
+            data.put("userList", userArray);
+            response.put("data", data);
+
+            // 메타데이터 추가
+            response.put("timestamp", new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new java.util.Date()));
+
+            res.type("application/json");
+            return response.toJSONString();
+
+        } catch (Exception e) {
+            logger.error("Error in adminStatisticsExport: {}", e.getMessage(), e);
+            res.status(500);
+            return JSONHelper.assembleResponse(500, "Internal server error: " + e.getMessage()).toJSONString();
+        }
     }
 }
