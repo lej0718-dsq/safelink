@@ -404,7 +404,7 @@ $(document).ready(function () {
 										console.log('sessionStorage에 휴대폰 번호 저장:', phoneNumber);
 
 										// 완료 페이지로 리다이렉트
-										window.location.href = "http://dev.linksafe.kr/subscribe_allone_done.html";
+										window.location.href = "https://linksafe.kr/subscribe_allone_done.html";
 										//$('#subscriptionModal').modal('hide');
 									} else if (data.code === 901) {
 										alert('휴대폰약속번호 서비스에 가입이 된 전화번호입니다.[901]');
