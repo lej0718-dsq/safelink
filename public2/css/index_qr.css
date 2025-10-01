@@ -251,3 +251,27 @@
     opacity: 1;
     visibility: visible;
 }
+
+/* 약속번호 설정하기 */
+#wrap .phone_info strong{display:block; font-size:16px; color:#000; font-weight:700; margin-bottom:15px;}
+#wrap .phone_info ul{text-align:center; margin-bottom:10px;}
+#wrap .phone_info ul li{display:inline-block; width:calc(33.3% - 10px); margin-right:10px;}
+#wrap .phone_info ul li:last-child{margin-right:0;}
+#wrap .phone_info ul li button{width:100%; height:35px; line-height:33px; background:#fff; border:1px solid #ddd; border-radius:35px; font-family: 'Pretendard'; cursor: pointer;}
+#wrap .phone_info ul li button.selected{color:#fff; background:#0077ff; border:1px solid #0077ff;}
+#wrap .phone_info ul li button.disable{color:#aaa; background: #eee; border:1px solid #eee;}
+#wrap .phone_info .number input{width:100%; height:35px; border:1px solid #ddd; font-size:14px; color:#555; font-family: 'Pretendard'; border-radius:5px; padding:0 10px; box-sizing: border-box;}
+
+#wrap .phone_info .number2{font-size:0;margin-bottom:10px;}
+#wrap .phone_info .number2 input.phone02{display:inline-block; width:calc(100% - 95px); height:35px; border:1px solid #ddd; font-size:14px; color:#555; font-family: 'Pretendard'; border-radius:5px; padding:0 10px; box-sizing: border-box; margin-right:5px;}
+#wrap .phone_info .number2 input.phone02.temp{display:inline-block; width:100%; height:35px; border:1px solid #ddd; font-size:14px; color:#555; font-family: 'Pretendard'; border-radius:5px; padding:0 10px; box-sizing: border-box; margin-right:5px;}
+#wrap .phone_info .number2 button.btn-success{display:inline-block; font-size:13px; width:90px; height:35px; line-height:35px; background: #0077ff; color: #fff; text-decoration: none; text-shadow: none; border: 0; border-radius: 5px;}
+#wrap .phone_info .number2 button.btn-success02{display:inline-block; font-size:13px; width:90px; height:35px; line-height:35px; background: #0077ff; color: #fff; text-decoration: none; text-shadow: none; border: 0; border-radius: 5px;}
+#wrap .phone_info .number2 button.btn-success.disable_btn{background: #aaa;}
+#wrap .phone_info .number2 button.btn-success02.disable_btn{background: #333;}
+
+#wrap .agree_btn{display:block; width:100%; height:50px; line-height:50px; color:#fff; background:#0077ff; border-radius:50px; text-align:center;}
+
+#changeBtn {
+    border: #FFFFFF;
+}

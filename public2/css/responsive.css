@@ -299,6 +299,31 @@ span.dot_txt01:before{position: absolute; width:4px; height:4px; background:#fff
 #service_join_wrap .agree_wrap02 p.agree_txt span.txt{width:100%; line-height:1.3;}
 
 #service_join_wrap .agree_btn{display:block; width:100%; height:50px; line-height:50px; color:#fff; background:#0077ff; border-radius:50px; text-align:center;}
+
+    /* 서비스 가입하기 */
+    #wrap h3.service_join_tit {font-size:18px; color:#000; font-weight:800; text-align:center; padding-bottom:30px; border-bottom:2px solid #222; margin-bottom:30px;}
+    #wrap .phone_info strong{display:block; font-size:16px; color:#000; font-weight:700; margin-bottom:15px;}
+    #wrap .phone_info ul{text-align:center; margin-bottom:10px;}
+    #wrap .phone_info ul li{display:inline-block; width:calc(33.3% - 10px); margin-right:10px;}
+    #wrap .phone_info ul li:last-child{margin-right:0;}
+    #wrap .phone_info ul li button{width:100%; height:35px; line-height:33px; background:#fff; border:1px solid #ddd; border-radius:35px; font-family: 'Pretendard'; cursor: pointer;}
+    #wrap .phone_info ul li button.selected{color:#fff; background:#0077ff; border:1px solid #0077ff;}
+    #wrap .phone_info .number input{width:100%; height:35px; border:1px solid #ddd; font-size:14px; color:#555; font-family: 'Pretendard'; border-radius:5px; padding:0 10px; box-sizing: border-box;}
+
+    #wrap .agree_wrap{padding:20px 15px; background:#f5f5f5; border-radius:10px; margin:20px 0;}
+    #wrap .agree_wrap p.agree_tit input[type="checkbox"]{display:inline-block; width:12px; height:12px; border:1px solid #ddd; margin-right:10px; vertical-align:top; margin-top: 1px;}
+    #wrap .agree_wrap p.agree_tit{font-size:16px; color:#000; font-weight:700; border-bottom:1px solid #ddd; padding-bottom:10px;}
+    #wrap .agree_wrap p.agree_txt input{width:10px; height:10px; border:1px solid #ddd; margin-right:10px;}
+    #wrap .agree_wrap p.agree_txt{width:100%; font-size:14px; color:#333;}
+    #wrap .agree_wrap p.agree_txt02{width:100%; font-size:13px; color:#333; line-height: 1.5;}
+
+    #wrap .agree_wrap02{padding:20px 15px; background:#f5f5f5; border-radius:10px; margin:20px 0;}
+    #wrap .agree_wrap02 p.agree_txt{position:relative; font-size:0;}
+    #wrap .agree_wrap02 p.agree_txt input[type="checkbox"]{position:absolute; display:block; width:12px; height:12px; border:1px solid #ddd; top:5px; left:0;}
+    #wrap .agree_wrap02 p.agree_txt span{display:block; width:100%; font-size:12px; color:#333; line-height:1; word-break:keep-all; padding-left:30px;}
+    #wrap .agree_wrap02 p.agree_txt span.txt{width:100%; line-height:1.3;}
+
+    #wrap .agree_btn{display:block; width:100%; height:50px; line-height:50px; color:#fff; background:#0077ff; border-radius:50px; text-align:center;}
 }
 @media screen and (max-width:480px){
 #service_join_wrap.link_wrap .banner{position: relative; width:100%; height:70px; background: url(../images/join_banner.jpg) no-repeat; background-size:cover; background-position:80%; border-radius:10px; margin-top:20px;}
@@ -337,5 +362,19 @@ span.dot_txt01:before{position: absolute; width:4px; height:4px; background:#fff
 #service_join_wrap .agree_wrap02 p.agree_txt span.line_txt:last-child{margin-bottom:0;}
 #service_join_wrap .agree_wrap02 p.agree_txt span.dot_txt::before{position:absolute; display:block; width:4px; height:4px; content:""; border-radius: 50%; background-color: #000; top:7px; left:0;}
 #service_join_wrap .agree_wrap02 p.agree_txt span.line_txt::before{position:absolute; display:block; width:5px; height:1px; content:""; border-radius: 50%; background-color: #000; top:8px; left:0;}
+
+    #wrap .phone_info strong{font-size: 14px;}
+    #wrap .phone_info ul li button{font-size:13px;}
+    #wrap .phone_info .number input{font-size:13px;}
+    #wrap .agree_wrap p.agree_tit input[type="checkbox"]{margin-right:10px; }
+    #wrap .agree_wrap p.agree_tit{font-size:14px;}
+    #wrap .agree_wrap p.agree_txt input{margin-right:10px;}
+    #wrap .agree_wrap p.agree_txt{font-size:13px;}
+    #wrap .agree_wrap p.agree_txt02{font-size:12px;}
+    #wrap .agree_wrap02 p.agree_txt span{font-size:12px; word-break:break-all;}
+    #wrap .agree_btn{font-size:14px; width:100%; height:40px; line-height:40px; border-radius:40px;}
+
+    #wrap .phone_info .number2 button.btn-success{font-size:12px;}
+    #wrap .phone_info .number2 button.btn-success02{font-size:12px;}
 
 }

@@ -29,6 +29,10 @@
 </head>
 <body>
     <div id="wrap">
+        <input type="hidden" name="mobileno" id="mobileno" value="" />
+        <input type="hidden" name="spcode" id="spcode" value="" />
+        <input type="hidden" name="checkcode" id="checkcode" value="" />
+        <input type="hidden" name="steps" id="steps" value="" />
         <!-- top으로 가기 버튼 -->
         <div class="goTopBt">
             <span class="material-symbols-outlined">arrow_upward</span>
@@ -79,7 +83,7 @@
                 </ul>
             </div>
             <div class="m_gnb_bg"></div>
-    </header>
+        </header>
 
         <div id="content_wrap">
             <div id="main_visual">
@@ -89,6 +93,9 @@
                     <p>본인의 휴대폰번호를 노출하지 않으면서 <br><b>약속된 연결번호</b>로 연락해보세요.</p>
                     <div style="display: flex;">
                         <a style="margin-right: 10px;" href="javascript:void(0);" onclick="showPopup();">가입하기</a>
+                        <a id="change-btn" href="javascript:void(0);" onclick="changePopup('change');">약속번호 설정하기</a>
+                    </div>
+                    <div style="display: flex;margin-top: 10px;">
                         <a id="copy-btn" style="margin-right: 10px;display: none;width: 65%;" href="javascript:void(0);" onclick="qrPopup('copy');">약속번호 복사하기</a>
                         <a id="qr-btn" style="display: none;width: 50%;" href="javascript:void(0);" onclick="qrPopup('download');">QR 다운로드</a>
                     </div>
@@ -513,6 +520,40 @@
                 </div>
             </div>
         </footer>
+        <div class="overlay" id="changePopup" style="flex-direction: column;">
+            <div class="popup" >
+                <div class="popup-header" style="text-align: center;">약속번호 설정하기</div>
+                <hr class="qr-line">
+                <div style="font-size: 11pt;font-weight: 400;color: #8C8C8C;line-height: normal;margin-bottom: 24px;">
+                    휴대폰약속번호 서비스는 보인의 휴대폰번호를 노출하지 않고 약속된 연결번호로 연락하는 안전한 통화서비스입니다.
+                </div>
+                <div class="phone_info">
+                    <strong>가입 전화번호 입력</strong>
+                    <ul>
+                        <li><button class="service_j_btn" id="SKT">SKT</button></li>
+                        <li><button class="service_j_btn" id="KTF">KT</button></li>
+                        <li><button class="service_j_btn" id="LGT">LGU+</button></li>
+                    </ul>
+
+                    <div class="number number2">
+                        <input type="text" id="phoneNumberCer" class="phone02" placeholder="전화번호를 입력하세요.">
+                        <button type="button" class="btn-success disable_btn" id="sendotp">인증번호요청</button>
+                    </div>
+                    <div class="number number2">
+                        <input type="text" id="otpNumber" class="phone02" placeholder="인증번호 6자리를 입력하세요." maxlength="6">
+                        <button type="button" class="btn-success disable_btn" id="checkotp">확인하기</button>
+                    </div>
+                </div>
+                <!-- 휴대폰 번호 입력 영역 -->
+                <div class="phone_info">
+                    <strong>약속번호 설정하기</strong>
+                    <div class="number number2">
+                        <input type="text" id="changeNumber" placeholder="약속번호 3~8자리를 입력하세요." maxlength="8">
+                    </div>
+                </div>
+                <button id="changeBtn" class="agree_btn" style="background: #aaa">설정하기</button>
+            </div>
+        </div>
     </div>
 </body>
 
@@ -526,9 +567,44 @@
 <script type="text/javascript" src="js/clipboard.min.js"></script>
 
 <script language="javascript">
+    const changePopupOverlay = document.getElementById("changePopup");
+
+    changePopupOverlay.addEventListener('click', function(e) {
+        if (e.target === changePopupOverlay) {
+            changePopupOverlay.style.display = 'none';
+            resetChangePopup();
+        }
+    })
+
+    function changePopup(type) {
+        const changePopup = document.getElementById("changePopup");
+        changePopup.style.display = 'flex';
+    }
+
+    function resetChangePopup() {
+        console.log("resetChangePopup");
+        document.querySelectorAll('.service_j_btn').forEach(el => {
+            el.classList.remove('selected');
+        });
+        $("#spcode").val(null);
+        $("#phoneNumberCer").val(null).removeAttr('readonly').removeAttr('style');
+        $("#sendotp").addClass("disable_btn");
+        $("#otpNumber").val(null);
+        $("#checkotp").addClass("disable_btn");
+        $("#checkcode").val(null);
+        $("#steps").val(null);
+        $("#mobileno").val(null);
+        $("#changeNumber").val(null);
+        $("#changeBtn").css('background', '#aaa');
+
+    }
 $(document).ready(function(){
 	// LoadingWithMask();
     $('#phoneNumber').on('input', function() { this.value = this.value.replace(/[^0-9]/g, ''); });
+
+    $('#phoneNumberCer').on('input', function() { $('#sendotp').removeClass('disable_btn'); });
+    $('#otpNumber').on('input', function() { this.value = this.value.replace(/[^0-9]/g, ''); });
+    $('#changeNumber').on('input', function() { this.value = this.value.replace(/[^0-9]/g, ''); });
 
     function isMobileDevice() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -540,6 +616,238 @@ $(document).ready(function(){
         document.getElementById('qr-btn').style.display='';
 
     }
+
+    // 통신사 선택
+    $('#wrap .service_j_btn').on('click', function(e){
+        console.log("test");
+        e.stopPropagation();
+        e.preventDefault();
+
+        $('#wrap .service_j_btn').removeClass('selected');
+        $(this).addClass('selected');
+
+        $('#spcode').val($(this).attr('id'));
+        console.log($('#spcode').val());
+    });
+
+    // 인증번호 발송요청
+    $('#wrap #sendotp').on('click', function(e){
+        e.stopPropagation();
+        e.preventDefault();
+
+        let classList = $('#sendotp').attr('class');
+        console.log(classList);
+        if (classList == 'btn-success') {
+            // ===================================================
+            var telcoSelected = $('#spcode').val().length > 0;
+            if (!telcoSelected) {
+                alert('통신사를 선택해주세요.');
+                return;
+            }
+
+            var phoneNumber = $.trim($('#phoneNumberCer').val());
+            var phoneValid1 = /^010/.test(phoneNumber);
+            var phoneValid2 = /^010[1-9]/.test(phoneNumber);
+            var phoneValid3 = /^010\d{8}/.test(phoneNumber);
+            if (!phoneValid1) {
+                alert('전화번호는 010으로 시작해야 합니다.');
+                $('#phoneNumberCer').focus();
+                return;
+            }
+            if (!phoneValid2) {
+                //$('#phoneNumberFeedback').show();
+                alert('전화번호는 숫자로 입력하여 주세요.');
+                $('#phoneNumberCer').focus();
+                return;
+            }
+            if (!phoneValid3) {
+                alert('전화번호를 다시 한번 확인해 주세요.');
+                $('#phoneNumberCer').focus();
+                return;
+            }
+
+            var formData = {
+                spcode: $('#spcode').val(),
+                mobileno: phoneNumber,
+                offercode: $('#offercode').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/v1.0/subscribe/mobiletown/sendsms',
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                caches: false,
+                beforeSend: function () {
+                    //LoadingWithMask(); // 요청 전 로딩 표시
+                },
+                success: function (response) {
+                    //LoadingWithMaskOff();
+                    var data = JSON.parse(response);
+                    if (data.code === 200) {
+                        alert('인증번호가 발송되었으니, 3분안에 인증번호를 입력하여 주세요.');
+                        $('#steps').val("SENDOTP");
+                        $('#phoneNumberCer').prop('readonly', true);
+                        $('#phoneNumberCer').css('background-color', '#f0f7fa');
+                        $('#sendotp').addClass('disable_btn');
+                        $('#checkotp').removeClass('disable_btn');
+                    } else {
+                        if (data.code === 901) {
+                            alert('휴대폰약속번호 서비스에 가입이 된 전화번호입니다.[901]');
+                        } else if (data.code === 912) {
+                            alert('통신사에 가입되지 않은 전화번호입니다.[912]');
+                        } else if (data.code === 923) {
+                            alert('휴대폰약속번호 서비스에 가입이 불가한 전화번호입니다.[923]');
+                        } else if (data.code === 3003) {
+                            alert('조금전에 인증번호를 요청하셨네요. 잠시 후에 다시 시도해주세요.[3003]');
+                            $('#checkotp').val('');
+                            $('#checkotp').addClass('disable_btn');
+                        } else {
+                            alert(data.msg);
+                        }
+                        $('#sendotp').removeClass('disable_btn');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    //LoadingWithMaskOff(); // 에러 발생 시 로딩 해제
+                    alert('인증번호 발송이 원활하지 않아요. 잠시후 다시 해주세요.[9F5]');
+                    $('#sendotp').removeClass('disable_btn');
+                },
+                complete: function () {
+                    //hideLoading();
+                    //LoadingWithMaskOff();
+                }
+            });
+        } else {
+            //alert('전화번호를 먼저 입력하세요.');
+            //$('#phoneNumber').focus();
+        }
+    });
+
+    // 인증번호 검증요청
+    $('#wrap #checkotp').on('click', function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        let classList = $('#checkotp').attr('class');
+        console.log(classList);
+        if (classList == 'btn-success') {
+            // ===================================================
+            var phoneNumber = $.trim($('#phoneNumberCer').val());
+            var otpNumber = $.trim($('#otpNumber').val());
+
+            var formData = {
+                spcode: $('#spcode').val(),
+                mobileno: phoneNumber,
+                offercode: $('#offercode').val(),
+                rnumber: otpNumber
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/v1.0/subscribe/mobiletown/checkotp',
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                caches: false,
+                beforeSend: function () {
+                    //LoadingWithMask(); // 요청 전 로딩 표시
+                },
+                success: function (response) {
+                    //LoadingWithMaskOff();
+                    var data = JSON.parse(response);
+                    if (data.code === 200) {
+                        alert('인증번호 검증이 되었어요. 약속번호를 설정해 주세요.');
+                        $('#steps').val("CONFIRMOTP");
+                        $('#checkotp').addClass("disable_btn");
+                        $('#checkcode').val(data.checkcode);
+                        $('#changeBtn').css('background','');
+                    } else {
+                        if (data.code === 901) {
+                            alert('휴대폰약속번호 서비스에 가입이 된 전화번호입니다.[901]');
+                        } else if (data.code === 912) {
+                            alert('통신사에 가입되지 않은 전화번호입니다.[912]');
+                        } else if (data.code === 923) {
+                            alert('휴대폰약속번호 서비스에 가입이 불가한 전화번호입니다.[923]');
+                        } else if (data.code >= 3102 && data.code <= 3106) {
+                            alert(data.msg);
+                            $('#phoneNumberCer').prop('readonly', false);
+                            $('#phoneNumberCer').css('background-color', '#FFFFFF');
+
+                            $('#checkotp').addClass("disable_btn");
+                            $('#sendotp').removeClass('disable_btn');
+                            $('#otpNumber').val('');
+
+                        } else {
+                            alert(data.msg);
+                        }
+                        $('#checkotp').val('');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    LoadingWithMaskOff(); // 에러 발생 시 로딩 해제
+                    alert('인증번호 검증이 원활하지 않아요. 잠시후 다시 해주세요.[9F5]');
+                },
+                complete: function () {
+                    //hideLoading();
+                    //LoadingWithMaskOff();
+                }
+            });
+            // ===================================================
+        }
+
+    });
+
+    //약속번호 설정하기
+    $('#wrap #changeBtn').on('click', function(e){
+
+        if('CONFIRMOTP' === $('#steps').val()) {
+            if($("#changeNumber").val() === null || $("#changeNumber").val() === '') {
+                alert("변경할 약속번호를 입력하시기 바랍니다.");
+                return;
+            }
+
+            var formData = {
+                spcode: $('#spcode').val(),
+                mobileno: $('#phoneNumberCer').val(),
+                linkno: $('#changeNumber').val()
+            };
+            $.ajax({
+                type: 'POST',
+                url: '/api/v1.0/changelinkno',
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                caches: false,
+                beforeSend: function () {
+                    //LoadingWithMask(); // 요청 전 로딩 표시
+                },
+                success: function (response) {
+                    //LoadingWithMaskOff();
+                    console.log(response);
+                    var data = response;
+                    if (data.code === 200) {
+                        alert('약속번호가 설정되었습니다.');
+                        resetChangePopup();
+                        $('#changePopup').hide();
+                    } else {
+                        if (data.code === 998) {
+                            alert('약속 번호 체계 오류입니다.[998]');
+                        } else if (data.code === 912) {
+                            alert('서비스에 가입되지 않은 전화번호입니다.[912]');
+                        } else if (data.code === 999) {
+                            alert('이미 사용중인 연결 번호 입니다.[999]');
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    LoadingWithMaskOff(); // 에러 발생 시 로딩 해제
+                    alert('인증번호 검증이 원활하지 않아요. 잠시후 다시 해주세요.[9F5]');
+                },
+                complete: function () {
+                    //hideLoading();
+                    //LoadingWithMaskOff();
+                }
+            });
+        }
+    });
 });
 
 const clipboard = new ClipboardJS('#copyTextBtn');
@@ -606,7 +914,7 @@ function LoadingWithMaskOff() {
 }
 
 // 설정된 날짜 이후에는 팝업을 표시하지 않도록 하는 기능
-const popupEndDate = new Date("2025-09-30T23:59:59");
+const popupEndDate = new Date("2025-10-31T23:59:59");
 
 const popup = document.getElementById("popup");
 const closeBtns = document.querySelectorAll(".close-popup");
