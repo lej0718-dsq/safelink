@@ -52,7 +52,7 @@
         right: 11%;
     }
     .agree_btn {
-        background: #BE3850 !important;
+        background: #8e38bf !important;
         font-size: 17px !important;
         font-weight: 600 !important;
         border-radius: 10px !important;
@@ -104,19 +104,17 @@
     <div id="service_join_wrap">
         <h1 class="hide">빌레터 휴대폰약속번호</h1>
         <div class="inner02">
-            <img src="images/event07/7_01.png" alt="빌레터 이벤트">
+            <img src="images/event08/8_01.jpg" alt="빌레터 이벤트">
         </div>
         <hr class="lines style03">
         <div class="inner02">
             <!--h3 class="service_join_tit">서비스 가입하기</h3-->
             <form name="" id="subscriptionForm" style="padding: 10px">
                 <input type="hidden" name="mobileno" id="mobileno" value="" />
-                <input type="hidden" name="spcode" id="spcode" value="" />
-                <input type="hidden" name="offercode" id="offercode" value="27" />
+                <input type="hidden" name="spcode" id="spcode" value="SKT" />
+                <input type="hidden" name="offercode" id="offercode" value="28" />
                 <input type="hidden" name="steps" id="steps" value="" />
                 <input type="hidden" name="checkcode" id="checkcode" value="" />
-                <input type="hidden" name="payGbn" id="payGbn" value="phone" />
-
 
                 <!--div class="agree_wrap">
                     <p class="agree_txt02">
@@ -126,18 +124,13 @@
 
                 <div class="phone_info">
                     <strong>가입 전화번호 입력</strong>
-                    <ul>
-                        <li><button class="service_j_btn" id="SKT" >SKT</button></li>
-                        <li><button class="service_j_btn" id="KTF" >KT</button></li>
-                        <li><button class="service_j_btn" id="LGT" >LGU+</button></li>
-                    </ul>
                     <div class="number number2">
                         <input type="text" id="phoneNumber" class="phone02" placeholder="전화번호를 입력하세요.">
-                        <button type="button" class="btn-success disable_btn" id="sendotp" >인증번호요청</button>
+                        <button type="button" class="btn-success disable_btn" id="sendotp">인증번호요청</button>
                     </div>
                     <div class="number number2">
                         <input type="text" id="otpNumber" class="phone02" placeholder="인증번호 6자리를 입력하세요." maxlength="6">
-                        <button type="button" class="btn-success disable_btn" id="checkotp"  >확인하기</button>
+                        <button type="button" class="btn-success disable_btn" id="checkotp">확인하기</button>
                     </div>
                 </div>
 
@@ -1089,44 +1082,23 @@
         </div>
         <div class="inner02">
             <div style="padding: 0 18px 0 18px;">
-                <a href="#" class="agree_btn" >서비스 가입</a>
+                <a href="#" class="agree_btn">서비스 가입</a>
                 <div style="text-align: center;padding: 20px 10px 20px 10px;">
                     <p class="agree_txt02" style="font-size: 12px;font-weight: 400;color: #8f949e;line-height: normal;">
-                        휴대폰약속번호 서비스는 통신요금에 <span style="font-size: 12px; color: #BE3850; font-weight: 500;">매월 1,650원(VAT 포함)</span>이 청구됩니다.
+                        빌레터 휴대폰약속번호 서비스는 SKT빌레터 앱 모아보기 메뉴에서<br>
+                        이용 가능합니다. 통신요금에 <span style="font-size: 12px; color: #8e38bf; font-weight: 500;">매월 1,650원(VAT 포함)</span>이 청구됩니다.
                     </p>
                 </div>
-                <form name="payForm" accept-charset="euc-kr">
-                    <input type="hidden" name="CASH_GB" value="MC">
-                    <input type="hidden" name="MC_SVCID" value="241108151152">
-                    <input type="hidden" name="PAY_MODE" value="10">
-                    <input type="hidden" name="Prdtprice" value="1650">
-                    <input type="hidden" name="Okurl" value="https://linksafe.kr/api/v1.0/mobilians/paycomplete">
-                    <input type="hidden" name="Notiurl" value="https://linksafe.kr/api/v1.0/mobilians/savephone">
-                    <input type="hidden" name="Prdtnm" value="휴대폰약속번호 서비스">
-                    <input type="hidden" name="Siteurl" value="linksafe.kr">
-                    <input type="hidden" name="Tradeid" value="">
-                    <input type="hidden" name="LOGO_YN" value="N">
-                    <input type="hidden" name="CALL_TYPE" value="SELF">
-                    <input type="hidden" name="MC_No" id="MC_No" value="">
-                    <input type="hidden" name="MC_DEFAULTCOMMID" id="MC_DEFAULTCOMMID" value="KTF">
-                    <input type="hidden" name="MC_FIXCOMMID" id="MC_FIXCOMMID" value="KTF">
-                    <input type="hidden" name="MC_AUTOPAY" value="Y">
-                    <input type="hidden" name="MC_FIXNO" value="Y">
-                    <input type="hidden" name="MSTR" value="">
-                </form>
             </div>
         </div>
         <!--hr class="lines style03"-->
         <div class="inner02">
-            <img style="background: #eeeeee;" src="images/event01/3_02_all.png" alt="휴대폰약속번호 서비스 설명">
+            <img style="background: #eeeeee;" src="images/event01/3_02.png" alt="휴대폰약속번호 서비스 설명">
         </div>
     </div>
 </body>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script type="text/javascript" src="js/popup_subscribe_pg.js?20241120"></script>
-<script type="text/javascript" src="js/event_null.js?20241120"></script>
-<script src="https://mup.mobilians.co.kr/js/ext/ext_inc_comm.js"></script>
-
+<script type="text/javascript" src="js/popup_subscribe.js?20241120"></script>
 <script language="javascript">
     function setEventEntry(mobileno) {
         alert("가입이 완료되었습니다.");
@@ -1160,6 +1132,7 @@
             };
         };
     }
+
     // 원하는 Modal 수만큼 Modal 함수를 호출해서 funcs 함수에 정의합니다.
     for (var i = 0; i < btns.length; i++) {
         funcs[i] = Modal(i);
@@ -1179,7 +1152,6 @@
 </script>
 
 <script>
-
     // Modal을 가져옵니다.
     var modals = document.getElementsByClassName("modal");
     // Modal을 띄우는 클래스 이름을 가져옵니다.
@@ -1187,10 +1159,7 @@
     // Modal을 닫는 close 클래스를 가져옵니다.
     var spanes = document.getElementsByClassName("close");
     var funcs = [];
-    function payRequest(){
-		    //아래와 같이 ext_inc_comm.js에 선언되어 있는 함수를 호출
-		    MCASH_PAYMENT(document.payForm);
-	      }
+
     // Modal을 띄우고 닫는 클릭 이벤트를 정의한 함수
     function Modal(num) {
         return function() {
@@ -1222,11 +1191,9 @@
         if (event.target.className == "modal") {
             event.target.style.display = "none";
         }
-
-
     };
 </script>
 <style>
-    #service_join_wrap .phone_info .number2 button.btn-success{display:inline-block; font-size:13px; width:90px; height:35px; line-height:35px; background: #BE3850; color: #fff; text-decoration: none; text-shadow: none; border: 0; border-radius: 6px;}
+    #service_join_wrap .phone_info .number2 button.btn-success{display:inline-block; font-size:13px; width:90px; height:35px; line-height:35px; background: #8e38bf; color: #fff; text-decoration: none; text-shadow: none; border: 0; border-radius: 6px;}
 </style>
 </html>
