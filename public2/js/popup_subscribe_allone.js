@@ -339,7 +339,7 @@ $(document).ready(function () {
 					// true/false 값 확인
 					if (data.result === true) {
 						// true일 때 알림창 표시
-						shouldProceed = confirm('최초가입자가 아니어서 메가커피쿠폰 대상이 아닙니다. CU쿠폰 이벤트는 참여가능합니다. 그래도 가입하시겠습니까?');
+						shouldProceed = confirm('최초가입자가 아니어서 커피쿠폰 대상이 아닙니다. CU쿠폰 이벤트는 참여가능합니다. 그래도 가입하시겠습니까?');
 					}
 					if (shouldProceed) {
 						// PG결제 분기 처리 2025.02.10 양세용
