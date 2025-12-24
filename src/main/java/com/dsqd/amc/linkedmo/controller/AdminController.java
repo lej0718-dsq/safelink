@@ -2,7 +2,8 @@ package com.dsqd.amc.linkedmo.controller;
 
 import static spark.Spark.*;
 
-import java.security.Provider.Service;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dsqd.amc.linkedmo.model.Batch;
-import com.dsqd.amc.linkedmo.model.Board;
+import com.dsqd.amc.linkedmo.model.Blocknumber;
 import com.dsqd.amc.linkedmo.model.Evententry;
 import com.dsqd.amc.linkedmo.model.Subscribe;
 import com.dsqd.amc.linkedmo.service.AdminService;
@@ -74,6 +75,13 @@ public class AdminController {
                     get("/monthly", this::adminStatisticsMonthly);
                     get("/daily", this::adminStatisticsDaily);
                     get("/export", this::adminStatisticsExport);
+                });
+
+                path("/admin/blocknumbers", () -> {
+                    // 차단 고객 관리
+                    get("", this::getBlocknumbers);
+                    post("", this::insertBlocknumber);
+                    put("/:id", this::cancelBlocknumber);
                 });
             });
         });
@@ -371,6 +379,126 @@ public class AdminController {
 
         } catch (Exception e) {
             logger.error("Error in adminStatisticsDaily: {}", e.getMessage(), e);
+            res.status(500);
+            return JSONHelper.assembleResponse(500, "Internal server error: " + e.getMessage()).toJSONString();
+        }
+    }
+
+    // 차단 고객 목록 조회
+    private String getBlocknumbers(Request req, Response res) {
+        try {
+            String mobileno = req.queryParams("mobileno");
+            String spcode = req.queryParams("spcode");
+            String status = req.queryParams("status");
+
+            List<Blocknumber> list;
+
+            // 검색 조건이 있는 경우
+            if ((mobileno != null && !mobileno.isEmpty()) ||
+                (spcode != null && !spcode.isEmpty()) ||
+                (status != null && !status.isEmpty())) {
+
+                Map<String, Object> params = new HashMap<>();
+                params.put("mobileno", mobileno);
+                params.put("spcode", spcode);
+                params.put("status", status);
+                list = adminService.searchBlocknumbers(params);
+            } else {
+                list = adminService.getAllBlocknumbers();
+            }
+
+            JSONArray jsonArray = new JSONArray();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            for (Blocknumber item : list) {
+                JSONObject obj = new JSONObject();
+                obj.put("id", item.getId());
+                obj.put("spcode", item.getSpcode());
+                obj.put("status", item.getStatus());
+                obj.put("mobileno", item.getMobileno());
+                obj.put("createat", item.getCreateat() != null ? sdf.format(item.getCreateat()) : null);
+                obj.put("canceledat", item.getCanceledat() != null ? sdf.format(item.getCanceledat()) : null);
+                obj.put("usernameofoper", item.getUsernameofoper());
+                obj.put("remark", item.getRemark());
+                jsonArray.add(obj);
+            }
+
+            res.type("application/json");
+            return jsonArray.toJSONString();
+
+        } catch (Exception e) {
+            logger.error("Error in getBlocknumbers: {}", e.getMessage(), e);
+            res.status(500);
+            return JSONHelper.assembleResponse(500, "Internal server error: " + e.getMessage()).toJSONString();
+        }
+    }
+
+    // 차단 고객 등록
+    private String insertBlocknumber(Request req, Response res) {
+        try {
+            JSONObject jsonObject = (JSONObject) JSONValue.parse(req.body());
+
+            String mobileno = jsonObject.getAsString("mobileno");
+            String spcode = jsonObject.getAsString("spcode");
+            String remark = jsonObject.getAsString("remark");
+
+            if (mobileno == null || mobileno.isEmpty()) {
+                res.status(400);
+                return JSONHelper.assembleResponse(400, "전화번호는 필수 입력값입니다.").toJSONString();
+            }
+
+            // 조작자 정보 (JWT에서 추출하거나 기본값 사용)
+            String username = req.attribute("username");
+            if (username == null) {
+                username = "admin";
+            }
+
+            Blocknumber blocknumber = Blocknumber.builder()
+                    .mobileno(mobileno)
+                    .spcode(spcode != null ? spcode : "ALL")
+                    .usernameofoper(username)
+                    .remark(remark)
+                    .build();
+
+            adminService.insertBlocknumber(blocknumber);
+
+            res.type("application/json");
+            return JSONHelper.assembleResponse(200, "차단 고객이 등록되었습니다.").toJSONString();
+
+        } catch (Exception e) {
+            logger.error("Error in insertBlocknumber: {}", e.getMessage(), e);
+            res.status(500);
+            return JSONHelper.assembleResponse(500, "Internal server error: " + e.getMessage()).toJSONString();
+        }
+    }
+
+    // 차단 해제
+    private String cancelBlocknumber(Request req, Response res) {
+        try {
+            int id = Integer.parseInt(req.params(":id"));
+
+            // 조작자 정보
+            String username = req.attribute("username");
+            if (username == null) {
+                username = "admin";
+            }
+
+            Blocknumber blocknumber = Blocknumber.builder()
+                    .id(id)
+                    .usernameofoper(username)
+                    .remark("관리자에 의해 차단 해제")
+                    .build();
+
+            adminService.cancelBlocknumber(blocknumber);
+
+            res.type("application/json");
+            return JSONHelper.assembleResponse(200, "차단이 해제되었습니다.").toJSONString();
+
+        } catch (NumberFormatException e) {
+            res.status(400);
+            return JSONHelper.assembleResponse(400, "Invalid ID format").toJSONString();
+        } catch (Exception e) {
+            logger.error("Error in cancelBlocknumber: {}", e.getMessage(), e);
             res.status(500);
             return JSONHelper.assembleResponse(500, "Internal server error: " + e.getMessage()).toJSONString();
         }

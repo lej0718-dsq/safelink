@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="admin_styles.css">
+    <style>
+        .dataTables_wrapper .dt-buttons { float: left; margin-right: 1em; }
+        .dataTables_length { float: left; margin-right: 1em; }
+        .dataTables_filter { float: left; }
+        .dataTables_wrapper .dataTables_filter input { width: auto; }
+        .filter-section { margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px; }
+        .filter-section .form-control, .filter-section .form-select { display: inline-block; width: auto; margin-right: 10px; }
+        .status-A { color: #dc3545; font-weight: bold; }
+        .status-C { color: #6c757d; }
+    </style>
+    <title>차단 고객 관리</title>
+</head>
+
+<body>
+<!--  Header Panel -->
+<section>
+<div id="headerPanel"></div>
+</section>
+
+<section>
+    <div class="container-fluid">
+        <div class="row">
+            <!--  Left Menu Panel -->
+            <div id="menuPanel" class="container"></div>
+
+            <div class="col-md-* main-content">
+                <h1 class="mt-2">차단 고객 관리</h1>
+                <br/>
+
+                <!-- 검색 필터 -->
+                <div class="filter-section">
+                    <label>전화번호:</label>
+                    <input type="text" id="searchMobileno" class="form-control" placeholder="전화번호 입력">
+                    <label>통신사:</label>
+                    <select id="searchSpcode" class="form-select">
+                        <option value="">전체</option>
+                        <option value="SKT">SKT</option>
+                        <option value="KTF">KT</option>
+                        <option value="LGU">LGU</option>
+                    </select>
+                    <label>상태:</label>
+                    <select id="searchStatus" class="form-select">
+                        <option value="">전체</option>
+                        <option value="A">차단중</option>
+                        <option value="C">해제됨</option>
+                    </select>
+                    <button id="btnSearch" class="btn btn-primary">검색</button>
+                    <button id="btnReset" class="btn btn-secondary">초기화</button>
+                    <button id="btnAddNew" class="btn btn-success" style="float:right;">신규 등록</button>
+                </div>
+
+                <table id="blocknumbersTable" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>통신사</th>
+                            <th>전화번호</th>
+                            <th>상태</th>
+                            <th>등록일시</th>
+                            <th>해제일시</th>
+                            <th>조작자</th>
+                            <th>비고</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!--  Footer Panel -->
+<section>
+<div id="footerPanel"></div>
+</section>
+
+<!-- 신규 등록 모달 -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">차단 고객 등록</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addForm">
+                    <div class="mb-3">
+                        <label for="inputMobileno" class="form-label">전화번호 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="inputMobileno" placeholder="01012345678" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputSpcode" class="form-label">통신사 <span class="text-danger">*</span></label>
+                        <select class="form-select" id="inputSpcode" required>
+                            <option value="SKT">SKT</option>
+                            <option value="KTF">KT</option>
+                            <option value="LGU">LGU</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputRemark" class="form-label">비고</label>
+                        <textarea class="form-control" id="inputRemark" rows="3" maxlength="1000" placeholder="차단 사유 등 (최대 1000자)"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" id="btnSave">등록</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Bundle with Popper and jQuery -->
+<script src="//cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/admin.js"></script>
+<!-- DataTables JS -->
+<script src="//cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<!-- DataTables Buttons JS -->
+<script src="//cdn.datatables.net/buttons/2.1.1/js/dataTables.buttons.min.js"></script>
+<!-- JSZip for Excel export -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<!-- Buttons HTML5 export JS -->
+<script src="//cdn.datatables.net/buttons/2.1.1/js/buttons.html5.min.js"></script>
+
+<script>
+var table;
+var addModal;
+
+function formatBlockStatus(status) {
+    if (status === 'A') {
+        return '<span class="status-A">차단중</span>';
+    } else if (status === 'C') {
+        return '<span class="status-C">해제됨</span>';
+    }
+    return status;
+}
+
+function formatDateTime(dateString) {
+    if (!dateString || dateString === "") return "-";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+function cancelBlock(id, mobileno) {
+    if (!confirm('차단을 해제하시겠습니까?\n전화번호: ' + mobileno)) return;
+
+    fetch('/api/v1.0/admin/blocknumbers/' + id, {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: 'C' })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert('차단이 해제되었습니다.');
+        table.ajax.reload();
+    })
+    .catch(error => {
+        alert('오류가 발생했습니다: ' + error);
+    });
+}
+
+function loadData() {
+    var params = [];
+    var mobileno = $('#searchMobileno').val();
+    var spcode = $('#searchSpcode').val();
+    var status = $('#searchStatus').val();
+
+    if (mobileno) params.push('mobileno=' + encodeURIComponent(mobileno));
+    if (spcode) params.push('spcode=' + encodeURIComponent(spcode));
+    if (status) params.push('status=' + encodeURIComponent(status));
+
+    var url = '/api/v1.0/admin/blocknumbers';
+    if (params.length > 0) {
+        url += '?' + params.join('&');
+    }
+
+    table.ajax.url(url).load();
+}
+
+$(document).ready(function() {
+    addModal = new bootstrap.Modal(document.getElementById('addModal'));
+
+    table = $('#blocknumbersTable').DataTable({
+        "processing": true,
+        "serverSide": false,
+        "ajax": {
+            "url": "/api/v1.0/admin/blocknumbers",
+            "headers": {
+                'Authorization': 'Bearer ' + token
+            },
+            "type": "GET",
+            "dataSrc": function (json) {
+                var data = json.data || json;
+                let formattedData = data.map(item => {
+                    return {
+                        ...item,
+                        statusDisplay: formatBlockStatus(item.status),
+                        createatDisplay: formatDateTime(item.createat),
+                        canceledatDisplay: formatDateTime(item.canceledat),
+                        remarkShort: item.remark ? (item.remark.length > 20 ? item.remark.substring(0, 20) + '...' : item.remark) : '-',
+                        buttons: item.status === 'A' ?
+                            '<button class="btn btn-sm btn-warning" onclick="cancelBlock(' + item.id + ', \'' + item.mobileno + '\')">차단해제</button>' :
+                            '<span class="text-muted">-</span>'
+                    };
+                });
+                return formattedData;
+            },
+            "error": function (xhr, error, thrown) {
+                if (xhr.status === 401) {
+                    alert('인증이 만료되었습니다. 다시 로그인 해주세요.');
+                    sessionStorage.setItem("token", "");
+                    sessionStorage.setItem("username", "");
+                    sessionStorage.setItem("korname", "");
+                    sessionStorage.setItem("group", "");
+                    window.location.href = './login.html';
+                } else {
+                    console.error('AJAX 요청 실패:', error, thrown);
+                }
+            },
+            "complete": function(xhr) {
+                const authorizationHeader = xhr.getResponseHeader('Authorization');
+                if (authorizationHeader && authorizationHeader.startsWith('Bearer ')) {
+                    const newToken = authorizationHeader.substring(7);
+                    sessionStorage.setItem("token", newToken);
+                }
+            }
+        },
+        "columns": [
+            { "data": "id" },
+            { "data": "spcode" },
+            { "data": "mobileno" },
+            { "data": "statusDisplay" },
+            { "data": "createatDisplay" },
+            { "data": "canceledatDisplay" },
+            { "data": "usernameofoper" },
+            { "data": "remarkShort", "title": "비고" },
+            { "data": "buttons" }
+        ],
+        "language": {
+            "search": "검색:",
+            "lengthMenu": "페이지당 _MENU_ 개씩 보기",
+            "zeroRecords": "검색 결과가 없습니다.",
+            "info": "_TOTAL_개의 항목 중 _START_ ~ _END_",
+            "infoEmpty": "항목이 없습니다.",
+            "infoFiltered": "(총 _MAX_개의 항목에서 필터링됨)",
+            "paginate": {
+                "first": "처음",
+                "last": "마지막",
+                "next": "다음",
+                "previous": "이전"
+            }
+        },
+        order: [[4, 'desc']],
+        dom: '<"top"lfB>rt<"bottom"ip><"clear">',
+        buttons: [{ extend: 'excelHtml5', text: '엑셀로 내보내기', className: 'btn btn-primary' }]
+    });
+
+    // 검색 버튼
+    $('#btnSearch').on('click', function() {
+        loadData();
+    });
+
+    // 초기화 버튼
+    $('#btnReset').on('click', function() {
+        $('#searchMobileno').val('');
+        $('#searchSpcode').val('');
+        $('#searchStatus').val('');
+        table.ajax.url('/api/v1.0/admin/blocknumbers').load();
+    });
+
+    // 신규 등록 버튼
+    $('#btnAddNew').on('click', function() {
+        $('#addForm')[0].reset();
+        addModal.show();
+    });
+
+    // 저장 버튼
+    $('#btnSave').on('click', function() {
+        var mobileno = $('#inputMobileno').val().trim();
+        var spcode = $('#inputSpcode').val();
+        var remark = $('#inputRemark').val().trim();
+
+        if (!mobileno) {
+            alert('전화번호를 입력해주세요.');
+            $('#inputMobileno').focus();
+            return;
+        }
+
+        // 전화번호 형식 검증 (숫자만)
+        if (!/^\d{10,11}$/.test(mobileno)) {
+            alert('전화번호는 10~11자리 숫자로 입력해주세요.');
+            $('#inputMobileno').focus();
+            return;
+        }
+
+        fetch('/api/v1.0/admin/blocknumbers', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                mobileno: mobileno,
+                spcode: spcode,
+                remark: remark
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('차단 고객이 등록되었습니다.');
+            addModal.hide();
+            table.ajax.reload();
+        })
+        .catch(error => {
+            alert('오류가 발생했습니다: ' + error);
+        });
+    });
+
+    // Enter 키로 검색
+    $('#searchMobileno').on('keypress', function(e) {
+        if (e.which === 13) {
+            loadData();
+        }
+    });
+});
+</script>
+</body>
+</html>

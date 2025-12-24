@@ -1,6 +1,7 @@
 package com.dsqd.amc.linkedmo.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -10,8 +11,10 @@ import com.dsqd.amc.linkedmo.model.Blocknumber;
 
 @Mapper
 public interface BlocknumberMapper {
-	
+
 	List<Blocknumber> getAllBlocknumber();
+
+	List<Blocknumber> searchBlocknumbers(Map<String, Object> params);
 
 	Blocknumber getBlocknumberById(@Param("id") int id);
 

@@ -9,9 +9,11 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import com.dsqd.amc.linkedmo.config.MyBatisConfig;
 import com.dsqd.amc.linkedmo.mapper.AdminMapper;
 import com.dsqd.amc.linkedmo.mapper.BatchMapper;
+import com.dsqd.amc.linkedmo.mapper.BlocknumberMapper;
 import com.dsqd.amc.linkedmo.mapper.EvententryMapper;
 import com.dsqd.amc.linkedmo.mapper.SubscribeMapper;
 import com.dsqd.amc.linkedmo.model.Batch;
+import com.dsqd.amc.linkedmo.model.Blocknumber;
 import com.dsqd.amc.linkedmo.model.Evententry;
 import com.dsqd.amc.linkedmo.model.Subscribe;
 
@@ -115,6 +117,44 @@ public class AdminService {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             AdminMapper mapper = session.getMapper(AdminMapper.class);
             return mapper.getUserListForExport(params);
+        }
+    }
+
+    // Blocknumber 관련 메서드
+    public List<Blocknumber> getAllBlocknumbers() {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            BlocknumberMapper mapper = session.getMapper(BlocknumberMapper.class);
+            return mapper.getAllBlocknumber();
+        }
+    }
+
+    public List<Blocknumber> searchBlocknumbers(Map<String, Object> params) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            BlocknumberMapper mapper = session.getMapper(BlocknumberMapper.class);
+            return mapper.searchBlocknumbers(params);
+        }
+    }
+
+    public Blocknumber getBlocknumberById(int id) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            BlocknumberMapper mapper = session.getMapper(BlocknumberMapper.class);
+            return mapper.getBlocknumberById(id);
+        }
+    }
+
+    public void insertBlocknumber(Blocknumber blocknumber) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            BlocknumberMapper mapper = session.getMapper(BlocknumberMapper.class);
+            mapper.insertBlocknumber(blocknumber);
+            session.commit();
+        }
+    }
+
+    public void cancelBlocknumber(Blocknumber blocknumber) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            BlocknumberMapper mapper = session.getMapper(BlocknumberMapper.class);
+            mapper.deleteBlocknumber(blocknumber);
+            session.commit();
         }
     }
 }

@@ -17,7 +17,22 @@
     </resultMap>
 
     <select id="getAllBlocknumber" resultMap="ResultMap">
+        SELECT * FROM blocknumbers ORDER BY createat DESC
+    </select>
+
+    <select id="searchBlocknumbers" resultMap="ResultMap">
         SELECT * FROM blocknumbers
+        WHERE 1=1
+        <if test="mobileno != null and mobileno != ''">
+            AND mobileno LIKE CONCAT('%', #{mobileno}, '%')
+        </if>
+        <if test="spcode != null and spcode != ''">
+            AND spcode = #{spcode}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        ORDER BY createat DESC
     </select>
     
     <select id="getBlocknumberById" resultMap="ResultMap">
