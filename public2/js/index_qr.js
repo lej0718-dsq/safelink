@@ -91,7 +91,7 @@ confirmBtn.addEventListener('click', () => {
 });
 
 function createQrcode(serviceNumber) {
-    amcNumber = '15555551,1,' + serviceNumber + '#';
+    amcNumber = '15555551,' + serviceNumber + '#';
     if(qrType === 'copy') {
         copyCodeArea.style.display = 'block';
         copyText.textContent= `${amcNumber}`;
