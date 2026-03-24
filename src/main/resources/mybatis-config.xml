@@ -25,5 +25,6 @@
 		<mapper resource="mapper/MobiletownMapper.xml"/>
 		<mapper resource="mapper/EvententryMapper.xml"/>
 		<mapper resource="mapper/BlocknumberMapper.xml"/>
+		<mapper resource="mapper/CollectionAccessMapper.xml"/>
     </mappers>
 </configuration>

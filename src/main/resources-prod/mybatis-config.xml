@@ -28,5 +28,6 @@
         <mapper resource="mapper/MobiliansMapper.xml"/>
         <mapper resource="mapper/MobiliansAutoMapper.xml"/>
         <mapper resource="mapper/CouponMapper.xml"/>
+        <mapper resource="mapper/CollectionAccessMapper.xml"/>
     </mappers>
 </configuration>

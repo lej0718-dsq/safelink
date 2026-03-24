@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import com.dsqd.amc.linkedmo.model.Batch;
 import com.dsqd.amc.linkedmo.model.Blocknumber;
+import com.dsqd.amc.linkedmo.model.CollectionAccessCount;
+import com.dsqd.amc.linkedmo.model.CollectionAccessPage;
 import com.dsqd.amc.linkedmo.model.Evententry;
 import com.dsqd.amc.linkedmo.model.Subscribe;
 import com.dsqd.amc.linkedmo.service.AdminService;
@@ -82,6 +84,16 @@ public class AdminController {
                     get("", this::getBlocknumbers);
                     post("", this::insertBlocknumber);
                     put("/:id", this::cancelBlocknumber);
+                });
+
+                path("/admin/collection/access", () -> {
+                    // 접속 통계 조회
+                    get("", this::getAccessCounts);
+                    // 집계 대상 페이지 관리
+                    get("/pages", this::getAccessPages);
+                    get("/pages/active", this::getActiveAccessPages);
+                    post("/pages", this::insertAccessPage);
+                    put("/pages/:id", this::updateAccessPage);
                 });
             });
         });
@@ -499,6 +511,182 @@ public class AdminController {
             return JSONHelper.assembleResponse(400, "Invalid ID format").toJSONString();
         } catch (Exception e) {
             logger.error("Error in cancelBlocknumber: {}", e.getMessage(), e);
+            res.status(500);
+            return JSONHelper.assembleResponse(500, "Internal server error: " + e.getMessage()).toJSONString();
+        }
+    }
+
+    // 접속 통계 조회
+    private String getAccessCounts(Request req, Response res) {
+        try {
+            String logMonth = req.queryParams("logMonth");
+            String page = req.queryParams("page");
+
+            List<CollectionAccessCount> list;
+
+            if ((logMonth != null && !logMonth.isEmpty()) ||
+                (page != null && !page.isEmpty())) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("logMonth", logMonth);
+                params.put("page", page);
+                list = adminService.searchAccessCounts(params);
+            } else {
+                list = adminService.getAllAccessCounts();
+            }
+
+            JSONArray jsonArray = new JSONArray();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            for (CollectionAccessCount item : list) {
+                JSONObject obj = new JSONObject();
+                obj.put("id", item.getId());
+                obj.put("page", item.getPage());
+                obj.put("description", item.getDescription());
+                obj.put("count", item.getCount());
+                obj.put("logMonth", item.getLogMonth());
+                obj.put("collectedAt", item.getCollectedAt() != null ? sdf.format(item.getCollectedAt()) : null);
+                jsonArray.add(obj);
+            }
+
+            res.type("application/json");
+            return jsonArray.toJSONString();
+
+        } catch (Exception e) {
+            logger.error("Error in getAccessCounts: {}", e.getMessage(), e);
+            res.status(500);
+            return JSONHelper.assembleResponse(500, "Internal server error: " + e.getMessage()).toJSONString();
+        }
+    }
+
+    // 집계 대상 페이지 전체 목록
+    private String getAccessPages(Request req, Response res) {
+        try {
+            List<CollectionAccessPage> list = adminService.getAllAccessPages();
+
+            JSONArray jsonArray = new JSONArray();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            for (CollectionAccessPage item : list) {
+                JSONObject obj = new JSONObject();
+                obj.put("id", item.getId());
+                obj.put("page", item.getPage());
+                obj.put("description", item.getDescription());
+                obj.put("status", item.getStatus());
+                obj.put("createdAt", item.getCreatedAt() != null ? sdf.format(item.getCreatedAt()) : null);
+                obj.put("updatedAt", item.getUpdatedAt() != null ? sdf.format(item.getUpdatedAt()) : null);
+                jsonArray.add(obj);
+            }
+
+            res.type("application/json");
+            return jsonArray.toJSONString();
+
+        } catch (Exception e) {
+            logger.error("Error in getAccessPages: {}", e.getMessage(), e);
+            res.status(500);
+            return JSONHelper.assembleResponse(500, "Internal server error: " + e.getMessage()).toJSONString();
+        }
+    }
+
+    // 활성 상태 페이지 목록 (필터용)
+    private String getActiveAccessPages(Request req, Response res) {
+        try {
+            List<CollectionAccessPage> list = adminService.getActiveAccessPages();
+
+            JSONArray jsonArray = new JSONArray();
+            for (CollectionAccessPage item : list) {
+                JSONObject obj = new JSONObject();
+                obj.put("id", item.getId());
+                obj.put("page", item.getPage());
+                obj.put("description", item.getDescription());
+                jsonArray.add(obj);
+            }
+
+            res.type("application/json");
+            return jsonArray.toJSONString();
+
+        } catch (Exception e) {
+            logger.error("Error in getActiveAccessPages: {}", e.getMessage(), e);
+            res.status(500);
+            return JSONHelper.assembleResponse(500, "Internal server error: " + e.getMessage()).toJSONString();
+        }
+    }
+
+    // 집계 대상 페이지 등록
+    private String insertAccessPage(Request req, Response res) {
+        try {
+            JSONObject jsonObject = (JSONObject) JSONValue.parse(req.body());
+
+            String page = jsonObject.getAsString("page");
+            String description = jsonObject.getAsString("description");
+            String statusStr = jsonObject.getAsString("status");
+
+            if (page == null || page.isEmpty()) {
+                res.status(400);
+                return JSONHelper.assembleResponse(400, "페이지 경로는 필수 입력값입니다.").toJSONString();
+            }
+            if (description == null || description.isEmpty()) {
+                res.status(400);
+                return JSONHelper.assembleResponse(400, "설명은 필수 입력값입니다.").toJSONString();
+            }
+
+            int status = (statusStr != null && !statusStr.isEmpty()) ? Integer.parseInt(statusStr) : 1;
+
+            CollectionAccessPage accessPage = CollectionAccessPage.builder()
+                    .page(page)
+                    .description(description)
+                    .status(status)
+                    .build();
+
+            adminService.insertAccessPage(accessPage);
+
+            res.type("application/json");
+            return JSONHelper.assembleResponse(200, "집계 대상 페이지가 등록되었습니다.").toJSONString();
+
+        } catch (Exception e) {
+            logger.error("Error in insertAccessPage: {}", e.getMessage(), e);
+            res.status(500);
+            return JSONHelper.assembleResponse(500, "Internal server error: " + e.getMessage()).toJSONString();
+        }
+    }
+
+    // 집계 대상 페이지 수정
+    private String updateAccessPage(Request req, Response res) {
+        try {
+            long id = Long.parseLong(req.params(":id"));
+            JSONObject jsonObject = (JSONObject) JSONValue.parse(req.body());
+
+            String page = jsonObject.getAsString("page");
+            String description = jsonObject.getAsString("description");
+            String statusStr = jsonObject.getAsString("status");
+
+            if (page == null || page.isEmpty()) {
+                res.status(400);
+                return JSONHelper.assembleResponse(400, "페이지 경로는 필수 입력값입니다.").toJSONString();
+            }
+            if (description == null || description.isEmpty()) {
+                res.status(400);
+                return JSONHelper.assembleResponse(400, "설명은 필수 입력값입니다.").toJSONString();
+            }
+
+            int status = (statusStr != null && !statusStr.isEmpty()) ? Integer.parseInt(statusStr) : 1;
+
+            CollectionAccessPage accessPage = CollectionAccessPage.builder()
+                    .id(id)
+                    .page(page)
+                    .description(description)
+                    .status(status)
+                    .build();
+
+            adminService.updateAccessPage(accessPage);
+
+            res.type("application/json");
+            return JSONHelper.assembleResponse(200, "집계 대상 페이지가 수정되었습니다.").toJSONString();
+
+        } catch (NumberFormatException e) {
+            res.status(400);
+            return JSONHelper.assembleResponse(400, "Invalid ID format").toJSONString();
+        } catch (Exception e) {
+            logger.error("Error in updateAccessPage: {}", e.getMessage(), e);
             res.status(500);
             return JSONHelper.assembleResponse(500, "Internal server error: " + e.getMessage()).toJSONString();
         }

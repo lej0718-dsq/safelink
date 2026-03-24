@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="admin_styles.css">
+    <style>
+        .dataTables_wrapper .dt-buttons { float: left; margin-right: 1em; }
+        .dataTables_length { float: left; margin-right: 1em; }
+        .dataTables_filter { float: left; }
+        .dataTables_wrapper .dataTables_filter input { width: auto; }
+        .filter-section { margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px; }
+        .filter-section .form-control, .filter-section .form-select { display: inline-block; width: auto; margin-right: 10px; }
+        .status-active { color: #198754; font-weight: bold; }
+        .status-inactive { color: #6c757d; }
+        .nav-tabs { margin-bottom: 20px; }
+    </style>
+    <title>접속 통계 관리</title>
+</head>
+
+<body>
+<!--  Header Panel -->
+<section>
+<div id="headerPanel"></div>
+</section>
+
+<section>
+    <div class="container-fluid">
+        <div class="row">
+            <!--  Left Menu Panel -->
+            <div id="menuPanel" class="container"></div>
+
+            <div class="col-md-* main-content">
+                <h1 class="mt-2">접속 통계 관리</h1>
+                <br/>
+
+                <!-- 탭 메뉴 -->
+                <ul class="nav nav-tabs" id="mainTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="stats-tab" data-bs-toggle="tab" data-bs-target="#statsPane" type="button" role="tab">접속 통계</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pages-tab" data-bs-toggle="tab" data-bs-target="#pagesPane" type="button" role="tab">집계 대상 페이지 관리</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="mainTabContent">
+                    <!-- 접속 통계 탭 -->
+                    <div class="tab-pane fade show active" id="statsPane" role="tabpanel">
+                        <div class="filter-section">
+                            <label>집계월:</label>
+                            <input type="text" id="searchLogMonth" class="form-control" placeholder="YYYYMM" maxlength="6">
+                            <label>페이지:</label>
+                            <select id="searchPage" class="form-select">
+                                <option value="">전체</option>
+                            </select>
+                            <button id="btnSearchStats" class="btn btn-primary">검색</button>
+                            <button id="btnResetStats" class="btn btn-secondary">초기화</button>
+                        </div>
+
+                        <table id="statsTable" class="display" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>번호</th>
+                                    <th>페이지</th>
+                                    <th>설명</th>
+                                    <th>접속 수</th>
+                                    <th>집계월</th>
+                                    <th>집계일시</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- 집계 대상 페이지 관리 탭 -->
+                    <div class="tab-pane fade" id="pagesPane" role="tabpanel">
+                        <div class="filter-section">
+                            <button id="btnAddPage" class="btn btn-success" style="float:right;">신규 등록</button>
+                            <div style="clear:both;"></div>
+                        </div>
+
+                        <table id="pagesTable" class="display" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>번호</th>
+                                    <th>페이지 경로</th>
+                                    <th>설명</th>
+                                    <th>상태</th>
+                                    <th>등록일시</th>
+                                    <th>수정일시</th>
+                                    <th>관리</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--  Footer Panel -->
+<section>
+<div id="footerPanel"></div>
+</section>
+
+<!-- 페이지 등록 모달 -->
+<div class="modal fade" id="addPageModal" tabindex="-1" aria-labelledby="addPageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPageModalLabel">집계 대상 페이지 등록</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addPageForm">
+                    <div class="mb-3">
+                        <label for="inputPage" class="form-label">페이지 경로 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="inputPage" placeholder="/example/page" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputDescription" class="form-label">설명 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="inputDescription" placeholder="페이지 설명" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputStatus" class="form-label">상태</label>
+                        <select class="form-select" id="inputStatus">
+                            <option value="1">활성</option>
+                            <option value="0">비활성</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" id="btnSavePage">등록</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 페이지 수정 모달 -->
+<div class="modal fade" id="editPageModal" tabindex="-1" aria-labelledby="editPageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPageModalLabel">집계 대상 페이지 수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPageForm">
+                    <input type="hidden" id="editId">
+                    <div class="mb-3">
+                        <label for="editPage" class="form-label">페이지 경로 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="editPage" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">설명 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="editDescription" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editStatus" class="form-label">상태</label>
+                        <select class="form-select" id="editStatus">
+                            <option value="1">활성</option>
+                            <option value="0">비활성</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" id="btnUpdatePage">수정</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Bundle with Popper and jQuery -->
+<script src="//cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/admin.js"></script>
+<!-- DataTables JS -->
+<script src="//cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<!-- DataTables Buttons JS -->
+<script src="//cdn.datatables.net/buttons/2.1.1/js/dataTables.buttons.min.js"></script>
+<!-- JSZip for Excel export -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<!-- Buttons HTML5 export JS -->
+<script src="//cdn.datatables.net/buttons/2.1.1/js/buttons.html5.min.js"></script>
+
+<script>
+var statsTable;
+var pagesTable;
+var addPageModal;
+var editPageModal;
+
+function formatDateTime(dateString) {
+    if (!dateString || dateString === "") return "-";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+function formatStatus(status) {
+    if (status === 1) {
+        return '<span class="status-active">활성</span>';
+    } else {
+        return '<span class="status-inactive">비활성</span>';
+    }
+}
+
+function formatLogMonth(logMonth) {
+    if (!logMonth || logMonth.length !== 6) return logMonth;
+    return logMonth.substring(0, 4) + '-' + logMonth.substring(4, 6);
+}
+
+function numberWithCommas(x) {
+    if (x == null) return '0';
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// 페이지 드롭다운 로드
+function loadPageOptions() {
+    fetch('/api/v1.0/admin/collection/access/pages/active', {
+        headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(response => response.json())
+    .then(data => {
+        var select = $('#searchPage');
+        select.find('option:not(:first)').remove();
+        data.forEach(function(item) {
+            select.append('<option value="' + item.page + '">' + item.description + ' (' + item.page + ')</option>');
+        });
+    })
+    .catch(error => console.error('페이지 목록 로드 실패:', error));
+}
+
+// 접속 통계 데이터 로드
+function loadStatsData() {
+    var params = [];
+    var logMonth = $('#searchLogMonth').val();
+    var page = $('#searchPage').val();
+
+    if (logMonth) params.push('logMonth=' + encodeURIComponent(logMonth));
+    if (page) params.push('page=' + encodeURIComponent(page));
+
+    var url = '/api/v1.0/admin/collection/access';
+    if (params.length > 0) {
+        url += '?' + params.join('&');
+    }
+
+    statsTable.ajax.url(url).load();
+}
+
+// 수정 모달 열기
+function openEditModal(id, page, description, status) {
+    $('#editId').val(id);
+    $('#editPage').val(page);
+    $('#editDescription').val(description);
+    $('#editStatus').val(status);
+    editPageModal.show();
+}
+
+$(document).ready(function() {
+    addPageModal = new bootstrap.Modal(document.getElementById('addPageModal'));
+    editPageModal = new bootstrap.Modal(document.getElementById('editPageModal'));
+
+    // 페이지 드롭다운 초기 로드
+    loadPageOptions();
+
+    // 접속 통계 DataTable
+    statsTable = $('#statsTable').DataTable({
+        "processing": true,
+        "serverSide": false,
+        "ajax": {
+            "url": "/api/v1.0/admin/collection/access",
+            "headers": { 'Authorization': 'Bearer ' + token },
+            "type": "GET",
+            "dataSrc": function (json) {
+                var data = json.data || json;
+                return data.map(function(item) {
+                    return {
+                        ...item,
+                        countDisplay: numberWithCommas(item.count),
+                        logMonthDisplay: formatLogMonth(item.logMonth),
+                        collectedAtDisplay: formatDateTime(item.collectedAt)
+                    };
+                });
+            },
+            "error": function (xhr, error, thrown) {
+                if (xhr.status === 401) {
+                    alert('인증이 만료되었습니다. 다시 로그인 해주세요.');
+                    sessionStorage.setItem("token", "");
+                    window.location.href = './login.html';
+                } else {
+                    console.error('AJAX 요청 실패:', error, thrown);
+                }
+            },
+            "complete": function(xhr) {
+                const authorizationHeader = xhr.getResponseHeader('Authorization');
+                if (authorizationHeader && authorizationHeader.startsWith('Bearer ')) {
+                    const newToken = authorizationHeader.substring(7);
+                    sessionStorage.setItem("token", newToken);
+                }
+            }
+        },
+        "columns": [
+            { "data": "id" },
+            { "data": "page" },
+            { "data": "description" },
+            { "data": "countDisplay", "className": "text-end" },
+            { "data": "logMonthDisplay" },
+            { "data": "collectedAtDisplay" }
+        ],
+        "language": {
+            "search": "검색:",
+            "lengthMenu": "페이지당 _MENU_ 개씩 보기",
+            "zeroRecords": "검색 결과가 없습니다.",
+            "info": "_TOTAL_개의 항목 중 _START_ ~ _END_",
+            "infoEmpty": "항목이 없습니다.",
+            "infoFiltered": "(총 _MAX_개의 항목에서 필터링됨)",
+            "paginate": { "first": "처음", "last": "마지막", "next": "다음", "previous": "이전" }
+        },
+        order: [[4, 'desc'], [3, 'desc']],
+        dom: '<"top"lfB>rt<"bottom"ip><"clear">',
+        buttons: [{ extend: 'excelHtml5', text: '엑셀로 내보내기', className: 'btn btn-primary' }]
+    });
+
+    // 집계 대상 페이지 DataTable
+    pagesTable = $('#pagesTable').DataTable({
+        "processing": true,
+        "serverSide": false,
+        "ajax": {
+            "url": "/api/v1.0/admin/collection/access/pages",
+            "headers": { 'Authorization': 'Bearer ' + token },
+            "type": "GET",
+            "dataSrc": function (json) {
+                var data = json.data || json;
+                return data.map(function(item) {
+                    return {
+                        ...item,
+                        statusDisplay: formatStatus(item.status),
+                        createdAtDisplay: formatDateTime(item.createdAt),
+                        updatedAtDisplay: formatDateTime(item.updatedAt),
+                        buttons: '<button class="btn btn-sm btn-outline-primary" onclick="openEditModal(' + item.id + ', \'' + item.page.replace(/'/g, "\\'") + '\', \'' + item.description.replace(/'/g, "\\'") + '\', ' + item.status + ')">수정</button>'
+                    };
+                });
+            },
+            "error": function (xhr, error, thrown) {
+                if (xhr.status === 401) {
+                    alert('인증이 만료되었습니다. 다시 로그인 해주세요.');
+                    sessionStorage.setItem("token", "");
+                    window.location.href = './login.html';
+                } else {
+                    console.error('AJAX 요청 실패:', error, thrown);
+                }
+            },
+            "complete": function(xhr) {
+                const authorizationHeader = xhr.getResponseHeader('Authorization');
+                if (authorizationHeader && authorizationHeader.startsWith('Bearer ')) {
+                    const newToken = authorizationHeader.substring(7);
+                    sessionStorage.setItem("token", newToken);
+                }
+            }
+        },
+        "columns": [
+            { "data": "id" },
+            { "data": "page" },
+            { "data": "description" },
+            { "data": "statusDisplay" },
+            { "data": "createdAtDisplay" },
+            { "data": "updatedAtDisplay" },
+            { "data": "buttons" }
+        ],
+        "language": {
+            "search": "검색:",
+            "lengthMenu": "페이지당 _MENU_ 개씩 보기",
+            "zeroRecords": "검색 결과가 없습니다.",
+            "info": "_TOTAL_개의 항목 중 _START_ ~ _END_",
+            "infoEmpty": "항목이 없습니다.",
+            "infoFiltered": "(총 _MAX_개의 항목에서 필터링됨)",
+            "paginate": { "first": "처음", "last": "마지막", "next": "다음", "previous": "이전" }
+        },
+        order: [[0, 'asc']]
+    });
+
+    // 통계 검색
+    $('#btnSearchStats').on('click', function() {
+        loadStatsData();
+    });
+
+    // 통계 초기화
+    $('#btnResetStats').on('click', function() {
+        $('#searchLogMonth').val('');
+        $('#searchPage').val('');
+        statsTable.ajax.url('/api/v1.0/admin/collection/access').load();
+    });
+
+    // Enter 키로 검색
+    $('#searchLogMonth').on('keypress', function(e) {
+        if (e.which === 13) loadStatsData();
+    });
+
+    // 페이지 신규 등록 버튼
+    $('#btnAddPage').on('click', function() {
+        $('#addPageForm')[0].reset();
+        addPageModal.show();
+    });
+
+    // 페이지 등록 저장
+    $('#btnSavePage').on('click', function() {
+        var page = $('#inputPage').val().trim();
+        var description = $('#inputDescription').val().trim();
+        var status = $('#inputStatus').val();
+
+        if (!page) {
+            alert('페이지 경로를 입력해주세요.');
+            $('#inputPage').focus();
+            return;
+        }
+        if (!description) {
+            alert('설명을 입력해주세요.');
+            $('#inputDescription').focus();
+            return;
+        }
+
+        fetch('/api/v1.0/admin/collection/access/pages', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ page: page, description: description, status: status })
+        })
+        .then(response => {
+            const authorizationHeader = response.headers.get('Authorization');
+            if (authorizationHeader && authorizationHeader.startsWith('Bearer ')) {
+                sessionStorage.setItem("token", authorizationHeader.substring(7));
+            }
+            if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+            return response.json();
+        })
+        .then(data => {
+            alert('집계 대상 페이지가 등록되었습니다.');
+            addPageModal.hide();
+            pagesTable.ajax.reload();
+            loadPageOptions();
+        })
+        .catch(error => {
+            alert('오류가 발생했습니다: ' + error);
+        });
+    });
+
+    // 페이지 수정 저장
+    $('#btnUpdatePage').on('click', function() {
+        var id = $('#editId').val();
+        var page = $('#editPage').val().trim();
+        var description = $('#editDescription').val().trim();
+        var status = $('#editStatus').val();
+
+        if (!page) {
+            alert('페이지 경로를 입력해주세요.');
+            $('#editPage').focus();
+            return;
+        }
+        if (!description) {
+            alert('설명을 입력해주세요.');
+            $('#editDescription').focus();
+            return;
+        }
+
+        fetch('/api/v1.0/admin/collection/access/pages/' + id, {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ page: page, description: description, status: status })
+        })
+        .then(response => {
+            const authorizationHeader = response.headers.get('Authorization');
+            if (authorizationHeader && authorizationHeader.startsWith('Bearer ')) {
+                sessionStorage.setItem("token", authorizationHeader.substring(7));
+            }
+            if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+            return response.json();
+        })
+        .then(data => {
+            alert('집계 대상 페이지가 수정되었습니다.');
+            editPageModal.hide();
+            pagesTable.ajax.reload();
+            loadPageOptions();
+        })
+        .catch(error => {
+            alert('오류가 발생했습니다: ' + error);
+        });
+    });
+
+    // 탭 전환 시 테이블 리로드 (DataTables 렌더링 이슈 방지)
+    $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+        if (e.target.id === 'pages-tab') {
+            pagesTable.columns.adjust().draw();
+        } else if (e.target.id === 'stats-tab') {
+            statsTable.columns.adjust().draw();
+        }
+    });
+});
+</script>
+</body>
+</html>

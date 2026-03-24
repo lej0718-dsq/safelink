@@ -10,10 +10,13 @@ import com.dsqd.amc.linkedmo.config.MyBatisConfig;
 import com.dsqd.amc.linkedmo.mapper.AdminMapper;
 import com.dsqd.amc.linkedmo.mapper.BatchMapper;
 import com.dsqd.amc.linkedmo.mapper.BlocknumberMapper;
+import com.dsqd.amc.linkedmo.mapper.CollectionAccessMapper;
 import com.dsqd.amc.linkedmo.mapper.EvententryMapper;
 import com.dsqd.amc.linkedmo.mapper.SubscribeMapper;
 import com.dsqd.amc.linkedmo.model.Batch;
 import com.dsqd.amc.linkedmo.model.Blocknumber;
+import com.dsqd.amc.linkedmo.model.CollectionAccessCount;
+import com.dsqd.amc.linkedmo.model.CollectionAccessPage;
 import com.dsqd.amc.linkedmo.model.Evententry;
 import com.dsqd.amc.linkedmo.model.Subscribe;
 
@@ -154,6 +157,58 @@ public class AdminService {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             BlocknumberMapper mapper = session.getMapper(BlocknumberMapper.class);
             mapper.deleteBlocknumber(blocknumber);
+            session.commit();
+        }
+    }
+
+    // CollectionAccess 관련 메서드
+    public List<CollectionAccessCount> getAllAccessCounts() {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            CollectionAccessMapper mapper = session.getMapper(CollectionAccessMapper.class);
+            return mapper.getAllAccessCounts();
+        }
+    }
+
+    public List<CollectionAccessCount> searchAccessCounts(Map<String, Object> params) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            CollectionAccessMapper mapper = session.getMapper(CollectionAccessMapper.class);
+            return mapper.searchAccessCounts(params);
+        }
+    }
+
+    public List<CollectionAccessPage> getAllAccessPages() {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            CollectionAccessMapper mapper = session.getMapper(CollectionAccessMapper.class);
+            return mapper.getAllAccessPages();
+        }
+    }
+
+    public List<CollectionAccessPage> getActiveAccessPages() {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            CollectionAccessMapper mapper = session.getMapper(CollectionAccessMapper.class);
+            return mapper.getActiveAccessPages();
+        }
+    }
+
+    public CollectionAccessPage getAccessPageById(long id) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            CollectionAccessMapper mapper = session.getMapper(CollectionAccessMapper.class);
+            return mapper.getAccessPageById(id);
+        }
+    }
+
+    public void insertAccessPage(CollectionAccessPage page) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            CollectionAccessMapper mapper = session.getMapper(CollectionAccessMapper.class);
+            mapper.insertAccessPage(page);
+            session.commit();
+        }
+    }
+
+    public void updateAccessPage(CollectionAccessPage page) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            CollectionAccessMapper mapper = session.getMapper(CollectionAccessMapper.class);
+            mapper.updateAccessPage(page);
             session.commit();
         }
     }
