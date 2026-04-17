@@ -29,5 +29,6 @@
         <mapper resource="mapper/MobiliansAutoMapper.xml"/>
         <mapper resource="mapper/CouponMapper.xml"/>
         <mapper resource="mapper/CollectionAccessMapper.xml"/>
+        <mapper resource="mapper/SmsTranMapper.xml"/>
     </mappers>
 </configuration>

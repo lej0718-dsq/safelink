@@ -447,7 +447,7 @@
         <div class="popup-overlay" id="popup">
             <div class="popup-content">
                 <span class="close-popup">&times;</span>
-                <img onclick="goToEvent01()" src="images/event01/event01_layer_1.png" class="popup-image" alt="이벤트 이미지">
+                <img onclick="goToEvent01()" src="images/event13/13_03.jpg" class="popup-image" alt="이벤트 이미지">
                 <!-- 하단 버튼 그룹 -->
                 <div class="popup-footer">
                     <button class="hide-btn">오늘 하루 보지 않기</button>
@@ -926,7 +926,7 @@ function LoadingWithMaskOff() {
 }
 
 // 설정된 날짜 이후에는 팝업을 표시하지 않도록 하는 기능
-const popupEndDate = new Date("2025-10-31T23:59:59");
+const popupEndDate = new Date("2099-10-31T23:59:59");
 
 const popup = document.getElementById("popup");
 const closeBtns = document.querySelectorAll(".close-popup");
@@ -994,7 +994,7 @@ popup.addEventListener("click", (e) => {
 });
 
 function goToEvent01() {
-    location.href="./event01.html";
+    location.href="./event13.html";
 }
 
 /* QR 기능*/

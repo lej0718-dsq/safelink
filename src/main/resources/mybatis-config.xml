@@ -26,5 +26,6 @@
 		<mapper resource="mapper/EvententryMapper.xml"/>
 		<mapper resource="mapper/BlocknumberMapper.xml"/>
 		<mapper resource="mapper/CollectionAccessMapper.xml"/>
+		<mapper resource="mapper/SmsTranMapper.xml"/>
     </mappers>
 </configuration>

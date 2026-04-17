@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dsqd.amc.linkedmo.mapper.SmsTranMapper">
+
+    <insert id="insertSmsTran" parameterType="com.dsqd.amc.linkedmo.model.SmsTran">
+        INSERT INTO TB_AGT_SMS_TRAN (
+            TR_USER_ID,
+            TR_INST_DATE,
+            TR_SEND_DATE,
+            TR_DEST_ADDR,
+            TR_CALL_BACK,
+            TR_SMS_MESSAGE,
+            TR_ORIG_ADDR
+        ) VALUES (
+            #{trUserId},
+            DATE_FORMAT(now(),'%Y%m%d%H%i%s'),
+            DATE_FORMAT(now(),'%Y%m%d%H%i%s'),
+            #{trDestAddr},
+            #{trCallBack},
+            #{trSmsMessage},
+            '07089852982'
+        )
+    </insert>
+
+</mapper>
