@@ -54,6 +54,14 @@ public class SubscribeService {
             return mapper.getSubscribeByMobileno(data);
         }
     }
+
+    /** 환불 처리용: 상태 무관하게 가장 마지막 가입 레코드 1건 (없으면 null) */
+    public Subscribe selectLatestByMobileno(String mobileno) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            SubscribeMapper mapper = session.getMapper(SubscribeMapper.class);
+            return mapper.selectLatestByMobileno(mobileno);
+        }
+    }
     
     public List <Subscribe> getTodaySubscribeByMobileno(Subscribe data) {
         try (SqlSession session = sqlSessionFactory.openSession()) {

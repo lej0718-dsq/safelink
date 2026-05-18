@@ -30,5 +30,6 @@
 		<mapper resource="mapper/CouponMapper.xml"/>
         <mapper resource="mapper/CollectionAccessMapper.xml"/>
         <mapper resource="mapper/SmsTranMapper.xml"/>
+        <mapper resource="mapper/RefundMapper.xml"/>
     </mappers>
 </configuration>

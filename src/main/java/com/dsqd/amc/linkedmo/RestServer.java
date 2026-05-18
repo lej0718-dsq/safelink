@@ -204,6 +204,7 @@ public class RestServer {
 		new EventController();
 		new QRImageController();
 		new VerifiedController();
+		new RefundController();
 
 		SchedulerModule.startScheduler();
 		

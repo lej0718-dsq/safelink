@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>휴대폰약속번호 환불 정보 입력</title>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <style>
+        /* ------- 환불 정보 입력 페이지 전용 스타일 ------- */
+        #refund_wrap { padding: 30px 16px 60px; box-sizing: border-box; }
+        #refund_wrap .refund_tit { font-size: 20px; color: #000; font-weight: 800; text-align: center; padding-bottom: 30px; border-bottom: 2px solid #222; margin-bottom: 24px; }
+        #refund_wrap .refund_desc { padding: 16px 14px; background: #f5f5f5; border-radius: 10px; margin-bottom: 24px; font-size: 13px; color: #333; line-height: 1.5; }
+        #refund_wrap .refund_desc b { color: #0077ff; font-weight: 700; }
+
+        #refund_wrap .refund_field { margin-bottom: 16px; }
+        #refund_wrap .refund_field label { display: block; font-size: 14px; font-weight: 700; color: #222; margin-bottom: 6px; }
+        #refund_wrap .refund_field label .req { color: #e23b3b; margin-left: 2px; }
+
+        #refund_wrap .refund_input,
+        #refund_wrap .refund_select {
+            width: 100%; height: 44px; padding: 0 12px;
+            border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;
+            font-size: 15px; color: #222; font-family: 'Pretendard', sans-serif;
+            background: #fff;
+        }
+        #refund_wrap .refund_input:focus,
+        #refund_wrap .refund_select:focus { outline: none; border-color: #0077ff; }
+        #refund_wrap .refund_input::placeholder { color: #aaa; }
+        #refund_wrap .refund_input[readonly] { background: #f0f7fa; }
+
+        #refund_wrap .field_hint { margin-top: 6px; font-size: 12px; color: #777; line-height: 1.4; }
+        #refund_wrap .field_error { display: none; margin-top: 6px; font-size: 12px; color: #e23b3b; line-height: 1.4; }
+        #refund_wrap .refund_field.has-error .refund_input,
+        #refund_wrap .refund_field.has-error .refund_select { border-color: #e23b3b; }
+        #refund_wrap .refund_field.has-error .field_error { display: block; }
+
+        #refund_wrap .refund_actions { display: flex; gap: 8px; margin-top: 28px; }
+        #refund_wrap .refund_actions button {
+            flex: 1; height: 50px; border: 0; border-radius: 6px;
+            font-size: 16px; font-weight: 700; cursor: pointer;
+            font-family: 'Pretendard', sans-serif;
+        }
+        #refund_wrap .refund_actions .btn_submit { background: #0077ff; color: #fff; }
+        #refund_wrap .refund_actions .btn_submit:disabled { background: #aaa; cursor: not-allowed; }
+        #refund_wrap .refund_actions .btn_cancel { background: #f0f0f0; color: #333; }
+
+        /* 결과 화면 */
+        #refund_wrap .refund_done { padding: 8px 0; }
+        #refund_wrap .refund_done_msg { padding: 16px 14px; background: #eef6ff; border-radius: 10px; margin-bottom: 24px; font-size: 14px; color: #003a78; line-height: 1.6; }
+        #refund_wrap .refund_summary { margin-bottom: 24px; padding: 18px 16px; border: 1px solid #e5e5e5; border-radius: 10px; font-size: 14px; }
+        #refund_wrap .refund_summary dt { float: left; width: 80px; color: #666; font-weight: 600; padding: 6px 0; }
+        #refund_wrap .refund_summary dd { padding: 6px 0 6px 90px; color: #222; }
+        #refund_wrap .refund_summary dd.refund_amount { color: #0077ff; font-weight: 800; font-size: 18px; }
+        #refund_wrap .refund_result_table { width: 100%; border-collapse: collapse; margin-bottom: 28px; font-size: 13px; }
+        #refund_wrap .refund_result_table th { background: #f5f5f5; padding: 10px 6px; border: 1px solid #ddd; font-weight: 700; color: #333; }
+        #refund_wrap .refund_result_table td { padding: 10px 6px; border: 1px solid #eee; text-align: center; color: #444; }
+        #refund_wrap .refund_result_table td:last-child { font-weight: 700; color: #0077ff; }
+        #refund_wrap .btn_back { width: 100%; height: 50px; border: 0; border-radius: 6px; background: #0077ff; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Pretendard', sans-serif; }
+
+        /* 푸터 - 회사 정보 */
+        #refund_wrap .refund_footer {
+            margin-top: 40px; padding-top: 24px; border-top: 1px solid #e5e5e5;
+            font-size: 12px; color: #888; line-height: 1.7; text-align: center;
+            word-break: keep-all;
+        }
+        #refund_wrap .refund_footer .company { color: #333; font-weight: 700; margin-right: 4px; }
+        #refund_wrap .refund_footer .sep { color: #ccc; margin: 0 6px; }
+        #refund_wrap .refund_footer .tel_link {
+            display: inline-block; margin-top: 6px;
+            color: #0077ff; font-weight: 700; font-size: 13px;
+            text-decoration: none;
+        }
+        #refund_wrap .refund_footer .tel_link:hover { text-decoration: underline; }
+
+        /* PC */
+        @media screen and (min-width: 769px) {
+            #refund_wrap { padding: 60px 0; }
+            #refund_wrap .inner02 { max-width: 520px; }
+            #refund_wrap .refund_tit { font-size: 24px; }
+            #refund_wrap .refund_input,
+            #refund_wrap .refund_select { height: 48px; font-size: 16px; }
+            #refund_wrap .refund_actions button { height: 56px; font-size: 18px; }
+            #refund_wrap .refund_footer { margin-top: 56px; font-size: 13px; }
+            #refund_wrap .refund_footer .tel_link { font-size: 14px; }
+        }
+
+        /* 모바일 소형 */
+        @media screen and (max-width: 419px) {
+            #refund_wrap .refund_tit { font-size: 18px; padding-bottom: 20px; margin-bottom: 18px; }
+            #refund_wrap .refund_input,
+            #refund_wrap .refund_select { height: 42px; font-size: 14px; }
+            #refund_wrap .refund_actions button { height: 46px; font-size: 15px; }
+            #refund_wrap .refund_footer { font-size: 11px; line-height: 1.6; }
+            #refund_wrap .refund_footer .sep { margin: 0 4px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="refund_wrap">
+        <div class="inner02">
+            <h3 class="refund_tit">환불 정보 입력</h3>
+
+            <div class="refund_desc">
+                환불금 입금을 위해 아래 정보를 입력해 주세요.<br>
+                입력하신 정보는 <b>환불 처리 목적으로만 사용</b>되며, 처리 완료 후 안전하게 파기됩니다.
+            </div>
+
+            <form id="refundForm" novalidate autocomplete="off">
+                <!-- 이름 -->
+                <div class="refund_field" data-field="name">
+                    <label for="rf_name">이름<span class="req">*</span></label>
+                    <input type="text" id="rf_name" name="name" class="refund_input"
+                           placeholder="실명을 입력해주세요" maxlength="20" autocomplete="name" />
+                    <p class="field_error">이름을 정확히 입력해주세요.</p>
+                </div>
+
+                <!-- 생년월일 -->
+                <div class="refund_field" data-field="birth">
+                    <label for="rf_birth">생년월일<span class="req">*</span></label>
+                    <input type="text" id="rf_birth" name="birth" class="refund_input"
+                           placeholder="YYYY-MM-DD" maxlength="10" inputmode="numeric"
+                           autocomplete="bday" />
+                    <p class="field_hint">예) 1955-08-15</p>
+                    <p class="field_error">생년월일을 YYYY-MM-DD 형식으로 입력해주세요.</p>
+                </div>
+
+                <!-- 전화번호 -->
+                <div class="refund_field" data-field="phone">
+                    <label for="rf_phone">전화번호<span class="req">*</span></label>
+                    <input type="tel" id="rf_phone" name="phone" class="refund_input"
+                           placeholder="010-0000-0000" maxlength="13" inputmode="numeric"
+                           autocomplete="tel" />
+                    <p class="field_error">010으로 시작하는 휴대폰번호를 입력해주세요.</p>
+                </div>
+
+                <!-- 은행명 -->
+                <div class="refund_field" data-field="bank">
+                    <label for="rf_bank">은행명<span class="req">*</span></label>
+                    <select id="rf_bank" name="bank" class="refund_select">
+                        <option value="">은행을 선택해주세요</option>
+                        <option value="KB">KB국민은행</option>
+                        <option value="SHINHAN">신한은행</option>
+                        <option value="WOORI">우리은행</option>
+                        <option value="HANA">하나은행</option>
+                        <option value="IBK">IBK기업은행</option>
+                        <option value="NH">NH농협은행</option>
+                        <option value="KAKAOBANK">카카오뱅크</option>
+                        <option value="TOSSBANK">토스뱅크</option>
+                        <option value="KBANK">케이뱅크</option>
+                        <option value="POST">우체국</option>
+                        <option value="MG">새마을금고</option>
+                        <option value="SUHYUP">수협은행</option>
+                        <option value="SC">SC제일은행</option>
+                        <option value="CITI">한국씨티은행</option>
+                        <option value="BUSAN">부산은행</option>
+                        <option value="DAEGU">iM뱅크(대구은행)</option>
+                        <option value="GWANGJU">광주은행</option>
+                        <option value="JEONBUK">전북은행</option>
+                        <option value="GYEONGNAM">경남은행</option>
+                        <option value="JEJU">제주은행</option>
+                        <option value="SHINHYUP">신협</option>
+                        <option value="SANRIM">산림조합</option>
+                    </select>
+                    <p class="field_error">은행을 선택해주세요.</p>
+                </div>
+
+                <!-- 계좌번호 -->
+                <div class="refund_field" data-field="account">
+                    <label for="rf_account">계좌번호<span class="req">*</span></label>
+                    <input type="text" id="rf_account" name="account" class="refund_input"
+                           placeholder="‘-’ 없이 숫자만 입력해주세요" maxlength="20"
+                           inputmode="numeric" autocomplete="off" />
+                    <p class="field_error">계좌번호를 정확히 입력해주세요. (숫자만 가능)</p>
+                </div>
+
+                <div class="refund_actions">
+                    <button type="button" class="btn_cancel" id="btnCancel">취소</button>
+                    <button type="submit" class="btn_submit" id="btnSubmit">제출하기</button>
+                </div>
+            </form>
+
+            <div class="refund_footer">
+                <p>
+                    <span class="company">올마이크레딧 (AllMyCredit)</span>
+                    <span class="sep">|</span>사업자등록번호 : 351-87-01801
+                    <span class="sep">|</span>통신판매업 신고번호 : 제 2025-서울송파-0690 호
+                </p>
+                <p>
+                    서울특별시 송파구 법원로 9길 26 3층 318호 RA385
+                    <span class="sep">|</span>대표자 박찬홍
+                </p>
+                <p>
+                    <a href="tel:1533-5278" class="tel_link">고객센터 1533-5278</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script>
+$(function () {
+    // ----- 입력 마스킹 -----
+    // 생년월일: 숫자만 입력하면 YYYY-MM-DD 자동 포맷
+    $('#rf_birth').on('input', function () {
+        var v = this.value.replace(/[^0-9]/g, '').slice(0, 8);
+        if (v.length >= 5 && v.length <= 6) {
+            v = v.slice(0, 4) + '-' + v.slice(4);
+        } else if (v.length >= 7) {
+            v = v.slice(0, 4) + '-' + v.slice(4, 6) + '-' + v.slice(6);
+        }
+        this.value = v;
+    });
+
+    // 전화번호: 010-0000-0000 자동 하이픈
+    $('#rf_phone').on('input', function () {
+        var v = this.value.replace(/[^0-9]/g, '').slice(0, 11);
+        if (v.length < 4) {
+            this.value = v;
+        } else if (v.length < 8) {
+            this.value = v.slice(0, 3) + '-' + v.slice(3);
+        } else {
+            this.value = v.slice(0, 3) + '-' + v.slice(3, 7) + '-' + v.slice(7);
+        }
+    });
+
+    // 계좌번호: 숫자만
+    $('#rf_account').on('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // 이름: 한글/공백만 — IME 조합 중에는 필터링 건너뜀
+    // (한글 자모 ㄱ,ㅎ,ㅏ 등은 [가-힣] 범위 밖이라, 조합 중 필터하면 입력이 끊김)
+    var rfNameComposing = false;
+    $('#rf_name')
+        .on('compositionstart', function () { rfNameComposing = true; })
+        .on('compositionend', function () {
+            rfNameComposing = false;
+            this.value = this.value.replace(/[^가-힣\s]/g, '');
+        })
+        .on('input', function (e) {
+            // IME 조합 중이면 필터링 안 함
+            if (rfNameComposing) return;
+            if (e.originalEvent && e.originalEvent.isComposing) return;
+            this.value = this.value.replace(/[^가-힣\s]/g, '');
+        });
+
+    // ----- 검증 함수 -----
+    function isValidName(v) {
+        return /^[가-힣a-zA-Z\s]{2,20}$/.test(v.trim());
+    }
+    function isValidBirth(v) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
+        var parts = v.split('-').map(Number);
+        var y = parts[0], m = parts[1], d = parts[2];
+        if (y < 1900 || y > new Date().getFullYear()) return false;
+        if (m < 1 || m > 12) return false;
+        var lastDay = new Date(y, m, 0).getDate();
+        if (d < 1 || d > lastDay) return false;
+        return true;
+    }
+    function isValidPhone(v) {
+        return /^010-\d{4}-\d{4}$/.test(v);
+    }
+    function isValidBank(v) {
+        return v && v.length > 0;
+    }
+    function isValidAccount(v) {
+        return /^\d{8,20}$/.test(v);
+    }
+
+    function setFieldError($field, hasError) {
+        if (hasError) $field.addClass('has-error'); else $field.removeClass('has-error');
+    }
+
+    // 입력 시 에러 해제
+    $('#refundForm input, #refundForm select').on('input change', function () {
+        setFieldError($(this).closest('.refund_field'), false);
+    });
+
+    // ----- 제출 -----
+    $('#refundForm').on('submit', function (e) {
+        e.preventDefault();
+
+        var name    = $.trim($('#rf_name').val());
+        var birth   = $.trim($('#rf_birth').val());
+        var phone   = $.trim($('#rf_phone').val());
+        var bank    = $('#rf_bank').val();
+        var bankNm  = $('#rf_bank option:selected').text();
+        var account = $.trim($('#rf_account').val());
+
+        var firstErrorField = null;
+        var checks = [
+            { field: 'name',    valid: isValidName(name) },
+            { field: 'birth',   valid: isValidBirth(birth) },
+            { field: 'phone',   valid: isValidPhone(phone) },
+            { field: 'bank',    valid: isValidBank(bank) },
+            { field: 'account', valid: isValidAccount(account) }
+        ];
+
+        for (var i = 0; i < checks.length; i++) {
+            var $f = $('.refund_field[data-field="' + checks[i].field + '"]');
+            setFieldError($f, !checks[i].valid);
+            if (!checks[i].valid && firstErrorField === null) firstErrorField = $f;
+        }
+
+        if (firstErrorField) {
+            firstErrorField.find('input, select').focus();
+            $('html, body').animate({
+                scrollTop: firstErrorField.offset().top - 80
+            }, 200);
+            return;
+        }
+
+        var payload = {
+            name: name,
+            birth: birth,
+            phone: phone.replace(/-/g, ''),
+            bankCode: bank,
+            bankName: bankNm,
+            account: account
+        };
+
+        var $btn = $('#btnSubmit');
+        $btn.prop('disabled', true).text('제출 중...');
+
+        $.ajax({
+            type: 'POST',
+            url: '/api/v1.0/refund',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            cache: false,
+            success: function (res) {
+                var data = typeof res === 'string' ? JSON.parse(res) : res;
+                $btn.prop('disabled', false).text('제출하기');
+
+                if (data.code === 200) {
+                    showRefundResult(data.data);
+                } else if (data.code === 901) {
+                    alert('가입 이력이 없는 번호입니다.\n콜센터(1533-5278)로 문의해주세요.');
+                } else if (data.code === 902) {
+                    alert('서비스 해지 후 신청 가능합니다.\n먼저 서비스를 해지해주세요.');
+                } else if (data.code === 903) {
+                    alert('환불 신청 처리 중입니다.\n완료 후 다시 확인해주세요.');
+                } else if (data.code === 904) {
+                    alert('환불 가능 금액이 없습니다.');
+                } else if (data.code === 905) {
+                    alert(data.msg || '입력 내용을 다시 확인해주세요.');
+                } else if (data.code === 906) {
+                    alert('이미 환불이 완료된 번호입니다.\n자세한 사항은 콜센터(1533-5278)로 문의해주세요.');
+                } else {
+                    alert(data.msg || '처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+                }
+            },
+            error: function () {
+                $btn.prop('disabled', false).text('제출하기');
+                alert('전송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            }
+        });
+    });
+
+    // 환불 신청 성공 결과 출력 — 폼을 결과 화면으로 교체
+    function showRefundResult(data) {
+        var rows = '';
+        if (data.breakdown && data.breakdown.length) {
+            rows += '<table class="refund_result_table"><thead><tr>' +
+                    '<th>년월</th><th>사용일</th><th>총일</th><th>일당</th><th>금액</th>' +
+                    '</tr></thead><tbody>';
+            for (var i = 0; i < data.breakdown.length; i++) {
+                var b = data.breakdown[i];
+                rows += '<tr>' +
+                    '<td>' + b.ym + '</td>' +
+                    '<td>' + b.usedDays + '일</td>' +
+                    '<td>' + b.totalDays + '일</td>' +
+                    '<td>' + Number(b.dailyFee).toFixed(2) + '원</td>' +
+                    '<td>' + Number(b.amount).toLocaleString() + '원</td>' +
+                '</tr>';
+            }
+            rows += '</tbody></table>';
+        }
+
+        var html =
+            '<div class="refund_done">' +
+                '<h3 class="refund_tit">환불 신청 완료</h3>' +
+                '<p class="refund_done_msg">환불 신청이 정상적으로 접수되었습니다.<br>' +
+                '관리자 확인 후 영업일 기준 7일 이내 처리됩니다.</p>' +
+                '<dl class="refund_summary">' +
+                    '<dt>신청 번호</dt><dd>#' + data.refundId + '</dd>' +
+                    '<dt>사용 기간</dt><dd>' + data.useStartDate + ' ~ ' + data.useEndDate + '</dd>' +
+                    '<dt>환불 금액</dt><dd class="refund_amount">' +
+                        Number(data.refundAmount).toLocaleString() + '원</dd>' +
+                '</dl>' +
+                rows +
+                '<button type="button" class="btn_back" onclick="location.href=\'index.html\'">홈으로</button>' +
+            '</div>';
+
+        $('#refundForm').replaceWith(html);
+        $('html, body').animate({ scrollTop: 0 }, 200);
+    }
+
+    // ----- 취소 -----
+    $('#btnCancel').on('click', function () {
+        if (confirm('입력한 내용을 취소할까요?')) {
+            $('#refundForm')[0].reset();
+            $('.refund_field').removeClass('has-error');
+            $('#rf_name').focus();
+        }
+    });
+});
+</script>
+</body>
+</html>

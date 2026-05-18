@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="admin_styles.css">
+    <style>
+        .dataTables_wrapper .dt-buttons { float: left; margin-right: 1em; }
+        .dataTables_length { float: left; margin-right: 1em; }
+        .dataTables_filter { float: left; }
+        .dataTables_wrapper .dataTables_filter input { width: auto; }
+        .filter-bar { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
+        .filter-bar input, .filter-bar select { height: 34px; }
+        .badge-status { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+        .badge-REQUESTED { background: #fff3cd; color: #8a5a00; }
+        .badge-COMPLETED { background: #d4edda; color: #155724; }
+        .breakdown-table { width: 100%; font-size: 13px; }
+        .breakdown-table th { background: #f3f3f3; padding: 8px; text-align: center; border: 1px solid #ddd; }
+        .breakdown-table td { padding: 8px; text-align: center; border: 1px solid #eee; }
+        .detail-row dt { font-weight: 600; color: #555; }
+        .detail-row dd { margin-bottom: 8px; }
+    </style>
+    <title>환불 신청 관리</title>
+</head>
+<body>
+
+<section><div id="headerPanel"></div></section>
+
+<section>
+    <div class="container-fluid">
+        <div class="row">
+            <div id="menuPanel" class="container"></div>
+
+            <div class="col-md-* main-content">
+                <h1 class="mt-2">환불 신청 관리</h1>
+                <br/>
+
+                <div class="filter-bar">
+                    <select id="fStatus" class="form-select" style="width:140px;">
+                        <option value="">전체 상태</option>
+                        <option value="REQUESTED">환불 신청</option>
+                        <option value="COMPLETED">환불 완료</option>
+                    </select>
+                    <input type="text" id="fMobileno" class="form-control" placeholder="전화번호 검색" style="width:160px;" />
+                    <input type="date" id="fFrom" class="form-control" style="width:160px;" />
+                    <span>~</span>
+                    <input type="date" id="fTo" class="form-control" style="width:160px;" />
+                    <button id="btnFilter" class="btn btn-primary btn-sm">조회</button>
+                    <button id="btnReset" class="btn btn-secondary btn-sm">초기화</button>
+                </div>
+
+                <table id="refundTable" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>전화번호</th>
+                            <th>예금주</th>
+                            <th>은행</th>
+                            <th>환불금액</th>
+                            <th>사용기간</th>
+                            <th>상태</th>
+                            <th>신청일시</th>
+                            <th>처리일시</th>
+                            <th>처리자</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 상세 모달 -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">환불 신청 상세 #<span id="dt_id"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <dl class="row detail-row">
+                    <dt class="col-sm-3">상태</dt>           <dd class="col-sm-9"><span id="dt_status"></span></dd>
+                    <dt class="col-sm-3">전화번호</dt>        <dd class="col-sm-9" id="dt_mobileno"></dd>
+                    <dt class="col-sm-3">예금주명</dt>        <dd class="col-sm-9" id="dt_name"></dd>
+                    <dt class="col-sm-3">생년월일</dt>        <dd class="col-sm-9" id="dt_birth"></dd>
+                    <dt class="col-sm-3">은행</dt>            <dd class="col-sm-9" id="dt_bank"></dd>
+                    <dt class="col-sm-3">계좌번호</dt>        <dd class="col-sm-9" id="dt_account"></dd>
+                    <dt class="col-sm-3">사용 기간</dt>       <dd class="col-sm-9" id="dt_period"></dd>
+                    <dt class="col-sm-3">환불 금액</dt>       <dd class="col-sm-9"><strong id="dt_amount" style="color:#0077ff;font-size:18px;"></strong></dd>
+                    <dt class="col-sm-3">신청일시</dt>        <dd class="col-sm-9" id="dt_request"></dd>
+                    <dt class="col-sm-3">처리일시 / 처리자</dt> <dd class="col-sm-9" id="dt_processed"></dd>
+                    <dt class="col-sm-3">메모</dt>            <dd class="col-sm-9" id="dt_memo"></dd>
+                </dl>
+                <hr/>
+                <h6>월별 일할 계산 내역</h6>
+                <table class="breakdown-table">
+                    <thead>
+                        <tr><th>년월</th><th>구간</th><th>사용일</th><th>총일</th><th>일당(원)</th><th>금액(원)</th></tr>
+                    </thead>
+                    <tbody id="dt_breakdown"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <textarea id="dt_completeMemo" class="form-control" rows="2" placeholder="환불 완료 메모(선택, 예: 5/13 송금 완료)" style="margin-right:8px;"></textarea>
+                <button type="button" id="btnComplete" class="btn btn-success">환불 완료 처리</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section><div id="footerPanel"></div></section>
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/admin.js"></script>
+<script src="//cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    var token = sessionStorage.getItem('token');
+    var table = null;
+    var currentDetail = null;
+
+    function ajaxAuth(opts) {
+        opts.beforeSend = function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
+        };
+        opts.complete = function (xhr) {
+            // 응답으로 새 토큰이 내려오면 갱신
+            var newToken = xhr.getResponseHeader('Authorization');
+            if (newToken && newToken.indexOf('Bearer ') === 0) {
+                sessionStorage.setItem('token', newToken.substring(7));
+            }
+        };
+        return $.ajax(opts);
+    }
+
+    function statusBadge(s) {
+        var label = s === 'REQUESTED' ? '환불 신청' : (s === 'COMPLETED' ? '환불 완료' : s);
+        return '<span class="badge-status badge-' + s + '">' + label + '</span>';
+    }
+
+    function formatNumber(n) {
+        if (n == null) return '';
+        return Number(n).toLocaleString();
+    }
+
+    function loadList() {
+        var params = $.param({
+            status:   $('#fStatus').val() || '',
+            mobileno: $('#fMobileno').val().trim(),
+            from:     $('#fFrom').val(),
+            to:       $('#fTo').val()
+        });
+
+        ajaxAuth({
+            type: 'GET',
+            url: '/api/v1.0/admin/refund?' + params,
+            success: function (res) {
+                var data = typeof res === 'string' ? JSON.parse(res) : res;
+                if (data.code !== 200) {
+                    alert(data.msg || '조회 실패');
+                    return;
+                }
+                renderTable(data.data || []);
+            },
+            error: function () { alert('서버 오류'); }
+        });
+    }
+
+    function renderTable(rows) {
+        if (table) { table.destroy(); $('#refundTable tbody').empty(); }
+        var $tbody = $('#refundTable tbody');
+        rows.forEach(function (r) {
+            var period = (r.useStartDate || '') + ' ~ ' + (r.useEndDate || '');
+            var btn = '<button class="btn btn-sm btn-primary" data-id="' + r.id + '">상세</button>';
+            $tbody.append(
+                '<tr>' +
+                    '<td>' + r.id + '</td>' +
+                    '<td>' + (r.mobileno || '') + '</td>' +
+                    '<td>' + (r.name || '') + '</td>' +
+                    '<td>' + (r.bankName || '') + '</td>' +
+                    '<td style="text-align:right;">' + formatNumber(r.refundAmount) + '</td>' +
+                    '<td>' + period + '</td>' +
+                    '<td>' + statusBadge(r.status) + '</td>' +
+                    '<td>' + (r.requestDate || '') + '</td>' +
+                    '<td>' + (r.processedDate || '') + '</td>' +
+                    '<td>' + (r.processedBy || '') + '</td>' +
+                    '<td>' + btn + '</td>' +
+                '</tr>'
+            );
+        });
+        table = $('#refundTable').DataTable({
+            order: [[ 0, 'desc' ]],
+            lengthMenu: [10, 25, 50, 100]
+        });
+    }
+
+    $('#refundTable tbody').on('click', 'button[data-id]', function () {
+        var id = $(this).data('id');
+        openDetail(id);
+    });
+
+    function openDetail(id) {
+        ajaxAuth({
+            type: 'GET',
+            url: '/api/v1.0/admin/refund/' + id,
+            success: function (res) {
+                var data = typeof res === 'string' ? JSON.parse(res) : res;
+                if (data.code !== 200) { alert(data.msg || '조회 실패'); return; }
+                currentDetail = data.data;
+                fillDetail(currentDetail);
+                var modal = new bootstrap.Modal(document.getElementById('detailModal'));
+                modal.show();
+            },
+            error: function () { alert('서버 오류'); }
+        });
+    }
+
+    function fillDetail(d) {
+        $('#dt_id').text(d.id);
+        $('#dt_status').html(statusBadge(d.status));
+        $('#dt_mobileno').text(d.mobileno || '');
+        $('#dt_name').text(d.name || '');
+        $('#dt_birth').text(d.birth || '');
+        $('#dt_bank').text((d.bankName || '') + ' (' + (d.bankCode || '') + ')');
+        $('#dt_account').text(d.account || d.accountMasked || '');
+        $('#dt_period').text((d.useStartDate || '') + ' ~ ' + (d.useEndDate || ''));
+        $('#dt_amount').text(formatNumber(d.refundAmount) + '원');
+        $('#dt_request').text(d.requestDate || '');
+        $('#dt_processed').text((d.processedDate || '-') + (d.processedBy ? ' / ' + d.processedBy : ''));
+        $('#dt_memo').text(d.memo || '-');
+
+        var $tb = $('#dt_breakdown').empty();
+        (d.breakdown || []).forEach(function (b) {
+            $tb.append(
+                '<tr>' +
+                    '<td>' + b.ym + '</td>' +
+                    '<td>' + b.monthStart + ' ~ ' + b.monthEnd + '</td>' +
+                    '<td>' + b.usedDays + '</td>' +
+                    '<td>' + b.totalDays + '</td>' +
+                    '<td>' + Number(b.dailyFee).toFixed(2) + '</td>' +
+                    '<td>' + formatNumber(b.amount) + '</td>' +
+                '</tr>'
+            );
+        });
+
+        $('#dt_completeMemo').val('');
+        if (d.status === 'COMPLETED') {
+            $('#btnComplete').prop('disabled', true).text('이미 완료됨');
+            $('#dt_completeMemo').prop('disabled', true);
+        } else {
+            $('#btnComplete').prop('disabled', false).text('환불 완료 처리');
+            $('#dt_completeMemo').prop('disabled', false);
+        }
+    }
+
+    $('#btnComplete').on('click', function () {
+        if (!currentDetail) return;
+        if (!confirm('환불 완료 처리하시겠습니까?\n(처리 후에는 되돌릴 수 없습니다)')) return;
+
+        ajaxAuth({
+            type: 'PUT',
+            url: '/api/v1.0/admin/refund/' + currentDetail.id + '/complete',
+            contentType: 'application/json',
+            data: JSON.stringify({ memo: $('#dt_completeMemo').val() }),
+            success: function (res) {
+                var data = typeof res === 'string' ? JSON.parse(res) : res;
+                if (data.code === 200) {
+                    alert('환불 완료 처리되었습니다.');
+                    bootstrap.Modal.getInstance(document.getElementById('detailModal')).hide();
+                    loadList();
+                } else if (data.code === 909) {
+                    alert('이미 완료 처리된 건입니다.');
+                } else {
+                    alert(data.msg || '처리 실패');
+                }
+            },
+            error: function () { alert('서버 오류'); }
+        });
+    });
+
+    $('#btnFilter').on('click', loadList);
+    $('#btnReset').on('click', function () {
+        $('#fStatus').val(''); $('#fMobileno').val(''); $('#fFrom').val(''); $('#fTo').val('');
+        loadList();
+    });
+
+    // 초기 로딩
+    loadList();
+});
+</script>
+</body>
+</html>

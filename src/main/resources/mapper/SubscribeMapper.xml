@@ -41,7 +41,15 @@
     <select id="getSubscribeByMobileno" resultMap="ResultMap">
         SELECT * FROM subscribe WHERE mobileno=#{mobileno} and status='A'
     </select>
-    
+
+    <!-- 환불 처리용: 상태 무관하게 가장 마지막 가입(가장 최근 created_at) 1건 -->
+    <select id="selectLatestByMobileno" resultMap="ResultMap">
+        SELECT * FROM subscribe
+         WHERE mobileno = #{mobileno}
+         ORDER BY created_at DESC, id DESC
+         LIMIT 1
+    </select>
+
     <select id="getTodaySubscribeByMobileno" resultMap="ResultMap">
         SELECT * FROM subscribe WHERE mobileno=#{mobileno} and DATE(created_at)=CURDATE()
     </select>

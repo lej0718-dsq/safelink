@@ -13,7 +13,9 @@ public interface SubscribeMapper {
 	Subscribe getSubscribeById(@Param("id") int id);
 	
 	List<Subscribe> getSubscribeByMobileno(Subscribe data);
-	
+
+	Subscribe selectLatestByMobileno(@Param("mobileno") String mobileno);
+
 	List<Subscribe> getTodaySubscribeByMobileno(Subscribe data);
 	
 	List<Subscribe> getSubscribeAll();

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dsqd.amc.linkedmo.mapper.RefundMapper">
+
+    <resultMap id="RefundResultMap" type="com.dsqd.amc.linkedmo.model.Refund">
+        <id     column="id"             property="id" />
+        <result column="mobileno"       property="mobileno" />
+        <result column="name"           property="name" />
+        <result column="birth"          property="birth" />
+        <result column="bank_code"      property="bankCode" />
+        <result column="bank_name"      property="bankName" />
+        <result column="account_enc"    property="accountEnc" />
+        <result column="subscribe_id"   property="subscribeId" />
+        <result column="use_start_date" property="useStartDate" />
+        <result column="use_end_date"   property="useEndDate" />
+        <result column="refund_amount"  property="refundAmount" />
+        <result column="status"         property="status" />
+        <result column="memo"           property="memo" />
+        <result column="request_date"   property="requestDate" />
+        <result column="processed_date" property="processedDate" />
+        <result column="processed_by"   property="processedBy" />
+    </resultMap>
+
+    <resultMap id="RefundDetailResultMap" type="com.dsqd.amc.linkedmo.model.RefundDetail">
+        <id     column="id"          property="id" />
+        <result column="refund_id"   property="refundId" />
+        <result column="ym"          property="ym" />
+        <result column="month_start" property="monthStart" />
+        <result column="month_end"   property="monthEnd" />
+        <result column="used_days"   property="usedDays" />
+        <result column="total_days"  property="totalDays" />
+        <result column="daily_fee"   property="dailyFee" />
+        <result column="amount"      property="amount" />
+    </resultMap>
+
+    <insert id="insertRefund" parameterType="com.dsqd.amc.linkedmo.model.Refund"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO refund (
+            mobileno, name, birth, bank_code, bank_name, account_enc,
+            subscribe_id, use_start_date, use_end_date, refund_amount,
+            status, memo, request_date
+        ) VALUES (
+            #{mobileno}, #{name}, #{birth}, #{bankCode}, #{bankName}, #{accountEnc},
+            #{subscribeId}, #{useStartDate}, #{useEndDate}, #{refundAmount},
+            #{status}, #{memo}, NOW()
+        )
+    </insert>
+
+    <insert id="insertRefundDetail" parameterType="com.dsqd.amc.linkedmo.model.RefundDetail"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO refund_detail (
+            refund_id, ym, month_start, month_end,
+            used_days, total_days, daily_fee, amount
+        ) VALUES (
+            #{refundId}, #{ym}, #{monthStart}, #{monthEnd},
+            #{usedDays}, #{totalDays}, #{dailyFee}, #{amount}
+        )
+    </insert>
+
+    <select id="selectById" resultMap="RefundResultMap">
+        SELECT * FROM refund WHERE id = #{id}
+    </select>
+
+    <select id="selectByQuery" resultMap="RefundResultMap">
+        SELECT * FROM refund
+        <where>
+            <if test="q.status != null and q.status != ''">
+                AND status = #{q.status}
+            </if>
+            <if test="q.mobileno != null and q.mobileno != ''">
+                AND mobileno LIKE CONCAT('%', #{q.mobileno}, '%')
+            </if>
+            <if test="q.from != null and q.from != ''">
+                AND request_date &gt;= CONCAT(#{q.from}, ' 00:00:00')
+            </if>
+            <if test="q.to != null and q.to != ''">
+                AND request_date &lt;= CONCAT(#{q.to}, ' 23:59:59')
+            </if>
+        </where>
+        ORDER BY request_date DESC, id DESC
+    </select>
+
+    <select id="countByMobilenoAndStatus" resultType="int">
+        SELECT COUNT(*) FROM refund
+        WHERE mobileno = #{mobileno}
+          AND status   = #{status}
+    </select>
+
+    <update id="updateToCompleted">
+        UPDATE refund
+           SET status         = 'COMPLETED',
+               processed_by   = #{processedBy},
+               processed_date = NOW(),
+               memo           = #{memo}
+         WHERE id     = #{id}
+           AND status = 'REQUESTED'
+    </update>
+
+    <select id="selectDetailsByRefundId" resultMap="RefundDetailResultMap">
+        SELECT * FROM refund_detail
+         WHERE refund_id = #{refundId}
+         ORDER BY ym ASC
+    </select>
+
+</mapper>
