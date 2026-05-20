@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.dsqd.amc.linkedmo.GlobalCache;
 import com.dsqd.amc.linkedmo.config.MyBatisConfig;
 import com.dsqd.amc.linkedmo.mapper.RefundMapper;
+import com.dsqd.amc.linkedmo.model.Blocknumber;
 import com.dsqd.amc.linkedmo.model.Refund;
 import com.dsqd.amc.linkedmo.model.RefundCalculation;
 import com.dsqd.amc.linkedmo.model.RefundDetail;
@@ -44,11 +45,13 @@ public class RefundService {
 
     private final SqlSessionFactory sqlSessionFactory;
     private final SubscribeService subscribeService;
+    private final BlocknumberService blocknumberService;
     private final RefundCalculator calculator;
 
     public RefundService() {
         this.sqlSessionFactory = MyBatisConfig.getSqlSessionFactory();
         this.subscribeService = new SubscribeService();
+        this.blocknumberService = new BlocknumberService();
         this.calculator = new RefundCalculator();
     }
 
@@ -188,6 +191,25 @@ public class RefundService {
 
         logger.info("Refund applied: id={}, mobileno={}, amount={}",
             refund.getId(), AccountMasker.maskPhone(phone), calc.getTotalAmount());
+
+        // 9) 재가입 차단 신청 처리 (환불 INSERT 와 분리: 여기서 실패해도 환불은 성공으로 본다)
+        //    status / createat 컬럼은 DB DEFAULT 값을 사용하므로 명시하지 않음
+        if (req.isBlockRejoin()) {
+            try {
+                Blocknumber bn = Blocknumber.builder()
+                    .spcode("SKT")
+                    .mobileno(phone)
+                    .usernameofoper("admin")
+                    .remark("미인지")
+                    .build();
+                blocknumberService.insertBlocknumber(bn);
+                logger.info("Block-rejoin registered: mobileno={}, refundId={}",
+                    AccountMasker.maskPhone(phone), refund.getId());
+            } catch (Exception e) {
+                logger.error("Block-rejoin insert failed (refund still OK): mobileno={}, refundId={}",
+                    AccountMasker.maskPhone(phone), refund.getId(), e);
+            }
+        }
 
         return ApplyResult.ok(refund, calc);
     }

@@ -1000,6 +1000,25 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- SKT 만 75세 이상 가입 확인 안내 모달 -->
+	<div id="elderlyConsentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999;">
+		<div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.3); width:360px; max-width:90%; text-align:left;">
+			<h3 style="margin:0 0 16px 0; color:#333; font-size:18px; text-align:center;">가입 확인 안내</h3>
+			<p style="margin:0 0 12px 0; color:#333; font-size:14px; line-height:1.5;text-align: center;">
+				고객님은 SKT 만 75세 이상 가입자로 확인되었습니다.
+			</p>
+			<p style="margin:0 0 20px 0; color:#666; font-size:13px; line-height:1.5;text-align: center;">
+				본 서비스는 매월 <strong>1,650원</strong>이 통신요금에 자동 청구되는 부가서비스이며,
+				복잡한 디지털 조작이 필요할 수 있습니다.<br>
+				언제든지 해지 가능합니다.
+			</p>
+			<div style="display:flex; gap:10px;">
+				<button type="button" id="elderlyConfirm" style="flex:1; padding:12px; background:#007bff; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">가입 진행</button>
+				<button type="button" id="elderlyCancel" style="flex:1; padding:12px; background:#6c757d; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">취소</button>
+			</div>
+		</div>
+	</div>
 	</div>
 </body>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>

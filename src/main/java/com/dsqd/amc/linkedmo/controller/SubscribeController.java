@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Properties;
 
 import com.dsqd.amc.linkedmo.model.Mobilians;
@@ -30,7 +31,9 @@ import com.dsqd.amc.linkedmo.naru.SubscribeNaru;
 import com.dsqd.amc.linkedmo.service.BlocknumberService;
 import com.dsqd.amc.linkedmo.service.SubscribeService;
 import com.dsqd.amc.linkedmo.skt.SubscribeSK;
+import com.dsqd.amc.linkedmo.GlobalCache;
 import com.dsqd.amc.linkedmo.util.AES256Util;
+import com.dsqd.amc.linkedmo.util.AgeUtil;
 import com.dsqd.amc.linkedmo.util.InterfaceManager;
 import com.dsqd.amc.linkedmo.util.JSONHelper;
 import com.dsqd.amc.linkedmo.util.TestMobileno;
@@ -44,12 +47,31 @@ import javax.servlet.ServletException;
 
 public class SubscribeController {
 	private static final Logger logger = LoggerFactory.getLogger(SubscribeController.class);
+
+	/** SKT 만 75세 이상 가입 확인 안내 임계 연령 기본값 */
+	private static final int DEFAULT_ELDERLY_THRESHOLD = 75;
+
 	private SubscribeService service = new SubscribeService();
 	private InterfaceManager itfMgr = InterfaceManager.getInstance();
 	private MobiliansService mobiliansService = new MobiliansService();
 
 	public SubscribeController() {
 		setupEndpoints();
+	}
+
+	/**
+	 * application.properties 의 subscribe.elderly.threshold 값을 읽어 int 로 반환.
+	 * 값이 없거나 파싱 실패 시 기본값(75) 반환.
+	 */
+	private static int elderlyThreshold() {
+		String v = GlobalCache.getInstance().getAsString("subscribe.elderly.threshold");
+		if (v == null) return DEFAULT_ELDERLY_THRESHOLD;
+		try {
+			return Integer.parseInt(v.trim());
+		} catch (NumberFormatException e) {
+			logger.warn("Invalid subscribe.elderly.threshold value [{}], fallback to {}", v, DEFAULT_ELDERLY_THRESHOLD);
+			return DEFAULT_ELDERLY_THRESHOLD;
+		}
 	}
 
 	private void setupEndpoints() {
@@ -263,6 +285,19 @@ public class SubscribeController {
 								else
 									data.setSpuserid(responseJSON.getAsString("SVC_MGMT_NUM"));
 
+								// 만 75세 이상 가입 확인 안내 — 동일 응답으로 재검증 (추가 외부 호출 없음)
+								OptionalInt age = AgeUtil.calcKoreanAge(responseJSON.getAsString("SSN_BIRTH_DT"));
+								int threshold = elderlyThreshold();
+								boolean elderly = age.isPresent() && age.getAsInt() >= threshold;
+								boolean confirmed = Boolean.TRUE.equals(jsonObject.get("elderlyConfirmed"));
+
+								if (elderly && !confirmed) {
+									logger.warn("Elderly consent missing: mobileno={}, age={}, threshold={}",
+										mobileno, age, threshold);
+									return JSONHelper.assembleResponse(934,
+										"만 75세 이상 가입자는 가입 확인 동의가 필요합니다.[934]");
+								}
+
 								responseJSON = skt.subscribe(data);
 
 							} else if ("KTF".equals(data.getSpcode())) {
@@ -356,6 +391,9 @@ public class SubscribeController {
 							// KT,LGU 통신사는 PG사에서 소액 결제 프로세스로 처리됨에 따라 통신사 검증 하지 않고 문자 인증으로 번호만 검증
 							Subscribe data = Subscribe.builder().mobileno(mobileno).build();
 
+							// SKT 만 75세 이상 가입 확인 안내 플래그 (응답에 포함)
+							boolean elderlyConsentRequired = false;
+
 							if (jsonObject.getAsString("spcode").equals("SKT")) {
 								SubscribeSK skt = new SubscribeSK();
 								JSONObject responseJSON = skt.user(data); // 사용자가 있는지 확인
@@ -363,6 +401,18 @@ public class SubscribeController {
 									return responseJSON;
 								else
 									data.setSpuserid(responseJSON.getAsString("SVC_MGMT_NUM"));
+
+								// 동일 응답에서 SSN_BIRTH_DT 추출 → 만 나이 산출 (추가 외부 호출 없음)
+								String birthDt = responseJSON.getAsString("SSN_BIRTH_DT");
+								int threshold = elderlyThreshold();
+								OptionalInt age = AgeUtil.calcKoreanAge(birthDt);
+								elderlyConsentRequired = age.isPresent() && age.getAsInt() >= threshold;
+
+								if (!age.isPresent()) {
+									logger.warn("SSN_BIRTH_DT missing or invalid: mobileno={}, raw={}", mobileno, birthDt);
+								}
+								logger.info("Elderly check: mobileno={}, age={}, threshold={}, required={}",
+									mobileno, age, threshold, elderlyConsentRequired);
 							}
 
 							SubscribeMobiletown smt = new SubscribeMobiletown();
@@ -387,7 +437,9 @@ public class SubscribeController {
 								code = (int) json.get("code");
 								msg = json.getAsString("msg");
 							}
-							return JSONHelper.assembleResponse(code, msg);
+							JSONObject ret = JSONHelper.assembleResponse(code, msg);
+							ret.put("elderlyConsentRequired", elderlyConsentRequired);
+							return ret;
 						});
 
 						//

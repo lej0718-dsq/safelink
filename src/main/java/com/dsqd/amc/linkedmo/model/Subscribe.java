@@ -36,6 +36,8 @@ public class Subscribe {
     private int coupon_count;
     private int coupon_max_count;
     private String linkno;
+    /** SKT 만 75세 이상 가입 확인 안내 동의 여부 (요청 body 수신 전용) */
+    private boolean elderlyConfirmed;
 
     public String toJSONString() {
         JSONObject jsonObject = new JSONObject();

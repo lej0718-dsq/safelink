@@ -22,4 +22,5 @@ public class RefundRequest {
     private String bankCode;
     private String bankName;
     private String account;   // 평문 — 로그 노출 금지
+    private boolean blockRejoin;  // 재가입 차단 신청 여부 (체크 시 blocknumbers INSERT)
 }

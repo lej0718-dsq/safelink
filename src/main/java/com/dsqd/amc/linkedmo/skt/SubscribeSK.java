@@ -238,20 +238,22 @@ public class SubscribeSK {
 				msg = "";
 				JSONObject jsonBody = (JSONObject) itfJSON.get("BODY");
 				String SVC_MGMT_NUM = jsonBody.getAsString("SVC_MGMT_NUM");
-				logger.info("SVC_MGMT_NUM : {}", SVC_MGMT_NUM);
+				String SSN_BIRTH_DT = jsonBody.getAsString("SSN_BIRTH_DT"); // 75+ 가입 확인용 (yyyyMMdd)
+				logger.info("SVC_MGMT_NUM : {}, SSN_BIRTH_DT : {}", SVC_MGMT_NUM, SSN_BIRTH_DT);
 				JSONObject obj = new JSONObject();
 				obj.put("SVC_MGMT_NUM", SVC_MGMT_NUM);
+				obj.put("SSN_BIRTH_DT", SSN_BIRTH_DT);
 				api = null;
 				return JSONHelper.assembleResponse(code, obj);
 			} else {
 				msg = "RESULT 이상 : " + RESULT + "/" + RESULT_CODE;
 			}
-			
+
 		} else {
 			api = null;
 			return JSONHelper.assembleResponse(999, "서비스가 원활하지 않습니다. 잠시 후 다시 시도해주세요.[999]");
 		}
-		
+
 		api = null;
 		return JSONHelper.assembleResponse(code, msg);
 	}
