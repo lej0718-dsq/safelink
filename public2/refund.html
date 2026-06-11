@@ -19,6 +19,9 @@
         #refund_wrap .refund_tit { font-size: 20px; color: #000; font-weight: 800; text-align: center; padding-bottom: 30px; border-bottom: 2px solid #222; margin-bottom: 24px; }
         #refund_wrap .refund_desc { padding: 16px 14px; background: #f5f5f5; border-radius: 10px; margin-bottom: 24px; font-size: 13px; color: #333; line-height: 1.5; }
         #refund_wrap .refund_desc b { color: #0077ff; font-weight: 700; }
+        #refund_wrap .refund_desc_link { margin: 10px 0 0; padding-top: 10px; border-top: 1px dashed #ddd; font-size: 13px; color: #555; }
+        #refund_wrap .refund_desc_link a { color: #0077ff; font-weight: 700; text-decoration: none; margin-left: 4px; }
+        #refund_wrap .refund_desc_link a:hover { text-decoration: underline; }
 
         #refund_wrap .refund_field { margin-bottom: 16px; }
         #refund_wrap .refund_field label { display: block; font-size: 14px; font-weight: 700; color: #222; margin-bottom: 6px; }
@@ -119,6 +122,10 @@
             <div class="refund_desc">
                 환불금 입금을 위해 아래 정보를 입력해 주세요.<br>
                 입력하신 정보는 <b>환불 처리 목적으로만 사용</b>되며, 처리 완료 후 안전하게 파기됩니다.
+                <p class="refund_desc_link">
+                    아직 해지하지 않으셨나요?
+                    <a href="javascript:void(0);" id="openCancelPopup">서비스 해지 ›</a>
+                </p>
             </div>
 
             <form id="refundForm" novalidate autocomplete="off">
@@ -126,8 +133,8 @@
                 <div class="refund_field" data-field="name">
                     <label for="rf_name">이름<span class="req">*</span></label>
                     <input type="text" id="rf_name" name="name" class="refund_input"
-                           placeholder="실명을 입력해주세요" maxlength="20" autocomplete="name" />
-                    <p class="field_error">이름을 정확히 입력해주세요.</p>
+                           placeholder="한글 실명을 입력해주세요" maxlength="20" autocomplete="name" />
+                    <p class="field_error">이름은 한글 2~20자로 입력해주세요.</p>
                 </div>
 
                 <!-- 생년월일 -->
@@ -257,25 +264,16 @@ $(function () {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
 
-    // 이름: 한글/공백만 — IME 조합 중에는 필터링 건너뜀
-    // (한글 자모 ㄱ,ㅎ,ㅏ 등은 [가-힣] 범위 밖이라, 조합 중 필터하면 입력이 끊김)
-    var rfNameComposing = false;
-    $('#rf_name')
-        .on('compositionstart', function () { rfNameComposing = true; })
-        .on('compositionend', function () {
-            rfNameComposing = false;
-            this.value = this.value.replace(/[^가-힣\s]/g, '');
-        })
-        .on('input', function (e) {
-            // IME 조합 중이면 필터링 안 함
-            if (rfNameComposing) return;
-            if (e.originalEvent && e.originalEvent.isComposing) return;
-            this.value = this.value.replace(/[^가-힣\s]/g, '');
-        });
+    // 이름: 입력 중에는 필터링하지 않음 (iOS Safari IME 호환).
+    // 한글이 아닌 문자는 blur 시점에 정리하고, 최종 검증은 제출 시 isValidName 에서 수행.
+    $('#rf_name').on('blur', function () {
+        this.value = this.value.replace(/[^가-힣\s]/g, '').replace(/\s+/g, ' ').trim();
+    });
 
     // ----- 검증 함수 -----
+    // 이름: 한글(완성형 음절) + 공백, 2~20자
     function isValidName(v) {
-        return /^[가-힣a-zA-Z\s]{2,20}$/.test(v.trim());
+        return /^[가-힣\s]{2,20}$/.test(v.trim());
     }
     function isValidBirth(v) {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
@@ -434,6 +432,12 @@ $(function () {
             $('.refund_field').removeClass('has-error');
             $('#rf_name').focus();
         }
+    });
+
+    // ----- 서비스 해지 팝업 (index.html 의 showPopup02 동일 패턴) -----
+    $(document).on('click', '#openCancelPopup', function () {
+        window.open('cancel.html', 'safelink_cancel_popup',
+            'width=420, height=650, left=100, top=100');
     });
 });
 </script>
