@@ -34,29 +34,14 @@
 				<input type="hidden" name="checkcode" id="checkcode" value="" />
 				<input type="hidden" name="payGbn" id="payGbn" value="phone" />
 
-				<div class="agree_wrap">
-					<p class="agree_txt02">
-						휴대폰약속번호 서비스는 본인의 휴대폰번호를 노출하지 않고 약속된 연결번호로 연락하는 안전한 통화서비스입니다.
-					</p>
+				<div class="header_visual">
+					<img src="images/header.jpg"
+						alt="휴대폰약속번호 - 휴대폰번호를 노출하지 않고 약속된 연결번호로 연락하는 안전한 통화서비스"
+						width="1125" height="450"
+						fetchpriority="high"
+						style="display:block; width:100%; height:auto; border-radius:10px;">
 				</div>
 
-				<div class="phone_info">
-					<strong>가입 전화번호 입력</strong>
-					<ul>
-						<li><button class="service_j_btn" id="SKT">SKT</button></li>
-						<li><button class="service_j_btn" id="KTF">KT</button></li>
-						<li><button class="service_j_btn" id="LGT">LGU+</button></li>
-					</ul>
-
-					<div class="number number2">
-						<input type="text" id="phoneNumber" class="phone02" placeholder="전화번호를 입력하세요.">
-						<button type="button" class="btn-success disable_btn" id="sendotp">인증번호요청</button>
-					</div>
-					<div class="number number2">
-						<input type="text" id="otpNumber" class="phone02" placeholder="인증번호 6자리를 입력하세요." maxlength="6">
-						<button type="button" class="btn-success disable_btn" id="checkotp">확인하기</button>
-					</div>
-				</div>
 
 				<div class="agree_wrap">
 					<p class="agree_tit">
@@ -936,7 +921,7 @@
 												</tr>
 												<tr>
 												  <th style="border: 1px solid #444444;">제공 항목</th>
-												  <td style="border: 1px solid #444444;">휴대폰번호</td>
+												  <td style="border: 1px solid #444444;">휴대폰번호, 생년월일, 부가서비스 가입내역</td>
 												</tr>
 												<tr>
 												  <th style="border: 1px solid #444444;">보유 기간</th>
@@ -955,6 +940,23 @@
 							</div>
 						</div>
 					</p>
+				<div class="phone_info">
+					<strong>가입 전화번호 입력</strong>
+					<ul>
+						<li><button class="service_j_btn" id="SKT">SKT</button></li>
+						<li><button class="service_j_btn" id="KTF">KT</button></li>
+						<li><button class="service_j_btn" id="LGT">LGU+</button></li>
+					</ul>
+
+					<div class="number number2">
+						<input type="text" id="phoneNumber" class="phone02" placeholder="전화번호를 입력하세요.">
+						<button type="button" class="btn-success disable_btn" id="sendotp">인증번호요청</button>
+					</div>
+					<div class="number number2">
+						<input type="text" id="otpNumber" class="phone02" placeholder="인증번호 6자리를 입력하세요." maxlength="6">
+						<button type="button" class="btn-success disable_btn" id="checkotp">확인하기</button>
+					</div>
+				</div>
 				</form>
 				</div>
 				<div class="agree_wrap" style="margin-bottom: 24px;padding-bottom: 0px;">
@@ -1022,7 +1024,7 @@
 	</div>
 </body>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script type="text/javascript" src="js/popup_subscribe_pg.js?20241120"></script>
+<script type="text/javascript" src="js/popup_subscribe_pg.js?20260625"></script>
 <script type="text/javascript" src="js/event_null.js?20241120"></script>
 <script src="https://mup.mobilians.co.kr/js/ext/ext_inc_comm.js"></script>
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>

@@ -76,6 +76,16 @@ $(document).ready(function () {
 		let classList = $('#sendotp').attr('class');
 		console.log(classList);
 		if (classList == 'btn-success') {
+			// 약관 동의 선행 체크 (약관 동의 → 휴대폰 인증 순서)
+			var allAgreed = $('#agree1').is(':checked') && $('#agree2').is(':checked') && $('#agree3').is(':checked');
+			if (!allAgreed) {
+				alert('서비스약관, 개인정보수집동의, 제3자정보제공동의에 먼저 동의해주세요.');
+				if (!$('#agree1').is(':checked')) { $('#agree1').focus(); }
+				else if (!$('#agree2').is(':checked')) { $('#agree2').focus(); }
+				else { $('#agree3').focus(); }
+				return;
+			}
+
 			// =================================================== 
 			var telcoSelected = $('#spcode').val().length > 0;
 			if (!telcoSelected) {
