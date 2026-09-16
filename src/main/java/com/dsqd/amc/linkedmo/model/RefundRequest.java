@@ -23,4 +23,5 @@ public class RefundRequest {
     private String bankName;
     private String account;   // 평문 — 로그 노출 금지
     private boolean blockRejoin;  // 재가입 차단 신청 여부 (체크 시 blocknumbers INSERT)
+    private String checkcode;     // 번호인증(OTP) 성공 시 발급된 AES256 인증 토큰 (mobileno|rnumber|timestamp)
 }

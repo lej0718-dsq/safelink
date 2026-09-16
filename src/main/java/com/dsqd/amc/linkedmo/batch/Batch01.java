@@ -87,6 +87,26 @@ public class Batch01 implements Task {
     		if (data != null && data.size() > 0) {
     			total_user = data.size();
     			logger.info("BatchName : [{}/{}] - Work Size : {}", batch_name, env, data.size());
+    			// NARU 등 외부 API 과다 호출 방지용 요청 간 딜레이(ms). 기본 100ms, batch01.request.delay.ms 로 조정.
+    			long requestDelayMs;
+    			try {
+    				requestDelayMs = Long.parseLong(prop.getProperty("batch01.request.delay.ms", "100"));
+    			} catch (NumberFormatException nfe) {
+    				requestDelayMs = 100L;
+    			}
+    			// getData 등 일시적 실패 시 재시도 횟수/간격(ms).
+    			int naruRetryCount;
+    			long naruRetryDelayMs;
+    			try {
+    				naruRetryCount = Integer.parseInt(prop.getProperty("batch01.naru.retry.count", "2"));
+    			} catch (NumberFormatException nfe) {
+    				naruRetryCount = 2;
+    			}
+    			try {
+    				naruRetryDelayMs = Long.parseLong(prop.getProperty("batch01.naru.retry.delay.ms", "300"));
+    			} catch (NumberFormatException nfe) {
+    				naruRetryDelayMs = 300L;
+    			}
     			for (Subscribe u: data ) {
 					try {
 						if ("A".equals(u.getStatus()) ) { // 유효한 사용자 목록
@@ -123,6 +143,19 @@ public class Batch01 implements Task {
 
 							SubscribeNaru naru = new SubscribeNaru();
 							responseJSON = naru.getData(u);
+							// 일시적 실패(예: NARU DB 순간혼잡 → 404/5xx/타임아웃 → 923) 시 재호출
+							for (int naruTry = 1; naruTry <= naruRetryCount
+									&& !"200".equals(responseJSON.getAsString("code")); naruTry++) {
+								logger.warn("NARU getData 실패(code={}) 재시도 {}/{} : {}",
+										responseJSON.getAsString("code"), naruTry, naruRetryCount, u.getMobileno());
+								try {
+									Thread.sleep(naruRetryDelayMs);
+								} catch (InterruptedException ie) {
+									Thread.currentThread().interrupt();
+									break;
+								}
+								responseJSON = naru.getData(u);
+							}
 							logger.info("({}) NARU DATA STATUS: [{}][{}]", String.format("%06d", subscribe_user), responseJSON.getAsString("nowstatutsut"), u.getMobileno());
 
 							if ("T0".equals(category)) {
@@ -160,6 +193,16 @@ public class Batch01 implements Task {
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
+					}
+
+					// 외부 API 과다 호출 방지 — 각 건 처리 후 딜레이
+					if (requestDelayMs > 0) {
+						try {
+							Thread.sleep(requestDelayMs);
+						} catch (InterruptedException ie) {
+							Thread.currentThread().interrupt();
+							break;
+						}
 					}
     				
     			}

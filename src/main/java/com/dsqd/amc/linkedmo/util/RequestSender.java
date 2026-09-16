@@ -5,6 +5,7 @@ import net.minidev.json.JSONValue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -92,21 +93,32 @@ public class RequestSender {
                 response = content.toString();
                 logger.info("서버 응답 정보: 서버=" + server + ", 응답시간: " + (endTime - startTime) + "ms, 응답내용: " + response);
                 serverSuccessMap.put(server, serverSuccessMap.getOrDefault(server, 0) + 1);
+            } else if (responseCode >= 400 && responseCode < 500) {
+                // 4xx 는 서버 장애가 아니라 요청/데이터 문제(예: 404 = 해당 번호 데이터 없음).
+                // 서버를 활성 목록에서 제거하지 않고, 이 요청만 실패로 처리한다.
+                String errorBody = readErrorBody(connection);
+                logger.warn("NARU 요청 4xx (서버는 정상 유지): 응답코드={}, URI={}, 파라미터={}, 바디={}",
+                        responseCode, uri, parameter, errorBody);
+                throw new NaruClientException(responseCode, errorBody);
             } else {
+                // 5xx 등은 서버 장애로 간주한다.
                 serverFailureMap.put(server, serverFailureMap.getOrDefault(server, 0) + 1);
                 logger.error("서버가 비정상 상태입니다. 응답 코드: {}", responseCode);
                 throw new IOException("서버가 비정상 상태입니다. 응답 코드: " + responseCode);
             }
+        } catch (NaruClientException e) {
+            // 4xx: 서버 장애가 아니므로 activeServerList 에서 제거하지 않는다. (요청만 실패)
+            throw e;
         } catch (IOException e) {
         	logger.error("서버 요청 중 IOException 발생: " + e.getMessage());
             System.err.println("서버 요청 중 IOException 발생: " + e.getMessage());
-            activeServerList.remove(server);
+            // 서버를 활성 목록에서 제거하지 않는다. (단일 서버·자동복구 부재 환경에서 제거는 전체 마비만 유발)
             serverFailureMap.put(server, serverFailureMap.getOrDefault(server, 0) + 1);
             throw e;
         } catch (Exception e) {
         	logger.error("서버 요청 중 오류 발생: " + e.getMessage());
             System.err.println("서버 요청 중 오류 발생: " + e.getMessage());
-            activeServerList.remove(server);
+            // 서버를 활성 목록에서 제거하지 않는다. (단일 서버·자동복구 부재 환경에서 제거는 전체 마비만 유발)
             serverFailureMap.put(server, serverFailureMap.getOrDefault(server, 0) + 1);
             throw e;
         } finally {
@@ -114,5 +126,23 @@ public class RequestSender {
             serverLoadMap.get(server).decrementAndGet();
         }
         return response;
+    }
+
+    /** 4xx/에러 응답의 바디를 읽어 반환한다. 없거나 실패하면 빈 문자열. */
+    private static String readErrorBody(HttpURLConnection connection) {
+        try {
+            InputStream es = connection.getErrorStream();
+            if (es == null) return "";
+            StringBuilder sb = new StringBuilder();
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(es))) {
+                String line;
+                while ((line = in.readLine()) != null) {
+                    sb.append(line);
+                }
+            }
+            return sb.toString();
+        } catch (Exception ex) {
+            return "";
+        }
     }
 }

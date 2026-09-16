@@ -25,4 +25,31 @@
         )
     </insert>
 
+    <!-- 장문(LMS/MMS) 발송 큐 -->
+    <insert id="insertAgtTran" parameterType="com.dsqd.amc.linkedmo.model.AgtTran">
+        INSERT INTO TB_AGT_TRAN (
+            TR_USER_ID,
+            TR_INST_DATE,
+            TR_SEND_DATE,
+            TR_DEST_ADDR,
+            TR_CALL_BACK,
+            TR_MSG_TYPE,
+            TR_CONTENTS_CNT,
+            TR_SUBJECT,
+            TR_MMS_MESSAGE,
+            TR_ORIG_ADDR
+        ) VALUES (
+            #{trUserId},
+            DATE_FORMAT(now(),'%Y%m%d%H%i%s'),
+            DATE_FORMAT(now(),'%Y%m%d%H%i%s'),
+            #{trDestAddr},
+            #{trCallBack},
+            #{trMsgType},
+            #{trContentsCnt},
+            #{trSubject},
+            #{trMmsMessage},
+            #{trOrigAddr}
+        )
+    </insert>
+
 </mapper>

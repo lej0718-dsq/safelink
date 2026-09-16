@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.dsqd.amc.linkedmo.mobiletown.SubscribeMobiletown;
 import com.dsqd.amc.linkedmo.model.Refund;
 import com.dsqd.amc.linkedmo.model.RefundCalculation;
 import com.dsqd.amc.linkedmo.model.RefundDetail;
@@ -22,6 +23,7 @@ import com.dsqd.amc.linkedmo.service.RefundService;
 import com.dsqd.amc.linkedmo.util.AccountMasker;
 import com.dsqd.amc.linkedmo.util.JSONHelper;
 import com.dsqd.amc.linkedmo.util.JwtUtil;
+import com.dsqd.amc.linkedmo.util.TestMobileno;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -54,6 +56,12 @@ public class RefundController {
                 // ─── 사용자 (JWT 미인증)
                 path("/refund", () -> {
                     post("", this::createRefund);
+
+                    // 번호인증 (환불 전용 OTP)
+                    path("/mobiletown", () -> {
+                        post("/sendsms",  this::sendOtp);
+                        post("/checkotp", this::checkOtp);
+                    });
                 });
 
                 // ─── 관리자 (JWT 필수)
@@ -61,6 +69,7 @@ public class RefundController {
                     get("",                  this::listRefunds);
                     get("/:id",              this::getRefund);
                     put("/:id/complete",     this::completeRefund);
+                    post("/:id/notify-check", this::notifyInfoCheck);
                 });
             });
         });
@@ -99,6 +108,81 @@ public class RefundController {
             logger.error("Refund create error", e);
             return JSONHelper.assembleResponse(998, "서버 오류가 발생했습니다.").toJSONString();
         }
+    }
+
+    // ============================================================
+    // 사용자: 번호인증 (환불 전용 OTP)
+    // ============================================================
+
+    /** 인증번호 발송 — 휴대폰번호 형식만 확인 후 OTP SMS 발송. (자격 검증은 검증 성공 후로 미룸) */
+    private Object sendOtp(Request req, Response res) {
+        res.type("application/json");
+        try {
+            JSONObject body = (JSONObject) JSONValue.parse(req.body());
+            String mobileno = normalizePhone(body == null ? null : body.getAsString("mobileno"));
+            if (!mobileno.matches("^010\\d{8}$")) {
+                return JSONHelper.assembleResponse(905, "휴대폰번호가 올바르지 않습니다.").toJSONString();
+            }
+
+            SubscribeMobiletown smt = new SubscribeMobiletown();
+            JSONObject json = new TestMobileno().isTestphone(mobileno)
+                ? smt.refundMobiletownPseudo(mobileno)
+                : smt.refundMobiletown(mobileno);
+
+            int code = (int) json.get("code");
+            String msg = json.getAsString("msg");
+            return JSONHelper.assembleResponse(code, msg == null ? "" : msg).toJSONString();
+        } catch (Exception e) {
+            logger.error("Refund sendOtp error", e);
+            return JSONHelper.assembleResponse(998, "인증번호 발송 중 오류가 발생했습니다.").toJSONString();
+        }
+    }
+
+    /**
+     * 인증번호 검증 — 성공 시 checkcode 발급 + 환불 자격/금액 미리보기 반환.
+     * (자격 검증을 인증 성공 이후로 두어 번호 열거를 통한 자격 노출을 막는다)
+     */
+    private Object checkOtp(Request req, Response res) {
+        res.type("application/json");
+        try {
+            JSONObject body = (JSONObject) JSONValue.parse(req.body());
+            String mobileno = normalizePhone(body == null ? null : body.getAsString("mobileno"));
+            String rnumber  = body == null ? null : body.getAsString("rnumber");
+            if (!mobileno.matches("^010\\d{8}$")) {
+                return JSONHelper.assembleResponse(905, "휴대폰번호가 올바르지 않습니다.").toJSONString();
+            }
+
+            // 1) OTP 검증
+            SubscribeMobiletown smt = new SubscribeMobiletown();
+            JSONObject otp = smt.refundMobiletownOtp(mobileno, rnumber);
+            if (200 != (int) otp.get("code")) {
+                return otp.toJSONString(); // 실패 코드/메시지 그대로 반환
+            }
+            String checkcode = otp.getAsString("checkcode");
+
+            // 2) 환불 자격/금액 미리보기 (계좌 입력 전 조기 반려)
+            RefundService.PrecheckResult pre = refundService.precheck(mobileno);
+            if (pre.code != 200) {
+                return JSONHelper.assembleResponse(pre.code, pre.msg).toJSONString();
+            }
+
+            JSONObject data = new JSONObject();
+            data.put("checkcode",     checkcode);
+            data.put("refundAmount",  pre.refundAmount);
+            data.put("useStartDate",  formatDate(pre.useStartDate));
+            data.put("useEndDate",    formatDate(pre.useEndDate));
+
+            JSONObject resBody = JSONHelper.assembleResponse(200, "");
+            resBody.put("data", data);
+            return resBody.toJSONString();
+        } catch (Exception e) {
+            logger.error("Refund checkOtp error", e);
+            return JSONHelper.assembleResponse(998, "인증번호 검증 중 오류가 발생했습니다.").toJSONString();
+        }
+    }
+
+    private static String normalizePhone(String raw) {
+        return raw == null ? "" : raw.replaceAll("[^0-9]", "");
     }
 
     // ============================================================
@@ -195,6 +279,31 @@ public class RefundController {
             return JSONHelper.assembleResponse(400, "잘못된 ID 입니다.").toJSONString();
         } catch (Exception e) {
             logger.error("Admin refund complete error", e);
+            return JSONHelper.assembleResponse(998, "처리 중 오류가 발생했습니다.").toJSONString();
+        }
+    }
+
+    // ============================================================
+    // 관리자: 정보 확인 요청 안내 문자 발송 (계좌번호 오류 등)
+    // ============================================================
+
+    private Object notifyInfoCheck(Request req, Response res) {
+        res.type("application/json");
+        try {
+            long id = Long.parseLong(req.params(":id"));
+            int code = refundService.notifyInfoCheck(id);
+            switch (code) {
+                case 200:
+                    return JSONHelper.assembleResponse(200, "").toJSONString();
+                case 404:
+                    return JSONHelper.assembleResponse(404, "환불 신청 내역을 찾을 수 없습니다.").toJSONString();
+                default:
+                    return JSONHelper.assembleResponse(998, "문자 발송 중 오류가 발생했습니다.").toJSONString();
+            }
+        } catch (NumberFormatException e) {
+            return JSONHelper.assembleResponse(400, "잘못된 ID 입니다.").toJSONString();
+        } catch (Exception e) {
+            logger.error("Admin refund notify-check error", e);
             return JSONHelper.assembleResponse(998, "처리 중 오류가 발생했습니다.").toJSONString();
         }
     }

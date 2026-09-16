@@ -208,7 +208,7 @@ $(document).ready(function () {
 					LoadingWithMaskOff(); 
 					var data = JSON.parse(response);
 			        if (data.code === 200) {
-			            alert('인증번호 검증이 되었어요. 약관동의 후 가입버튼을 눌러주세요.');
+			            alert('인증번호 검증이 되었어요.');
 						$('#steps').val("CONFIRMOTP");
 			            $('#checkotp').addClass("disable_btn");
 						$('#checkcode').val(data.checkcode);
@@ -405,8 +405,8 @@ $(document).ready(function () {
 			+     '<p style="margin:0 0 12px 0; color:#333; font-size:14px; line-height:1.5;text-align: center;">고객님은 SKT 만 75세 이상 가입자로 확인되었습니다.</p>'
 			+     '<p style="margin:0 0 20px 0; color:#666; font-size:13px; line-height:1.5;text-align: center;">본 서비스는 매월 <strong>1,650원</strong>이 통신요금에 자동 청구되는 부가서비스이며, 복잡한 디지털 조작이 필요할 수 있습니다.<br>언제든지 해지 가능합니다.</p>'
 			+     '<div style="display:flex; gap:10px;">'
-			+       '<button type="button" id="elderlyConfirm" style="flex:1; padding:12px; background:#007bff; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">가입 진행</button>'
-			+       '<button type="button" id="elderlyCancel" style="flex:1; padding:12px; background:#6c757d; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">취소</button>'
+			+       '<button type="button" id="elderlyCancel" style="flex:1; padding:12px; background:#6c757d; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">중단하기</button>'
+			+       '<button type="button" id="elderlyConfirm" style="flex:1; padding:12px; background:#007bff; color:white; border:none; border-radius:6px; font-size:16px; cursor:pointer;">계속 진행하기</button>'
 			+     '</div>'
 			+   '</div>'
 			+ '</div>';

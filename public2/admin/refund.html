@@ -107,6 +107,7 @@
             </div>
             <div class="modal-footer">
                 <textarea id="dt_completeMemo" class="form-control" rows="2" placeholder="환불 완료 메모(선택, 예: 5/13 송금 완료)" style="margin-right:8px;"></textarea>
+                <button type="button" id="btnNotifyCheck" class="btn btn-warning">정보 확인 요청</button>
                 <button type="button" id="btnComplete" class="btn btn-success">환불 완료 처리</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
             </div>
@@ -255,11 +256,34 @@ $(document).ready(function () {
         if (d.status === 'COMPLETED') {
             $('#btnComplete').prop('disabled', true).text('이미 완료됨');
             $('#dt_completeMemo').prop('disabled', true);
+            $('#btnNotifyCheck').prop('disabled', true);
         } else {
             $('#btnComplete').prop('disabled', false).text('환불 완료 처리');
             $('#dt_completeMemo').prop('disabled', false);
+            $('#btnNotifyCheck').prop('disabled', false);
         }
     }
+
+    $('#btnNotifyCheck').on('click', function () {
+        if (!currentDetail) return;
+        if (!confirm('신청자에게 "정보 확인 필요" 안내 문자를 발송하시겠습니까?')) return;
+
+        ajaxAuth({
+            type: 'POST',
+            url: '/api/v1.0/admin/refund/' + currentDetail.id + '/notify-check',
+            contentType: 'application/json',
+            data: '{}',
+            success: function (res) {
+                var data = typeof res === 'string' ? JSON.parse(res) : res;
+                if (data.code === 200) {
+                    alert('정보 확인 요청 문자가 발송되었습니다.');
+                } else {
+                    alert(data.msg || '문자 발송에 실패했습니다.');
+                }
+            },
+            error: function () { alert('서버 오류'); }
+        });
+    });
 
     $('#btnComplete').on('click', function () {
         if (!currentDetail) return;

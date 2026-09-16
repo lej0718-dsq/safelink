@@ -55,6 +55,28 @@
         #refund_wrap .refund_actions .btn_submit:disabled { background: #aaa; cursor: not-allowed; }
         #refund_wrap .refund_actions .btn_cancel { background: #f0f0f0; color: #333; }
 
+        /* 번호인증 섹션 */
+        #refund_wrap .verify_row { display: flex; gap: 8px; }
+        #refund_wrap .verify_row .refund_input { flex: 1; min-width: 0; }
+        #refund_wrap .btn_verify {
+            flex-shrink: 0; width: 96px; height: 44px; border: 0; border-radius: 6px;
+            background: #0077ff; color: #fff; font-size: 14px; font-weight: 700;
+            cursor: pointer; font-family: 'Pretendard', sans-serif;
+        }
+        #refund_wrap .btn_verify:disabled { background: #aaa; cursor: not-allowed; }
+        #refund_wrap .verify_done {
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            margin-top: 12px; padding: 12px 14px; background: #eef6ff; border-radius: 8px;
+        }
+        #refund_wrap .verify_done .verify_badge { color: #0077ff; font-weight: 700; font-size: 14px; }
+        #refund_wrap .verify_done .verify_amount { color: #003a78; font-weight: 800; font-size: 15px; }
+        /* 인증 전 정보입력 잠금 */
+        #refund_wrap .info_locked { opacity: 0.45; pointer-events: none; user-select: none; }
+        #refund_wrap .step_label {
+            font-size: 13px; font-weight: 700; color: #0077ff; margin: 0 0 10px;
+        }
+        #refund_wrap .info_section > .step_label { margin-top: 4px; }
+
         /* 재가입 차단 신청 박스 */
         #refund_wrap .refund_block { margin-top: 24px; padding: 14px 14px 12px; background: #fff8e1; border: 1px solid #f3d77a; border-radius: 8px; }
         #refund_wrap .refund_block_label { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; font-weight: 700; color: #5a3a00; cursor: pointer; }
@@ -120,7 +142,7 @@
             <h3 class="refund_tit">환불 정보 입력</h3>
 
             <div class="refund_desc">
-                환불금 입금을 위해 아래 정보를 입력해 주세요.<br>
+                환불금 입금을 위해 먼저 <b>휴대폰 번호 인증</b> 후 정보를 입력해 주세요.<br>
                 입력하신 정보는 <b>환불 처리 목적으로만 사용</b>되며, 처리 완료 후 안전하게 파기됩니다.
                 <p class="refund_desc_link">
                     아직 해지하지 않으셨나요?
@@ -128,7 +150,39 @@
                 </p>
             </div>
 
-            <form id="refundForm" novalidate autocomplete="off">
+            <!-- STEP 1) 번호인증 -->
+            <div class="refund_verify" id="verifySection">
+                <p class="step_label">STEP 1. 번호인증</p>
+                <div class="refund_field" data-field="phone">
+                    <label for="rf_phone">전화번호<span class="req">*</span></label>
+                    <div class="verify_row">
+                        <input type="tel" id="rf_phone" name="phone" class="refund_input"
+                               placeholder="010-0000-0000" maxlength="13" inputmode="numeric"
+                               autocomplete="tel" />
+                        <button type="button" class="btn_verify" id="btnSendOtp">인증요청</button>
+                    </div>
+                    <p class="field_error">010으로 시작하는 휴대폰번호를 입력해주세요.</p>
+                </div>
+                <div class="refund_field" data-field="otp" id="otpField" style="display:none;">
+                    <label for="rf_otp">인증번호<span class="req">*</span></label>
+                    <div class="verify_row">
+                        <input type="text" id="rf_otp" class="refund_input"
+                               placeholder="인증번호 6자리" maxlength="6" inputmode="numeric"
+                               autocomplete="one-time-code" />
+                        <button type="button" class="btn_verify" id="btnCheckOtp">확인</button>
+                    </div>
+                    <p class="field_hint" id="otpHint">문자로 받은 인증번호 6자리를 입력해주세요. (3분 이내)</p>
+                    <p class="field_error">인증번호가 올바르지 않습니다.</p>
+                </div>
+                <div class="verify_done" id="verifyDone" style="display:none;">
+                    <span class="verify_badge">✓ 번호인증 완료</span>
+                    <span class="verify_amount" id="verifyAmount"></span>
+                </div>
+            </div>
+
+            <!-- STEP 2) 정보입력 (번호인증 전 잠금) -->
+            <form id="refundForm" class="info_section info_locked" novalidate autocomplete="off">
+                <p class="step_label">STEP 2. 정보입력</p>
                 <!-- 이름 -->
                 <div class="refund_field" data-field="name">
                     <label for="rf_name">이름<span class="req">*</span></label>
@@ -145,15 +199,6 @@
                            autocomplete="bday" />
                     <p class="field_hint">예) 1955-08-15</p>
                     <p class="field_error">생년월일을 YYYY-MM-DD 형식으로 입력해주세요.</p>
-                </div>
-
-                <!-- 전화번호 -->
-                <div class="refund_field" data-field="phone">
-                    <label for="rf_phone">전화번호<span class="req">*</span></label>
-                    <input type="tel" id="rf_phone" name="phone" class="refund_input"
-                           placeholder="010-0000-0000" maxlength="13" inputmode="numeric"
-                           autocomplete="tel" />
-                    <p class="field_error">010으로 시작하는 휴대폰번호를 입력해주세요.</p>
                 </div>
 
                 <!-- 은행명 -->
@@ -304,9 +349,121 @@ $(function () {
         setFieldError($(this).closest('.refund_field'), false);
     });
 
+    // ===== 번호인증 =====
+    var refundVerify = { verified: false, checkcode: '', phone: '' };
+
+    // 번호인증 전에는 정보입력 잠금
+    function setInfoLocked(locked) {
+        $('#refundForm').toggleClass('info_locked', locked);
+        $('#refundForm').find('input, select, button').prop('disabled', locked);
+    }
+    setInfoLocked(true);
+
+    // 인증 만료/재인증 필요 시 초기화
+    function resetVerification() {
+        refundVerify = { verified: false, checkcode: '', phone: '' };
+        $('#rf_phone').prop('readonly', false);
+        $('#rf_otp').prop('readonly', false).val('');
+        $('#btnSendOtp').prop('disabled', false).text('인증요청');
+        $('#btnCheckOtp').prop('disabled', false);
+        $('#otpField').hide();
+        $('#verifyDone').hide();
+        setInfoLocked(true);
+        $('html, body').animate({ scrollTop: 0 }, 200);
+        $('#rf_phone').focus();
+    }
+
+    // 번호인증 섹션 입력 에러 해제
+    $('#rf_phone, #rf_otp').on('input', function () {
+        setFieldError($(this).closest('.refund_field'), false);
+    });
+
+    // 인증번호 발송
+    $('#btnSendOtp').on('click', function () {
+        var phone = $.trim($('#rf_phone').val());
+        var $pf = $('.refund_field[data-field="phone"]');
+        if (!isValidPhone(phone)) { setFieldError($pf, true); $('#rf_phone').focus(); return; }
+        setFieldError($pf, false);
+        var $b = $(this).prop('disabled', true);
+        $.ajax({
+            type: 'POST', url: '/api/v1.0/refund/mobiletown/sendsms',
+            contentType: 'application/json',
+            data: JSON.stringify({ mobileno: phone.replace(/-/g, '') }), cache: false,
+            success: function (res) {
+                var data = typeof res === 'string' ? JSON.parse(res) : res;
+                if (data.code === 200) {
+                    $('#otpField').show();
+                    $('#rf_otp').val('').focus();
+                    $b.text('재요청');
+                    alert('인증번호가 발송되었습니다. 3분 이내에 입력해주세요.');
+                } else {
+                    alert(data.msg || '인증번호 발송에 실패했습니다. 잠시 후 다시 시도해주세요.');
+                }
+            },
+            error: function () { alert('인증번호 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'); },
+            complete: function () { $b.prop('disabled', false); }
+        });
+    });
+
+    // 인증번호 검증
+    $('#btnCheckOtp').on('click', function () {
+        var phone = $.trim($('#rf_phone').val());
+        var otp   = $.trim($('#rf_otp').val());
+        var $of   = $('.refund_field[data-field="otp"]');
+        if (!/^\d{6}$/.test(otp)) { setFieldError($of, true); $('#rf_otp').focus(); return; }
+        setFieldError($of, false);
+        var $b = $(this).prop('disabled', true);
+        $.ajax({
+            type: 'POST', url: '/api/v1.0/refund/mobiletown/checkotp',
+            contentType: 'application/json',
+            data: JSON.stringify({ mobileno: phone.replace(/-/g, ''), rnumber: otp }), cache: false,
+            success: function (res) {
+                var data = typeof res === 'string' ? JSON.parse(res) : res;
+                if (data.code === 200) {
+                    var d = data.data || {};
+                    refundVerify.verified = true;
+                    refundVerify.checkcode = d.checkcode || '';
+                    refundVerify.phone = phone.replace(/-/g, '');
+                    $('#rf_phone').prop('readonly', true);
+                    $('#rf_otp').prop('readonly', true);
+                    $('#btnSendOtp').prop('disabled', true);
+                    $b.prop('disabled', true);
+                    $('#otpField').hide();
+                    if (d.refundAmount != null) {
+                        $('#verifyAmount').text('예상 환불금 ' + Number(d.refundAmount).toLocaleString() + '원');
+                    }
+                    $('#verifyDone').show();
+                    setInfoLocked(false);   // 정보입력 활성화
+                    $('#rf_name').focus();
+                } else if (data.code === 901) {
+                    alert('가입 이력이 없는 번호입니다.\n콜센터(1533-5278)로 문의해주세요.');
+                } else if (data.code === 902) {
+                    alert('서비스 해지 후 신청 가능합니다.\n먼저 서비스를 해지해주세요.');
+                } else if (data.code === 903) {
+                    alert('환불 신청 처리 중입니다.\n완료 후 다시 확인해주세요.');
+                } else if (data.code === 904) {
+                    alert('환불 가능 금액이 없습니다.');
+                } else if (data.code === 906) {
+                    alert('이미 환불이 완료된 번호입니다.\n자세한 사항은 콜센터(1533-5278)로 문의해주세요.');
+                } else {
+                    setFieldError($of, true);
+                    alert(data.msg || '인증번호가 올바르지 않습니다. 다시 확인해주세요.');
+                }
+            },
+            error: function () { alert('인증번호 검증 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'); },
+            complete: function () { if (!refundVerify.verified) $b.prop('disabled', false); }
+        });
+    });
+
     // ----- 제출 -----
     $('#refundForm').on('submit', function (e) {
         e.preventDefault();
+
+        if (!refundVerify.verified || !refundVerify.checkcode) {
+            alert('휴대폰 번호 인증을 먼저 완료해주세요.');
+            $('#rf_phone').focus();
+            return;
+        }
 
         var name    = $.trim($('#rf_name').val());
         var birth   = $.trim($('#rf_birth').val());
@@ -319,7 +476,6 @@ $(function () {
         var checks = [
             { field: 'name',    valid: isValidName(name) },
             { field: 'birth',   valid: isValidBirth(birth) },
-            { field: 'phone',   valid: isValidPhone(phone) },
             { field: 'bank',    valid: isValidBank(bank) },
             { field: 'account', valid: isValidAccount(account) }
         ];
@@ -341,11 +497,12 @@ $(function () {
         var payload = {
             name: name,
             birth: birth,
-            phone: phone.replace(/-/g, ''),
+            phone: refundVerify.phone || phone.replace(/-/g, ''),
             bankCode: bank,
             bankName: bankNm,
             account: account,
-            blockRejoin: $('#rf_blockRejoin').is(':checked')
+            blockRejoin: $('#rf_blockRejoin').is(':checked'),
+            checkcode: refundVerify.checkcode
         };
 
         var $btn = $('#btnSubmit');
@@ -375,6 +532,9 @@ $(function () {
                     alert(data.msg || '입력 내용을 다시 확인해주세요.');
                 } else if (data.code === 906) {
                     alert('이미 환불이 완료된 번호입니다.\n자세한 사항은 콜센터(1533-5278)로 문의해주세요.');
+                } else if (data.code === 907) {
+                    alert(data.msg || '인증 유효시간이 만료되었습니다. 다시 인증해주세요.');
+                    resetVerification();
                 } else {
                     alert(data.msg || '처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
                 }

@@ -41,7 +41,22 @@ public class SubscribeMobiletown {
 	public JSONObject cancelMobiletownOtp(String mobileno, String rnumber) {
 		return mobiletownOtp("C", mobileno, rnumber);
 	}
-	
+
+	// 환불시 인증번호 발송
+	public JSONObject refundMobiletown(String mobileno) {
+		return mobiletown("R", mobileno, "");
+	}
+
+	// 환불시 인증번호 발송 (테스트폰전용)
+	public JSONObject refundMobiletownPseudo(String mobileno) {
+		return mobiletownPseuo("R", mobileno, "");
+	}
+
+	// 환불시 인증번호 검증
+	public JSONObject refundMobiletownOtp(String mobileno, String rnumber) {
+		return mobiletownOtp("R", mobileno, rnumber);
+	}
+
 	// 가입안내 
 	public JSONObject notiMobiletown(String mobileno, String offercode, String type) {
 		JSONObject retObj = new JSONObject();

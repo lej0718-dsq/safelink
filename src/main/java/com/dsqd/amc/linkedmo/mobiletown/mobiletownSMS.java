@@ -7,6 +7,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dsqd.amc.linkedmo.model.AgtTran;
 import com.dsqd.amc.linkedmo.model.SmsTran;
 import com.dsqd.amc.linkedmo.service.SmsTranService;
 
@@ -17,6 +18,7 @@ public class mobiletownSMS {
 	private static final Logger logger = LoggerFactory.getLogger(mobiletownSMS.class);
 
 	private static String callback_number = "15335278";
+	private static String orig_number = "07089852982";	// 발신번호
 
 	private static String subscribe_url = "https://linksafe.kr/subscribe_page.html";
 	private static String subscribe_url_bitly_91 = "https://bit.ly/3YVxFzz";
@@ -88,6 +90,39 @@ public class mobiletownSMS {
         }
 
         logger.info("SMS SEND : {}", retObj.toJSONString());
+        return retObj;
+	}
+
+	// 장문(LMS/MMS) 발송 - TB_AGT_TRAN (90byte 초과 메시지)
+	public JSONObject sendMms(String receiver_phone, String subject, String message) {
+        JSONObject retObj = new JSONObject();
+        String key = setTrKey(receiver_phone);
+
+        try {
+        	SmsTranService service = new SmsTranService();
+        	AgtTran agtTran = AgtTran.builder()
+        			.trUserId("allmycredit")
+        			.trDestAddr(receiver_phone)
+        			.trCallBack(callback_number)
+        			.trMsgType("M")			// MMS (첨부 없는 장문)
+        			.trContentsCnt(0)		// 첨부 없음
+        			.trSubject(subject)
+        			.trMmsMessage(message)
+        			.trOrigAddr(orig_number)
+        			.build();
+        	service.insertAgtTran(agtTran);
+
+        	retObj.put("code", 200);
+        	retObj.put("msg", "mms send success");
+        	retObj.put("key", key);
+
+        } catch (Exception e) {
+        	logger.error("MMS 발송 실패 : {}", e.getMessage(), e);
+        	retObj.put("code", 9001);
+        	retObj.put("msg", e.getMessage());
+        }
+
+        logger.info("MMS SEND : {}", retObj.toJSONString());
         return retObj;
 	}
 
